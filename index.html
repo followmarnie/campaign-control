@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeNeon Marketing Cockpit · UTM & Naming</title>
+<style>
+  :root{
+    --tn-bg:#07071a; --tn-ink:#f3f6ff; --tn-strong:#ffffff;
+    --tn-primary:#6666ff; --tn-accent:#9639f3; --tn-pink:#ff3c8d;
+    --tn-teal:#17f8e0; --tn-lime:#edfb8c; --tn-orange:#ff846a; --tn-success:#4ade80;
+    --tn-grad:linear-gradient(135deg,#6666ff,#9639f3);
+    --tn-surf-1:rgba(255,255,255,.03); --tn-surf-2:rgba(255,255,255,.07); --tn-surf-3:rgba(255,255,255,.10);
+    --tn-border:rgba(255,255,255,.08);
+    --tn-r-s:10px; --tn-r-m:14px; --tn-r-l:20px;
+    --tn-ease:cubic-bezier(.22,1,.36,1);
+    --tn-glow:0 10px 40px -12px rgba(102,102,255,.5);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--tn-bg); color:var(--tn-ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-weight:300; line-height:1.6; padding:32px 20px 80px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-weight:700;font-size:clamp(22px,3vw,30px);margin:0 0 4px;
+     background:var(--tn-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:#aab0d6;font-size:14px;margin:0}
+  .topbar{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+  .topbar .right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap}
+  .topbar .who input{width:150px;background:var(--tn-surf-2);border:1px solid var(--tn-border);color:var(--tn-strong);
+    border-radius:var(--tn-r-s);padding:7px 10px;font-size:13px;font-family:inherit;font-weight:300}
+  .dot{width:9px;height:9px;border-radius:50%;background:#5b6090;flex:none;transition:background .3s}
+  .dot.ok{background:var(--tn-success);box-shadow:0 0 8px rgba(74,222,128,.6)}
+  .dot.err{background:var(--tn-pink);box-shadow:0 0 8px rgba(255,60,141,.6)}
+  .conn{font-size:12px;color:#8e94c0}
+  .langsw{display:flex;gap:2px;background:var(--tn-surf-2);border:1px solid var(--tn-border);border-radius:999px;padding:3px}
+  .langsw button{background:transparent;border:none;color:#b9bee6;padding:4px 11px;border-radius:999px;cursor:pointer;font-size:12px;font-family:inherit;font-weight:600}
+  .langsw button.on{background:var(--tn-grad);color:#fff}
+  .userchip{font-size:12px;color:#9aa0cc;display:flex;align-items:center;gap:6px}
+  .linkbtn{background:none;border:none;color:var(--tn-teal);cursor:pointer;font-size:12px;font-family:inherit;text-decoration:underline;padding:0}
+  .note{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-left:3px solid var(--tn-teal);
+        border-radius:var(--tn-r-s);padding:10px 14px;font-size:13px;color:#cfd4f0;margin-bottom:24px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-l);padding:20px}
+  .card h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#9aa0cc;margin:0 0 16px;font-weight:600}
+  label{display:block;font-size:12px;color:#b9bee6;margin:12px 0 4px;font-weight:400}
+  .hint{color:#7e84ad;font-size:11px}
+  input,select{
+    width:100%;background:var(--tn-surf-2);border:1px solid var(--tn-border);color:var(--tn-strong);
+    border-radius:var(--tn-r-s);padding:9px 11px;font-size:14px;font-family:inherit;font-weight:300;
+    transition:border-color .2s var(--tn-ease)
+  }
+  input:focus,select:focus{outline:none;border-color:var(--tn-primary)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .seg{display:flex;gap:6px;background:var(--tn-surf-2);border:1px solid var(--tn-border);border-radius:var(--tn-r-s);padding:4px}
+  .seg button{flex:1;background:transparent;border:none;color:#b9bee6;padding:8px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit}
+  .seg button.on{background:var(--tn-grad);color:#fff;box-shadow:var(--tn-glow)}
+  .out{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;word-break:break-all}
+  .outrow{padding:9px 0;border-bottom:1px dashed var(--tn-border);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .outrow:last-child{border-bottom:none}
+  .outrow .kv{flex:1;min-width:0}
+  .k{color:#8e94c0;font-size:11px;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px}
+  .v{color:var(--tn-strong)}
+  .v.empty{color:#5b6090;font-style:italic}
+  .minicopy{background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#b9bee6;border-radius:7px;
+    cursor:pointer;font-size:11px;padding:3px 8px;font-family:inherit;flex:none;transition:all .15s var(--tn-ease)}
+  .minicopy:hover{color:#fff;border-color:var(--tn-primary)}
+  .url{background:var(--tn-surf-2);border:1px solid var(--tn-border);border-radius:var(--tn-r-s);padding:11px;margin-top:6px}
+  .btn{background:var(--tn-grad);color:#fff;border:none;border-radius:var(--tn-r-s);padding:10px 16px;
+       cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:transform .15s var(--tn-ease)}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn.ghost{background:var(--tn-surf-3);color:var(--tn-ink)}
+  .btn.sm{padding:6px 10px;font-size:12px;font-weight:400}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .pill{display:inline-block;background:var(--tn-surf-3);border:1px solid var(--tn-border);border-radius:999px;
+        padding:2px 9px;font-size:11px;color:#b9bee6;margin-left:6px}
+  .warn{background:rgba(255,132,106,.10);border:1px solid rgba(255,132,106,.35);border-left:3px solid var(--tn-orange);
+        border-radius:var(--tn-r-s);padding:9px 12px;font-size:12px;color:#ffd0c2;margin-top:12px;display:none}
+  .warn.show{display:block}
+  .warn b{color:#fff}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}
+  th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--tn-border);vertical-align:top}
+  th{color:#8e94c0;font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:10px}
+  td.mono{font-family:"SF Mono",Menlo,Consolas,monospace}
+  .tag{display:inline-block;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:600}
+  .tag.paid{background:rgba(102,102,255,.18);color:#aab0ff}
+  .tag.email{background:rgba(23,248,224,.15);color:#7df3e6}
+  .tag.organic{background:rgba(237,251,140,.15);color:#d9e08c}
+  .counter{font-family:"SF Mono",Menlo,Consolas,monospace;color:var(--tn-teal)}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+  .toolbar input,.toolbar select{width:auto;min-width:120px}
+  .act{cursor:pointer;font-weight:700;padding:0 4px;user-select:none}
+  .act.edit{color:var(--tn-teal)}
+  .act.del{color:var(--tn-pink)}
+  .act.ok{color:var(--tn-success)}
+  .full{grid-column:1/-1}
+  td.editing{background:rgba(23,248,224,.06);outline:1px solid rgba(23,248,224,.3)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--tn-grad);
+         color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;
+         transition:opacity .3s var(--tn-ease);box-shadow:var(--tn-glow);max-width:80vw;text-align:center;z-index:60}
+  .toast.show{opacity:1}
+  .toast.err{background:linear-gradient(135deg,#ff3c8d,#9639f3)}
+  .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+        border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  /* Overlay (Login + How-to) */
+  .overlay{position:fixed;inset:0;background:rgba(3,3,14,.82);backdrop-filter:blur(6px);z-index:50;
+           display:flex;align-items:center;justify-content:center;padding:20px}
+  .overlay.hidden{display:none}
+  .modal{background:#0c0c22;border:1px solid var(--tn-border);border-radius:var(--tn-r-l);max-width:520px;width:100%;
+         padding:28px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);max-height:88vh;overflow:auto}
+  .modal.wide{max-width:680px}
+  .modal h2{margin:0 0 6px;font-size:20px;color:#fff;font-weight:700}
+  .modal .lead{color:#aab0d6;font-size:13px;margin:0 0 18px}
+  .modal .err{color:#ff9bbf;font-size:12px;min-height:16px;margin-top:8px}
+  .howto h3{color:var(--tn-teal);font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px}
+  .howto p,.howto li{font-size:13.5px;color:#d3d8f0}
+  .howto code{background:var(--tn-surf-2);padding:1px 6px;border-radius:5px;font-size:12px;color:#cfe}
+  .howto ol,.howto ul{padding-left:20px;margin:6px 0}
+  .howto li{margin:4px 0}
+  .modal .close{float:right;background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#b9bee6;border-radius:8px;cursor:pointer;font-size:16px;width:30px;height:30px;line-height:1;font-family:inherit}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div class="overlay" id="loginOverlay">
+  <div class="modal" style="max-width:400px">
+    <h1 style="font-size:24px">TradeNeon</h1>
+    <p class="lead" data-i18n="login.lead">Marketing Cockpit — bitte anmelden.</p>
+    <label data-i18n="login.email">E-Mail</label>
+    <input id="loginEmail" type="email" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <label data-i18n="login.password">Passwort</label>
+    <div style="position:relative">
+      <input id="loginPw" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" style="padding-right:52px">
+      <button type="button" id="pwToggle" tabindex="-1"
+        style="position:absolute;right:6px;top:50%;transform:translateY(-50%);width:auto;background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#b9bee6;border-radius:7px;cursor:pointer;font-size:11px;padding:5px 8px;font-family:inherit">👁</button>
+    </div>
+    <div class="btns"><button class="btn" id="loginBtn" style="width:100%;justify-content:center" data-i18n="login.btn">Anmelden</button></div>
+    <div class="err" id="loginErr"></div>
+    <div style="margin-top:14px;text-align:right"><div class="langsw" style="display:inline-flex" id="langSwitchLogin">
+      <button data-l="de" class="on">DE</button><button data-l="en">EN</button></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ HOW-TO ═══════════ -->
+<div class="overlay hidden" id="howtoOverlay">
+  <div class="modal wide howto">
+    <button class="close" onclick="toggleHowto(false)">×</button>
+    <!-- DE -->
+    <div id="howtoDE">
+      <h2>So funktioniert das Cockpit</h2>
+      <p class="lead">Aus Kampagnen-Eckdaten macht das Tool alle Naming-Ebenen und die fertige, SOP-konforme UTM-URL — und legt jede Zeile in der gemeinsamen Datenbank ab.</p>
+      <h3>In 3 Schritten</h3>
+      <ol>
+        <li><b>Plattform-Typ wählen</b> — <i>Werbe</i> (Meta/Google/…), <i>E-Mail</i> (Active Campaign) oder <i>Organisch</i> (Social/Blog/…). Danach passen sich die Felder an.</li>
+        <li><b>Felder ausfüllen</b> — nur SOP-erlaubte Werte (Dropdowns). Rechts entstehen live: Campaign-Name, AdSet/Automation, Ad-/Email-Identifier und alle <code>utm_*</code>-Parameter.</li>
+        <li><b>„In Datenbank speichern"</b> — die <code>utm_id</code> (z.&nbsp;B. <code>tradeneon00050</code>) wird von der Datenbank <b>automatisch und kollisionsfrei</b> vergeben. Danach steht die volle URL in der Registry und wird in Deine Zwischenablage kopiert.</li>
+      </ol>
+      <h3>Kopieren &amp; einsetzen</h3>
+      <p><b>„Nur URL-Parameter"</b> = der <code>?utm_…</code>-Anhang. <b>„Volle UTM-URL"</b> = Landingpage + Parameter, fertig zum Einfügen ins Werbe- oder Mail-Tool. Der Anker (<code>#…</code>) wird angehängt, ist aber kein Tracking-Parameter.</p>
+      <h3>Registry pflegen</h3>
+      <ul>
+        <li><b>✎ Stift</b> — Zeile direkt in der Tabelle bearbeiten (Felder werden editierbar, ✓ speichert).</li>
+        <li><b>⧉</b> — volle URL der Zeile kopieren. <b>✕</b> — Zeile löschen (mit Rückfrage).</li>
+        <li><b>Filter</b> nach Jahr, Kampagne, Source, Funnel. <b>CSV ⬇/⬆</b> als Backup/Import.</li>
+        <li><b>utm_id-Override</b> — nur wenn Du bewusst eine bestimmte Nummer vergeben willst; sonst leer lassen.</li>
+      </ul>
+      <h3>Wichtige Regeln</h3>
+      <ul>
+        <li><b>Interne Links nie taggen</b> (Menü, Footer, Cross-Sell) — sonst überschreibt der interne Klick die echte Quelle in GA4.</li>
+        <li>Taucht eine <b>neue Source/Medium</b> auf, erst in die <code>SOP_Platform_Naming.md</code> aufnehmen — das Tool warnt.</li>
+        <li>Die Naming-Regeln kommen aus der SOP (Single Source of Truth); das Tool bildet sie nur ab.</li>
+      </ul>
+    </div>
+    <!-- EN -->
+    <div id="howtoEN" style="display:none">
+      <h2>How the Cockpit works</h2>
+      <p class="lead">From a few campaign inputs the tool derives every naming level and the finished, SOP-compliant UTM URL — and stores each row in the shared database.</p>
+      <h3>In 3 steps</h3>
+      <ol>
+        <li><b>Pick the platform type</b> — <i>Advertising</i> (Meta/Google/…), <i>Email</i> (Active Campaign) or <i>Organic</i> (social/blog/…). The fields adapt accordingly.</li>
+        <li><b>Fill the fields</b> — only SOP-allowed values (dropdowns). On the right you get live: campaign name, ad set/automation, ad/email identifier and all <code>utm_*</code> parameters.</li>
+        <li><b>“Save to database”</b> — the <code>utm_id</code> (e.g. <code>tradeneon00050</code>) is assigned by the database <b>automatically and collision-free</b>. The full URL then appears in the registry and is copied to your clipboard.</li>
+      </ol>
+      <h3>Copy &amp; use</h3>
+      <p><b>“URL parameters only”</b> = the <code>?utm_…</code> string. <b>“Full UTM URL”</b> = landing page + parameters, ready to paste into your ad or mail tool. The anchor (<code>#…</code>) is appended but is not a tracking parameter.</p>
+      <h3>Manage the registry</h3>
+      <ul>
+        <li><b>✎ pencil</b> — edit a row inline (cells become editable, ✓ saves).</li>
+        <li><b>⧉</b> — copy the row’s full URL. <b>✕</b> — delete the row (with confirmation).</li>
+        <li><b>Filters</b> by year, campaign, source, funnel. <b>CSV ⬇/⬆</b> for backup/import.</li>
+        <li><b>utm_id override</b> — only if you deliberately want a specific number; otherwise leave empty.</li>
+      </ul>
+      <h3>Key rules</h3>
+      <ul>
+        <li><b>Never tag internal links</b> (menu, footer, cross-sell) — the internal click would overwrite the real source in GA4.</li>
+        <li>If a <b>new source/medium</b> shows up, add it to <code>SOP_Platform_Naming.md</code> first — the tool warns you.</li>
+        <li>Naming rules come from the SOP (single source of truth); the tool only reflects them.</li>
+      </ul>
+    </div>
+    <div class="btns" style="justify-content:flex-end"><button class="btn sm" onclick="toggleHowto(false)" data-i18n="howto.close">Schließen</button></div>
+  </div>
+</div>
+
+<div class="wrap" id="app" style="filter:blur(3px);opacity:.4;pointer-events:none">
+  <div class="topbar">
+    <div>
+      <h1>TradeNeon Marketing Cockpit</h1>
+      <p class="sub"><span data-i18n="app.sub">Modul „UTM &amp; Naming"</span> <span class="pill">v1 · Supabase</span></p>
+    </div>
+    <div class="right">
+      <div class="langsw" id="langSwitch"><button data-l="de" class="on">DE</button><button data-l="en">EN</button></div>
+      <button class="linkbtn" onclick="toggleHowto(true)" data-i18n="app.howto">So funktioniert's</button>
+      <span class="dot" id="connDot"></span><span class="conn" id="connLabel"></span>
+      <span class="who"><input id="who" data-i18n-ph="app.who"></span>
+      <span class="userchip"><span id="userEmail"></span> · <button class="linkbtn" id="logoutBtn" data-i18n="app.logout">Abmelden</button></span>
+    </div>
+  </div>
+  <div class="note" data-i18n="app.note"></div>
+
+  <div class="grid">
+    <!-- ───────── EINGABE ───────── -->
+    <div class="card">
+      <h2 data-i18n="s1.title">1 · Eingabe</h2>
+
+      <label data-i18n="f.ptype">Plattform-Typ</label>
+      <div class="seg" id="ptype">
+        <button data-t="paid" class="on" data-i18n="seg.paid">Werbe (Paid)</button>
+        <button data-t="email" data-i18n="seg.email">E-Mail (AC)</button>
+        <button data-t="organic" data-i18n="seg.organic">Organisch</button>
+      </div>
+
+      <div class="row3">
+        <div><label data-i18n="f.channel">Channel</label><select id="channel"></select></div>
+        <div><label data-i18n="f.tag">Funktions-Tag</label><select id="tag"></select></div>
+        <div><label data-i18n="f.funnel">Funnel</label><select id="funnel"></select></div>
+      </div>
+      <div class="row3">
+        <div><label data-i18n="f.thema">Thema <span class="hint">(Slug)</span></label><input id="thema" value="KI-im-Trading"></div>
+        <div><label data-i18n="f.datum">Datum <span class="hint">(YYYY-MM)</span></label><input id="datum" value="2026-06"></div>
+        <div class="paid-only"><label data-i18n="f.variant">Variant <span class="hint">(opt.)</span></label><select id="variant"></select></div>
+      </div>
+
+      <div class="paid-only">
+        <label data-i18n="f.adset">AdSet — Audience &amp; Targeting</label>
+        <div class="row3">
+          <select id="audtyp"></select>
+          <input id="targeting" data-i18n-ph="f.targeting" value="Daytrading-AI">
+          <select id="geo"></select>
+        </div>
+      </div>
+
+      <div class="paid-only">
+        <label data-i18n="f.ad">Ad — Asset</label>
+        <div class="row3">
+          <select id="fmt"></select>
+          <input id="fmtnn" type="number" min="1" value="1" placeholder="NN">
+          <select id="lang"></select>
+        </div>
+        <div class="row3" style="margin-top:8px">
+          <div><label style="margin-top:2px">Hook H[N]</label><input id="hook" type="number" min="1" value="1"></div>
+          <div><label style="margin-top:2px">CTA[N]</label><input id="cta" type="number" min="1" value="1"></div>
+          <div></div>
+        </div>
+      </div>
+
+      <div class="paid-only">
+        <label data-i18n="f.srcPaid">utm_source <span class="hint">(Werbe-Plattform)</span></label>
+        <select id="srcPaid"></select>
+      </div>
+
+      <div class="email-only">
+        <label data-i18n="f.automation">Automation — Sequenz &amp; Audience</label>
+        <div class="row2"><select id="seq"></select><select id="audslug"></select></div>
+        <div class="row3" style="margin-top:8px">
+          <div><label style="margin-top:2px" data-i18n="f.lang">Sprache</label><select id="langE"></select></div>
+          <div><label style="margin-top:2px">E-Nummer E[N]</label><input id="enr" type="number" min="1" value="1"></div>
+          <div><label style="margin-top:2px" data-i18n="f.inhalt">Inhalt-Slug</label><input id="inhalt" value="Webinar-Invite"></div>
+        </div>
+        <div class="row2" style="margin-top:8px">
+          <div><label style="margin-top:2px" data-i18n="f.audsuf">Audience-Suffix</label><select id="audsuf"></select></div>
+          <div><label style="margin-top:2px" data-i18n="f.multilink">Multi-Link-Slug <span class="hint">(opt.)</span></label><input id="multilink" data-i18n-ph="f.multilinkph"></div>
+        </div>
+      </div>
+
+      <div class="organic-only">
+        <label data-i18n="f.srcOrg">utm_source <span class="hint">(organischer Touchpoint)</span></label>
+        <select id="srcOrg"></select>
+        <label data-i18n="f.orgcontent">Content-Slug</label>
+        <input id="orgcontent" data-i18n-ph="f.orgcontentph">
+      </div>
+
+      <label data-i18n="f.url">Ziel-URL <span class="hint">(Landingpage)</span></label>
+      <input id="url" value="https://tradeneon-academy.com/webinare/trading-mit-ki-lp/">
+      <label data-i18n="f.anchor">Anker <span class="hint">(opt. · #… · kein Tracking-Param)</span></label>
+      <input id="anchor" data-i18n-ph="f.anchorph">
+      <label data-i18n="f.notes">Notiz <span class="hint">(opt.)</span></label>
+      <input id="notes" data-i18n-ph="f.notesph">
+    </div>
+
+    <!-- ───────── OUTPUT ───────── -->
+    <div class="card">
+      <h2><span data-i18n="s2.title">2 · Output</span> <span class="hint" id="modeLabel"></span></h2>
+      <div id="out"></div>
+      <div class="warn" id="warnSource"></div>
+      <div class="warn" id="warnInternal" data-i18n="warn.internal"></div>
+
+      <label style="margin-top:16px" data-i18n="o.params">Nur URL-Parameter</label>
+      <div class="url out" id="paramsOut"></div>
+      <label style="margin-top:10px" data-i18n="o.url">Volle UTM-URL</label>
+      <div class="url out" id="urlOut"></div>
+
+      <div class="btns">
+        <button class="btn sm" onclick="copyText($('paramsOut').textContent)" data-i18n="o.copyParams">Parameter kopieren</button>
+        <button class="btn sm" onclick="copyText($('urlOut').textContent)" data-i18n="o.copyUrl">Volle URL kopieren</button>
+        <button class="btn sm ghost" id="saveBtn" data-i18n="o.save">+ In Datenbank speichern</button>
+      </div>
+      <p class="hint" style="margin-top:8px" data-i18n="o.idhint"></p>
+    </div>
+
+    <!-- ───────── REGISTRY ───────── -->
+    <div class="card full">
+      <h2><span data-i18n="s3.title">3 · Registry</span> <span class="pill" id="rowCount">…</span></h2>
+      <div class="toolbar">
+        <input id="fYear" data-i18n-ph="r.fYear">
+        <input id="fCampaign" data-i18n-ph="r.fCampaign">
+        <select id="fSource"></select>
+        <select id="fFunnel"></select>
+        <span style="flex:1"></span>
+        <label style="margin:0 6px 0 0;color:#b9bee6" data-i18n="r.override">utm_id-Override</label>
+        <input id="ctrOverride" type="number" style="width:120px" placeholder="60">
+        <button class="btn sm ghost" onclick="loadRows()" data-i18n="r.reload">↻ Neu laden</button>
+        <button class="btn sm ghost" onclick="exportCSV()">CSV ⬇</button>
+        <label class="btn sm ghost" style="margin:0">CSV ⬆<input type="file" id="imp" accept=".csv" hidden></label>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="tbl">
+          <thead><tr>
+            <th>utm_id</th><th data-i18n="r.type">Typ</th><th>Campaign</th><th>Identifier</th>
+            <th>source</th><th>content</th><th data-i18n="r.fullurl">Volle URL</th><th style="width:110px"></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════ Supabase-Config ═══════════════ */
+const SB_URL='https://tnrzhdjmmxpfmimdysdc.supabase.co';
+const SB_KEY='sb_publishable_U2Is6eXQrFnek43jCv5Z2g_oVqkg19E'; // publishable — browser-safe; Zugriff über Login (RLS: authenticated)
+const SB_TBL='utm_registry';
+const LS_SESS='tn_cockpit_session';
+
+/* ═══════════════ i18n ═══════════════ */
+let LANG=localStorage.getItem('tn_cockpit_lang')||'de';
+const T={
+ de:{
+  'login.lead':'Marketing Cockpit — bitte anmelden.','login.email':'E-Mail','login.password':'Passwort','login.btn':'Anmelden',
+  'app.sub':'Modul „UTM &amp; Naming"','app.howto':"So funktioniert's",'app.logout':'Abmelden','app.who':'Dein Name (created_by)',
+  'app.note':'Eingabe → alle Naming-Ebenen + fertige UTM-URL, SOP-konform. Gespeichert wird in der <b>Marketing-Cockpit-Datenbank</b>; der <code>utm_id</code>-Zähler ist kollisionsfrei. CSV bleibt als Backup. Regelquelle: <code>SOP_Platform_Naming.md</code>.',
+  'howto.close':'Schließen',
+  's1.title':'1 · Eingabe','s2.title':'2 · Output','s3.title':'3 · Registry',
+  'f.ptype':'Plattform-Typ','seg.paid':'Werbe (Paid)','seg.email':'E-Mail (AC)','seg.organic':'Organisch',
+  'f.channel':'Channel','f.tag':'Funktions-Tag','f.funnel':'Funnel',
+  'f.thema':'Thema <span class="hint">(Slug)</span>','f.datum':'Datum <span class="hint">(YYYY-MM)</span>','f.variant':'Variant <span class="hint">(opt.)</span>',
+  'f.adset':'AdSet — Audience &amp; Targeting','f.targeting':'Targeting-Slug','f.ad':'Ad — Asset','f.srcPaid':'utm_source <span class="hint">(Werbe-Plattform)</span>',
+  'f.automation':'Automation — Sequenz &amp; Audience','f.lang':'Sprache','f.inhalt':'Inhalt-Slug','f.audsuf':'Audience-Suffix',
+  'f.multilink':'Multi-Link-Slug <span class="hint">(opt.)</span>','f.multilinkph':'z.B. geschenk',
+  'f.srcOrg':'utm_source <span class="hint">(organischer Touchpoint)</span>','f.orgcontent':'Content-Slug','f.orgcontentph':'z.B. reel_hook1',
+  'f.url':'Ziel-URL <span class="hint">(Landingpage)</span>','f.anchor':'Anker <span class="hint">(opt. · #… · kein Tracking-Param)</span>','f.anchorph':'z.B. anmeldung',
+  'f.notes':'Notiz <span class="hint">(opt.)</span>','f.notesph':'frei — z.B. Kampagnen-Kontext',
+  'warn.internal':'<b>Interner Link?</b> Interne Verlinkungen (Menü, Footer, Cross-Sell) <b>nie</b> mit UTM taggen — sonst überschreibt der interne Klick die echte Kampagnen-Quelle in GA4.',
+  'o.params':'Nur URL-Parameter','o.url':'Volle UTM-URL','o.copyParams':'Parameter kopieren','o.copyUrl':'Volle URL kopieren','o.save':'+ In Datenbank speichern',
+  'o.idhint':'Die <code>utm_id</code> wird beim Speichern von der Datenbank vergeben (atomar). Override unten in der Registry.',
+  'r.fYear':'Jahr filtern','r.fCampaign':'Kampagne filtern','r.srcAll':'Source: alle','r.funAll':'Funnel: alle',
+  'r.override':'utm_id-Override','r.reload':'↻ Neu laden','r.type':'Typ','r.fullurl':'Volle URL',
+  'row.campaign':'Campaign Name','row.adset':'AdSet (kein UTM)','row.automation':'Automation','row.adid':'Ad-Identifier','row.emailid':'Email-Identifier','row.idpending':'wird beim Speichern vergeben',
+  'tbl.empty':'Noch keine Zeilen — links bauen und „In Datenbank speichern".',
+  'conn.load':'lade…','conn.ok':'DB verbunden','conn.err':'DB-Fehler',
+  'ct.saved':'Gespeichert','ct.deleted':'Gelöscht','ct.updated':'Aktualisiert','ct.copied':'Kopiert','ct.copyfail':'Kopieren fehlgeschlagen',
+  'ct.urlcopied':'— URL kopiert','ct.needSource':'Bitte utm_source wählen','ct.dup':'utm_id schon vergeben — Override ändern',
+  'ct.loadfail':'Laden fehlgeschlagen','ct.savefail':'Speichern fehlgeschlagen','ct.delfail':'Löschen fehlgeschlagen','ct.updfail':'Update fehlgeschlagen',
+  'ct.importfail':'Import fehlgeschlagen','ct.imported':'Zeile(n) importiert','ct.nonew':'Nichts Neues zu importieren','ct.noexport':'Keine Zeilen zum Export','ct.csvok':'CSV exportiert','ct.sessexp':'Sitzung abgelaufen — bitte neu anmelden',
+  'cf.del':'Zeile {id} wirklich löschen? Das lässt sich nicht rückgängig machen.','saving':'speichere…'
+ },
+ en:{
+  'login.lead':'Marketing Cockpit — please log in.','login.email':'Email','login.password':'Password','login.btn':'Log in',
+  'app.sub':'Module “UTM &amp; Naming”','app.howto':'How it works','app.logout':'Log out','app.who':'Your name (created_by)',
+  'app.note':'Input → all naming levels + finished UTM URL, SOP-compliant. Saved to the <b>Marketing Cockpit database</b>; the <code>utm_id</code> counter is collision-free. CSV stays as backup. Rule source: <code>SOP_Platform_Naming.md</code>.',
+  'howto.close':'Close',
+  's1.title':'1 · Input','s2.title':'2 · Output','s3.title':'3 · Registry',
+  'f.ptype':'Platform type','seg.paid':'Advertising (Paid)','seg.email':'Email (AC)','seg.organic':'Organic',
+  'f.channel':'Channel','f.tag':'Function tag','f.funnel':'Funnel',
+  'f.thema':'Topic <span class="hint">(slug)</span>','f.datum':'Date <span class="hint">(YYYY-MM)</span>','f.variant':'Variant <span class="hint">(opt.)</span>',
+  'f.adset':'Ad set — audience &amp; targeting','f.targeting':'Targeting slug','f.ad':'Ad — asset','f.srcPaid':'utm_source <span class="hint">(ad platform)</span>',
+  'f.automation':'Automation — sequence &amp; audience','f.lang':'Language','f.inhalt':'Content slug','f.audsuf':'Audience suffix',
+  'f.multilink':'Multi-link slug <span class="hint">(opt.)</span>','f.multilinkph':'e.g. gift',
+  'f.srcOrg':'utm_source <span class="hint">(organic touchpoint)</span>','f.orgcontent':'Content slug','f.orgcontentph':'e.g. reel_hook1',
+  'f.url':'Target URL <span class="hint">(landing page)</span>','f.anchor':'Anchor <span class="hint">(opt. · #… · not a tracking param)</span>','f.anchorph':'e.g. signup',
+  'f.notes':'Note <span class="hint">(opt.)</span>','f.notesph':'free — e.g. campaign context',
+  'warn.internal':'<b>Internal link?</b> Never tag internal links (menu, footer, cross-sell) with UTM — the internal click would overwrite the real campaign source in GA4.',
+  'o.params':'URL parameters only','o.url':'Full UTM URL','o.copyParams':'Copy parameters','o.copyUrl':'Copy full URL','o.save':'+ Save to database',
+  'o.idhint':'The <code>utm_id</code> is assigned by the database on save (atomic). Override below in the registry.',
+  'r.fYear':'Filter year','r.fCampaign':'Filter campaign','r.srcAll':'Source: all','r.funAll':'Funnel: all',
+  'r.override':'utm_id override','r.reload':'↻ Reload','r.type':'Type','r.fullurl':'Full URL',
+  'row.campaign':'Campaign name','row.adset':'Ad set (no UTM)','row.automation':'Automation','row.adid':'Ad identifier','row.emailid':'Email identifier','row.idpending':'assigned on save',
+  'tbl.empty':'No rows yet — build on the left and “Save to database”.',
+  'conn.load':'connecting…','conn.ok':'DB connected','conn.err':'DB error',
+  'ct.saved':'Saved','ct.deleted':'Deleted','ct.updated':'Updated','ct.copied':'Copied','ct.copyfail':'Copy failed',
+  'ct.urlcopied':'— URL copied','ct.needSource':'Please pick a utm_source','ct.dup':'utm_id already taken — change override',
+  'ct.loadfail':'Load failed','ct.savefail':'Save failed','ct.delfail':'Delete failed','ct.updfail':'Update failed',
+  'ct.importfail':'Import failed','ct.imported':'row(s) imported','ct.nonew':'Nothing new to import','ct.noexport':'No rows to export','ct.csvok':'CSV exported','ct.sessexp':'Session expired — please log in again',
+  'cf.del':'Really delete row {id}? This cannot be undone.','saving':'saving…'
+ }
+};
+function t(k,vars){let s=(T[LANG]&&T[LANG][k]!=null)?T[LANG][k]:(T.de[k]!=null?T.de[k]:k);if(vars)for(const key in vars)s=s.split('{'+key+'}').join(vars[key]);return s}
+let connState='load';
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.innerHTML=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>el.placeholder=t(el.dataset.i18nPh).replace(/<[^>]+>/g,''));
+  document.querySelectorAll('.langsw button').forEach(b=>b.classList.toggle('on',b.dataset.l===LANG));
+  $('howtoDE').style.display=LANG==='de'?'':'none';
+  $('howtoEN').style.display=LANG==='en'?'':'none';
+  setConn(connState);
+  if(authed){render();refreshFilters();renderTable();}
+}
+function setLang(l){LANG=l;localStorage.setItem('tn_cockpit_lang',l);applyLang();}
+
+/* ─────────────── SOP-Werte (SOP_Platform_Naming.md) ─────────────── */
+const OPT = {
+  channel:[['ACA','ACA · Academy'],['DAY','DAY · Daytrading'],['SWG','SWG · Swingtrading'],
+           ['PSY','PSY · Trading-Psychologie'],['SWA','SWA · Software'],['LOI','LOI'],['FI','FI'],['LOT','LOT · Lab of Trades']],
+  tag:[['','— (keiner)'],['LM','LM · Lead Magnet'],['EVT','EVT · Event']],
+  funnel:[['Webinar','Webinar'],['Brochure','Brochure'],['Consultation','Consultation'],['Brand','Brand'],['Retargeting','Retargeting']],
+  variant:[['','— (keiner)'],['Website','Website'],['InstantForm','InstantForm'],['Retargeting','Retargeting']],
+  audtyp:[['Cold','Cold'],['Lookalike','Lookalike'],['Retargeting','Retargeting'],['CustomAudience','CustomAudience']],
+  geo:[['','— (kein Geo)'],['DACH','DACH'],['DE','DE'],['AT-CH','AT-CH'],['EN-Worldwide','EN-Worldwide']],
+  fmt:[['CB','CB · Creative Bundle Video'],['IMG','IMG · Static Image'],['CAR','CAR · Carousel'],['SF','SF · Short Form'],['LINK','LINK · Pure Link']],
+  lang:[['DE','DE'],['EN','EN']],
+  srcPaid:[['meta_ads','meta_ads'],['facebook_ads','facebook_ads'],['instagram_ads','instagram_ads'],['google','google'],
+           ['youtube_ads','youtube_ads'],['bing_ads','bing_ads'],['tiktok_ads','tiktok_ads'],['linkedin_ads','linkedin_ads']],
+  srcOrg:[['facebook','facebook'],['instagram','instagram'],['youtube','youtube'],['tiktok','tiktok'],['linkedin','linkedin'],
+          ['pinterest','pinterest'],['reddit','reddit'],['x','x'],['blog','blog'],['podcast','podcast'],['homepage','homepage'],
+          ['qr_code','qr_code'],['event','event'],['affiliate_partner','affiliate_partner']],
+  seq:[['Pre-Launch-Sequenz','Pre-Launch-Sequenz'],['Post-Webinar-Followup','Post-Webinar-Followup'],['Replay-Sequenz','Replay-Sequenz'],
+       ['Reminder-Sequenz','Reminder-Sequenz'],['Nurture-Sequenz','Nurture-Sequenz']],
+  audslug:[['AllSubs-NotRegistered','AllSubs-NotRegistered'],['AllSubs-NotCustomers','AllSubs-NotCustomers'],['Registered-Only','Registered-Only'],
+           ['Registered-NoShow','Registered-NoShow'],['Segment-','Segment-…']],
+  langE:[['DE','DE'],['EN','EN']],
+  audsuf:[['','— (keiner)'],['Registered','Registered → _registered'],['NotRegistered','NotRegistered → _notregistered']]
+};
+const MEDIUM = {
+  meta_ads:'paid_social',facebook_ads:'paid_social',instagram_ads:'paid_social',tiktok_ads:'paid_social',linkedin_ads:'paid_social',
+  google:'cpc',bing_ads:'cpc',youtube_ads:'video',facebook:'social',instagram:'social',linkedin:'social',tiktok:'social',
+  pinterest:'social',reddit:'social',x:'social',youtube:'social',qr_code:'offline',event:'offline',affiliate_partner:'referral',
+  partner_name:'referral',blog:'referral',podcast:'audio',homepage:'internal'
+};
+const KNOWN_SOURCES=new Set([...OPT.srcPaid.map(x=>x[0]),...OPT.srcOrg.map(x=>x[0]),'email_campaign']);
+const KNOWN_MEDIUMS=new Set([...Object.values(MEDIUM),'email']);
+
+/* ─────────────── Helpers ─────────────── */
+const $=id=>document.getElementById(id);
+const kebab=s=>(s||'').toString().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+const snake=s=>(s||'').toString().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+const join_=(...a)=>a.filter(x=>x!==''&&x!=null).join('_');
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmtId=n=>'tradeneon'+String(parseInt(n,10)).padStart(5,'0');
+function fill(id,opts){const s=$(id);if(!s)return;s.innerHTML=opts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}
+Object.keys(OPT).forEach(k=>fill(k,OPT[k]));
+
+let mode='paid';
+const state={rows:[]};
+function whoami(){return ($('who').value||'').trim()}
+
+/* ═══════════════ Auth (Supabase) ═══════════════ */
+let session=null, authed=false;
+function loadSession(){try{return JSON.parse(localStorage.getItem(LS_SESS)||'null')}catch(e){return null}}
+function saveSession(d){session={access_token:d.access_token,refresh_token:d.refresh_token,
+  expires_at:Date.now()+(d.expires_in||3600)*1000,email:(d.user&&d.user.email)||(session&&session.email)};
+  localStorage.setItem(LS_SESS,JSON.stringify(session))}
+function clearSession(){session=null;localStorage.removeItem(LS_SESS)}
+async function refreshToken(){
+  if(!session||!session.refresh_token)return false;
+  const r=await fetch(`${SB_URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',
+    headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:session.refresh_token})});
+  if(!r.ok){clearSession();return false}
+  saveSession(await r.json());return true;
+}
+async function ensureToken(){
+  if(!session)return false;
+  if(Date.now()>session.expires_at-30000)return await refreshToken();
+  return true;
+}
+async function signIn(email,pw){
+  const r=await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{method:'POST',
+    headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.error_description||d.msg||d.error||('HTTP '+r.status));
+  saveSession(d);
+}
+function onAuthed(){
+  authed=true;
+  $('loginOverlay').classList.add('hidden');
+  $('app').style.filter='';$('app').style.opacity='';$('app').style.pointerEvents='';
+  $('userEmail').textContent=session&&session.email?session.email:'';
+  loadRows();render();
+}
+function showLogin(){
+  authed=false;
+  $('loginOverlay').classList.remove('hidden');
+  $('app').style.filter='blur(3px)';$('app').style.opacity='.4';$('app').style.pointerEvents='none';
+}
+
+/* ═══════════════ Supabase REST ═══════════════ */
+async function sb(path,opts={},_retried){
+  await ensureToken();
+  const tok=(session&&session.access_token)||SB_KEY;
+  const r=await fetch(`${SB_URL}/rest/v1/${path}`,{...opts,
+    headers:{apikey:SB_KEY,Authorization:`Bearer ${tok}`,'Content-Type':'application/json',...(opts.headers||{})}});
+  if(r.status===401&&!_retried){ if(await refreshToken())return sb(path,opts,true); showLogin(); throw new Error(t('ct.sessexp')) }
+  if(!r.ok){let m;try{const j=await r.json();m=j.message||j.hint||JSON.stringify(j)}catch(e){m=await r.text()}throw new Error(`${r.status} · ${m}`)}
+  return r.status===204?null:r.json();
+}
+
+/* ─────────────── Ableitung (Kern) — Output-Keys = DB-Spalten ─────────────── */
+function derive(){
+  const channel=$('channel').value, tag=$('tag').value, funnel=$('funnel').value,
+        thema=$('thema').value.trim(), datum=$('datum').value.trim();
+  const campaignBase=join_(channel,funnel,thema,datum);
+  const utm_campaign=kebab([channel,funnel,thema,datum].join('-'));
+  let o={platform_type:mode,channel,function_tag:tag,funnel_type:funnel,topic_slug:thema,period:datum,variant:'',
+         campaign_name:campaignBase,utm_campaign,adset_or_automation:'',asset_identifier:'',
+         utm_source:'',utm_medium:'',utm_content:'',audience_suffix:'',
+         target_url:$('url').value.trim(),anchor:$('anchor').value.trim().replace(/^#/,''),notes:$('notes').value.trim()};
+  if(mode==='paid'){
+    const variant=$('variant').value; o.variant=variant;
+    if(variant)o.campaign_name=campaignBase+'_'+variant;
+    o.adset_or_automation=join_($('audtyp').value,$('targeting').value.trim(),$('geo').value);
+    const code=$('fmt').value+String($('fmtnn').value).padStart(2,'0');
+    const hcta='H'+$('hook').value+'_CTA'+$('cta').value;
+    o.asset_identifier=join_('ADS',datum,channel,tag,code,thema,$('lang').value,'H'+$('hook').value,'CTA'+$('cta').value);
+    o.utm_source=$('srcPaid').value; o.utm_medium=MEDIUM[o.utm_source]||''; o.utm_content=snake(code+'_'+hcta);
+  }else if(mode==='email'){
+    o.adset_or_automation=join_(campaignBase,$('seq').value,$('audslug').value);
+    const inhalt=$('inhalt').value.trim(), enr=$('enr').value, suf=$('audsuf').value;
+    o.audience_suffix=suf?snake(suf):'';
+    o.asset_identifier=join_('EMAIL',datum,channel,tag,funnel,thema,$('langE').value,'E'+enr,inhalt)+(suf?'_'+suf:'');
+    o.utm_source='email_campaign'; o.utm_medium='email';
+    let c='email'+enr+'_'+snake(inhalt); const ml=$('multilink').value.trim();
+    if(ml)c+='_'+snake(ml); if(suf)c+='_'+snake(suf); o.utm_content=c;
+  }else{
+    o.utm_source=$('srcOrg').value; o.utm_medium=MEDIUM[o.utm_source]||'social'; o.utm_content=snake($('orgcontent').value);
+    o.asset_identifier=''; o.adset_or_automation='';
+  }
+  return o;
+}
+function buildParams(o,id){
+  const p=[];
+  if(o.utm_source)p.push('utm_source='+o.utm_source);
+  if(o.utm_medium)p.push('utm_medium='+o.utm_medium);
+  if(o.utm_campaign)p.push('utm_campaign='+o.utm_campaign);
+  if(o.utm_content)p.push('utm_content='+o.utm_content);
+  p.push('utm_id='+(id||'(auto)'));
+  return '?'+p.join('&');
+}
+function buildUrl(o,id){
+  const base=o.target_url||''; const sep=base.includes('?')?'&':'?';
+  const params=buildParams(o,id).slice(1);
+  return base+(params?sep+params:'')+(o.anchor?'#'+o.anchor:'');
+}
+function validate(o){
+  const bad=[];
+  if(o.utm_source&&!KNOWN_SOURCES.has(o.utm_source))bad.push('utm_source „'+o.utm_source+'"');
+  if(o.utm_medium&&!KNOWN_MEDIUMS.has(o.utm_medium))bad.push('utm_medium „'+o.utm_medium+'"');
+  const w=$('warnSource');
+  if(bad.length){w.innerHTML='<b>'+(LANG==='de'?'Neuer Wert:':'New value:')+'</b> '+bad.join(' & ')+(LANG==='de'?' ist nicht in der SOP. Erst in ':' is not in the SOP. Add it to ')+'<code>SOP_Platform_Naming.md</code>'+(LANG==='de'?' aufnehmen.':' first.');w.classList.add('show')}
+  else w.classList.remove('show');
+  $('warnInternal').classList.toggle('show',/tradeneon(-academy)?\.com/.test(o.target_url||''));
+}
+
+/* ─────────────── Render Preview ─────────────── */
+function orow(k,v,copyable){
+  const val=`<span class="v ${v?'':'empty'}">${esc(v)||'—'}</span>`;
+  const btn=copyable&&v?`<button class="minicopy" onclick="copyText(${JSON.stringify(String(v))})">${t('ct.copied').replace(/.*/,LANG==='de'?'kopieren':'copy')}</button>`:'';
+  return `<div class="outrow"><div class="kv"><span class="k">${k}</span>${val}</div>${btn}</div>`;
+}
+function render(){
+  const o=derive();
+  const ov=$('ctrOverride').value.trim();
+  const previewId=ov?fmtId(ov):null;
+  $('modeLabel').textContent='· '+(mode==='paid'?t('seg.paid').replace(/ .*/,''):mode==='email'?'E-Mail':t('seg.organic'));
+  let h=orow(t('row.campaign'),o.campaign_name,true);
+  if(mode!=='organic')h+=orow(mode==='email'?t('row.automation'):t('row.adset'),o.adset_or_automation,true);
+  if(mode!=='organic')h+=orow(mode==='email'?t('row.emailid'):t('row.adid'),o.asset_identifier,true);
+  h+=orow('utm_source',o.utm_source)+orow('utm_medium',o.utm_medium)+orow('utm_campaign',o.utm_campaign)
+    +orow('utm_content',o.utm_content)+orow('utm_id',previewId||t('row.idpending'));
+  $('out').innerHTML=h;
+  $('paramsOut').textContent=buildParams(o,previewId);
+  $('urlOut').textContent=buildUrl(o,previewId);
+  validate(o);
+}
+
+/* ─────────────── Registry (Supabase) ─────────────── */
+async function loadRows(){
+  try{setConn('load');const rows=await sb(`${SB_TBL}?select=*&order=created_at.desc`);
+    state.rows=rows||[];setConn('ok');refreshFilters();renderTable();
+  }catch(e){setConn('err');toast(t('ct.loadfail')+': '+e.message,true)}
+}
+function refreshFilters(){
+  const srcs=[...new Set(state.rows.map(r=>r.utm_source).filter(Boolean))].sort();
+  const funs=[...new Set(state.rows.map(r=>r.funnel_type).filter(Boolean))].sort();
+  const fs=$('fSource').value, ff=$('fFunnel').value;
+  $('fSource').innerHTML=`<option value="">${t('r.srcAll')}</option>`+srcs.map(s=>`<option${s===fs?' selected':''}>${esc(s)}</option>`).join('');
+  $('fFunnel').innerHTML=`<option value="">${t('r.funAll')}</option>`+funs.map(s=>`<option${s===ff?' selected':''}>${esc(s)}</option>`).join('');
+}
+function renderTable(){
+  const fy=$('fYear').value.trim(), fc=$('fCampaign').value.trim().toLowerCase(), fs=$('fSource').value, ff=$('fFunnel').value;
+  const flt=state.rows.filter(r=>(!fy||(r.period||'').includes(fy))&&(!fc||(r.campaign_name||'').toLowerCase().includes(fc))
+    &&(!fs||r.utm_source===fs)&&(!ff||r.funnel_type===ff));
+  $('tbl').querySelector('tbody').innerHTML=flt.map(r=>`<tr data-id="${esc(r.utm_id)}">
+    <td class="mono counter">${esc(r.utm_id)}</td>
+    <td><span class="tag ${esc(r.platform_type)}">${esc(r.platform_type)}</span></td>
+    <td class="mono" data-col="campaign_name">${esc(r.campaign_name)||'—'}</td>
+    <td class="mono" data-col="asset_identifier" style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${esc(r.asset_identifier)||'—'}</td>
+    <td class="mono" data-col="utm_source">${esc(r.utm_source)||'—'}</td>
+    <td class="mono" data-col="utm_content">${esc(r.utm_content)||'—'}</td>
+    <td class="mono" data-col="full_url" style="max-width:240px;word-break:break-all">${esc(r.full_url)||'—'}</td>
+    <td>
+      <span class="act edit" title="Edit" onclick="startEdit('${esc(r.utm_id)}')">✎</span>
+      <span class="minicopy" title="Copy URL" onclick="copyText(${JSON.stringify(String(r.full_url||''))})">⧉</span>
+      <span class="act del" title="Delete" onclick="delRow('${esc(r.utm_id)}')">✕</span>
+    </td></tr>`).join('')||`<tr><td colspan="8" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
+  $('rowCount').textContent=state.rows.length+' '+(state.rows.length===1?(LANG==='de'?'Zeile':'row'):(LANG==='de'?'Zeilen':'rows'));
+}
+async function save(){
+  const btn=$('saveBtn'); const o=derive();
+  if(!o.utm_source){toast(t('ct.needSource'),true);return}
+  o.created_by=whoami()||null;
+  const ov=$('ctrOverride').value.trim();
+  btn.disabled=true; const prev=btn.innerHTML; btn.innerHTML='<span class="spin"></span>'+t('saving');
+  try{
+    const payload={...o}; if(ov)payload.utm_id=fmtId(ov);
+    const ins=await sb(`${SB_TBL}`,{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
+    const id=ins[0].utm_id;
+    const full_url=buildUrl(o,id);
+    await sb(`${SB_TBL}?utm_id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({full_url})});
+    if(ov)$('ctrOverride').value='';
+    await loadRows();
+    await copyText(full_url,true);
+    toast(t('ct.saved')+': '+id+' '+t('ct.urlcopied'));
+  }catch(e){
+    const dup=/duplicate|409|unique/i.test(e.message);
+    toast(dup?t('ct.dup'):(t('ct.savefail')+': '+e.message),true);
+  }finally{btn.disabled=false;btn.innerHTML=prev;}
+}
+async function delRow(id){
+  if(!confirm(t('cf.del',{id})))return;
+  try{await sb(`${SB_TBL}?utm_id=eq.${encodeURIComponent(id)}`,{method:'DELETE'});await loadRows();toast(t('ct.deleted')+': '+id)}
+  catch(e){toast(t('ct.delfail')+': '+e.message,true)}
+}
+/* Inline-Edit */
+const EDITABLE=['campaign_name','asset_identifier','utm_source','utm_content','full_url'];
+let editing=null;
+function startEdit(id){
+  if(editing&&editing!==id)cancelEdit();
+  editing=id;
+  const tr=$('tbl').querySelector(`tr[data-id="${CSS.escape(id)}"]`);if(!tr)return;
+  tr.querySelectorAll('td[data-col]').forEach(td=>{if(EDITABLE.includes(td.dataset.col)){td.contentEditable='true';td.classList.add('editing')}});
+  tr.querySelector('td:last-child').innerHTML=`<span class="act ok" title="Save" onclick="commitEdit('${esc(id)}')">✓</span>
+    <span class="act del" title="Cancel" onclick="cancelEdit()">↩</span>`;
+  const c=tr.querySelector('td[data-col="campaign_name"]');if(c)c.focus();
+}
+function cancelEdit(){editing=null;renderTable()}
+async function commitEdit(id){
+  const tr=$('tbl').querySelector(`tr[data-id="${CSS.escape(id)}"]`);if(!tr){editing=null;return}
+  const patch={};tr.querySelectorAll('td[data-col]').forEach(td=>{if(EDITABLE.includes(td.dataset.col)){let v=td.textContent.trim();patch[td.dataset.col]=v==='—'?'':v}});
+  try{await sb(`${SB_TBL}?utm_id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify(patch)});editing=null;await loadRows();toast(t('ct.updated')+': '+id)}
+  catch(e){toast(t('ct.updfail')+': '+e.message,true)}
+}
+/* CSV */
+const COLS=['utm_id','platform_type','channel','function_tag','funnel_type','topic_slug','period','variant','campaign_name',
+  'adset_or_automation','asset_identifier','utm_source','utm_medium','utm_campaign','utm_content','audience_suffix',
+  'target_url','anchor','full_url','notes','created_by','created_at'];
+function exportCSV(){
+  if(!state.rows.length){toast(t('ct.noexport'),true);return}
+  const q=v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`;
+  const csv=[COLS.join(',')].concat(state.rows.map(r=>COLS.map(c=>q(r[c])).join(','))).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='tradeneon-utm-registry.csv';a.click();toast(t('ct.csvok'));
+}
+async function importCSV(file){
+  const text=await file.text(); const lines=text.split(/\r?\n/).filter(Boolean); const head=parseCsvLine(lines[0]);
+  const existing=new Set(state.rows.map(r=>r.utm_id)); const batch=[];
+  for(let i=1;i<lines.length;i++){const cells=parseCsvLine(lines[i]);const o={};
+    head.forEach((h,j)=>{if(COLS.includes(h)&&h!=='created_at')o[h]=cells[j]||null});
+    if(!o.utm_id||existing.has(o.utm_id))continue; batch.push(o);}
+  if(!batch.length){toast(t('ct.nonew'));return}
+  try{await sb(`${SB_TBL}`,{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(batch)});await loadRows();toast(batch.length+' '+t('ct.imported'))}
+  catch(e){toast(t('ct.importfail')+': '+e.message,true)}
+}
+function parseCsvLine(line){const out=[];let cur='',q=false;
+  for(let i=0;i<line.length;i++){const c=line[i];
+    if(q){if(c==='"'){if(line[i+1]==='"'){cur+='"';i++}else q=false}else cur+=c}
+    else{if(c==='"')q=true;else if(c===','){out.push(cur);cur=''}else cur+=c}}
+  out.push(cur);return out;}
+
+/* ─────────────── Utils ─────────────── */
+async function copyText(txt,silent){
+  if(txt==null)return;
+  try{
+    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(txt)}
+    else{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
+    if(!silent)toast(t('ct.copied'))
+  }catch(e){if(!silent)toast(t('ct.copyfail'),true)}
+}
+let toastT;
+function toast(m,err){const el=$('toast');el.textContent=m;el.classList.toggle('err',!!err);el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),err?3400:1900)}
+function setConn(s){connState=s;const d=$('connDot'),l=$('connLabel');if(!d)return;
+  d.className='dot'+(s==='ok'?' ok':s==='err'?' err':'');l.textContent=t('conn.'+s);}
+function toggleHowto(show){$('howtoOverlay').classList.toggle('hidden',!show)}
+function setMode(t2){mode=t2;
+  document.querySelectorAll('#ptype button').forEach(b=>b.classList.toggle('on',b.dataset.t===t2));
+  document.querySelectorAll('.paid-only').forEach(e=>e.style.display=t2==='paid'?'':'none');
+  document.querySelectorAll('.email-only').forEach(e=>e.style.display=t2==='email'?'':'none');
+  document.querySelectorAll('.organic-only').forEach(e=>e.style.display=t2==='organic'?'':'none');
+  render();}
+
+/* ─────────────── Init ─────────────── */
+document.querySelectorAll('.langsw').forEach(sw=>sw.querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.l)));
+document.querySelectorAll('#ptype button').forEach(b=>b.onclick=()=>setMode(b.dataset.t));
+document.querySelectorAll('.card input,.card select').forEach(el=>el.addEventListener('input',render));
+$('ctrOverride').addEventListener('input',render);
+['fYear','fCampaign','fSource','fFunnel'].forEach(id=>$(id).addEventListener('input',renderTable));
+$('who').value=localStorage.getItem('tn_cockpit_who')||'';
+$('who').addEventListener('input',()=>localStorage.setItem('tn_cockpit_who',$('who').value));
+$('saveBtn').onclick=save;
+$('imp').onchange=e=>{if(e.target.files[0])importCSV(e.target.files[0]);e.target.value=''};
+$('logoutBtn').onclick=()=>{clearSession();showLogin()};
+$('loginBtn').onclick=doLogin;
+$('pwToggle').onclick=()=>{const i=$('loginPw');i.type=i.type==='password'?'text':'password';$('pwToggle').textContent=i.type==='password'?'👁':'🙈'};
+$('loginPw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+async function doLogin(){
+  const b=$('loginBtn');b.disabled=true;$('loginErr').textContent='';
+  try{await signIn($('loginEmail').value.trim(),$('loginPw').value);$('loginPw').value='';onAuthed()}
+  catch(e){$('loginErr').textContent=(LANG==='de'?'Anmeldung fehlgeschlagen: ':'Login failed: ')+e.message}
+  finally{b.disabled=false}
+}
+setMode('paid');
+applyLang();
+(async()=>{session=loadSession();if(session&&await ensureToken()){onAuthed()}else{clearSession();showLogin()}})();
+</script>
+</body>
+</html>
