@@ -90,11 +90,14 @@
   th{color:#8e94c0;font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:10px;white-space:nowrap}
   td.mono{font-family:"SF Mono",Menlo,Consolas,monospace}
   .tblwrap{overflow-x:auto}
+  /* Excel-artige Zeilen: nichts umbrechen, Tabelle scrollt horizontal */
   #tbl{min-width:1080px}
-  #tbl td.url{white-space:nowrap;max-width:300px;overflow:hidden;text-overflow:ellipsis}
-  #tbl td.ident{white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+  #tbl td{white-space:nowrap}
+  #tbl td.url{max-width:360px;overflow:hidden;text-overflow:ellipsis}
+  #tbl td.ident{max-width:260px;overflow:hidden;text-overflow:ellipsis}
   #namingTbl{min-width:900px}
-  #namingTbl td.ident{white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+  #namingTbl td{white-space:nowrap}
+  #namingTbl td.ident{max-width:300px;overflow:hidden;text-overflow:ellipsis}
   .tag{display:inline-block;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:600}
   .tag.paid{background:rgba(102,102,255,.18);color:#aab0ff}
   .tag.email{background:rgba(23,248,224,.15);color:#7df3e6}
@@ -120,6 +123,25 @@
   .fname:hover{color:var(--tn-teal)}
   tr.archrow{opacity:.5}
   .subhead{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#8e94c0;font-weight:600;margin:0}
+  /* Gruppen-Leiste (Excel-Tabs) */
+  .fctabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .fctabs button{background:var(--tn-surf-2);border:1px solid var(--tn-border);color:#b9bee6;padding:7px 13px;border-radius:999px;
+    cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:all .2s var(--tn-ease)}
+  .fctabs button.on{background:var(--tn-grad);color:#fff;border-color:transparent;box-shadow:var(--tn-glow)}
+  .fctabs button .n{opacity:.65;margin-left:5px;font-size:11px}
+  .fctabs button.newgrp{border-style:dashed;color:#8e94c0}
+  /* Kampagnen-Baum */
+  .cmcamp{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:14px 16px;margin-bottom:12px}
+  .cmcamp>h3{margin:0 0 10px;font-size:14px;color:#fff;font-weight:700;font-family:"SF Mono",Menlo,Consolas,monospace;word-break:break-all}
+  .cmsec{margin:8px 0 8px 4px;padding-left:12px;border-left:2px solid var(--tn-border)}
+  .cmsec-h{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#8e94c0;font-weight:600;margin-bottom:4px}
+  .cmitem{font-size:12.5px;color:#cfd4f0;padding:2px 0;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .cmitem .mono{font-family:"SF Mono",Menlo,Consolas,monospace}
+  .cmitem .muted{color:#7e84ad}
+  .cmlink{display:inline-block;border-radius:6px;padding:0 6px;font-size:10px;font-weight:700}
+  .cmlink.on{background:rgba(74,222,128,.15);color:#7fe6a4}
+  .cmlink.off{background:rgba(255,132,106,.15);color:#ffb39f}
+  .cmempty{color:#5b6090;font-size:12px;padding:2px 0}
   .miniact{background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#b9bee6;border-radius:7px;cursor:pointer;font-size:12px;padding:4px 9px;font-family:inherit;width:auto}
   .miniact:hover{color:#fff;border-color:var(--tn-primary)}
   .chk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#b9bee6;cursor:pointer}
@@ -282,6 +304,7 @@
     <button data-v="naming" class="on" data-i18n="tab.naming">1 · Naming</button>
     <button data-v="utm" data-i18n="tab.utm">2 · UTM-Builder</button>
     <button data-v="fc" data-i18n="tab.fc">3 · Funnels &amp; Conversions</button>
+    <button data-v="campaigns" data-i18n="tab.campaigns">4 · Kampagnen-Übersicht</button>
   </div>
 
   <!-- ═══════════ VIEW · NAMING ═══════════ -->
@@ -366,7 +389,7 @@
         <table id="namingTbl">
           <thead><tr>
             <th data-i18n="r.type">Typ</th><th>Campaign Name</th><th>AdSet / Automation</th><th data-i18n="nm.ident">Ad-/E-Mail-Identifier</th>
-            <th>utm_campaign</th><th>utm_content</th><th style="width:70px"></th>
+            <th>utm_campaign</th><th>utm_content</th><th data-i18n="nm.linkcol">UTM?</th><th style="width:70px"></th>
           </tr></thead>
           <tbody></tbody>
         </table>
@@ -383,6 +406,7 @@
       <h2 data-i18n="ub.inputtitle">Tracking-URL bauen</h2>
       <label data-i18n="ub.naming">Naming-Eintrag <span class="hint">(oder manuell)</span></label>
       <select id="uNaming"></select>
+      <label class="chk" style="margin-top:6px"><input type="checkbox" id="uOnlyOpen"> <span data-i18n="ub.onlyopen">Nur noch nicht verknüpfte zeigen</span></label>
       <div class="row2">
         <div><label>utm_campaign</label><input id="uCampaign" placeholder="aca-webinar-ki-im-trading-2026-06"></div>
         <div><label>utm_content</label><input id="uContent" placeholder="cb01_h1_cta1"></div>
@@ -454,6 +478,10 @@
   <div class="view" id="view-fc">
     <div class="note" data-i18n="fc.note"></div>
 
+    <!-- Gruppen-Leiste (wie Excel-Tabs) -->
+    <div class="fctabs" id="fcTabs"></div>
+
+    <div id="fcFunnels">
     <div class="card">
       <div class="toolbar">
         <h2 style="margin:0"><span data-i18n="fc.funnels">Funnels</span> <span class="pill" id="fnCount">…</span></h2>
@@ -476,7 +504,8 @@
       <h2><span data-i18n="fn.detail">Funnel</span> <span class="pill" id="fnStatusPill"></span></h2>
       <div class="row3">
         <div><label data-i18n="fn.name">Name</label><input id="fnName"></div>
-        <div><label data-i18n="fn.product">Gruppe/Produkt</label><select id="fnProduct"></select></div>
+        <div><label data-i18n="fn.product">Gruppe/Produkt <span class="hint" data-i18n="fn.producthint">(oder neue tippen)</span></label>
+          <input id="fnProduct" list="fnGroupsList" autocomplete="off"><datalist id="fnGroupsList"></datalist></div>
         <div><label data-i18n="fn.status">Status</label>
           <select id="fnStatus">
             <option value="draft">draft</option><option value="live">live</option><option value="archived">archived</option>
@@ -505,7 +534,9 @@
         <button class="btn sm" id="fnSave" data-i18n="fn.save">Funnel speichern</button>
       </div>
     </div>
+    </div><!-- /fcFunnels -->
 
+    <div id="fcConversions">
     <div class="card" style="margin-top:20px">
       <h2><span data-i18n="cv.title">Conversions · Event-Katalog</span> <span class="pill" id="cvCount">…</span></h2>
       <div class="tblwrap">
@@ -531,8 +562,8 @@
       <input id="cvPath">
       <div class="row3">
         <div><label>GA4-Event</label><input id="cvGa4"></div>
+        <div><label data-i18n="cv.trigger">Trigger (GA4)</label><input id="cvTrigger" placeholder="PV - /danke-…"></div>
         <div><label data-i18n="cv.status">GA4-Status</label><select id="cvGa4St"><option value="done">done</option><option value="open">open</option><option value="-">—</option></select></div>
-        <div></div>
       </div>
       <div class="row3">
         <div><label>Ads Conversion-ID</label><input id="cvAdsId" placeholder="16719590969"></div>
@@ -551,6 +582,18 @@
         <button class="btn sm" id="cvSave" data-i18n="cv.save">Speichern</button>
       </div>
     </div>
+    </div><!-- /fcConversions -->
+  </div>
+
+  <!-- ═══════════ VIEW · KAMPAGNEN-ÜBERSICHT ═══════════ -->
+  <div class="view" id="view-campaigns">
+    <div class="note" data-i18n="cm.note"></div>
+    <div class="toolbar">
+      <input id="cmFilter" data-i18n-ph="cm.filter" style="min-width:220px">
+      <span style="flex:1"></span>
+      <span class="pill" id="cmCount">…</span>
+    </div>
+    <div id="cmList"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -568,7 +611,10 @@ const T={
   'login.lead':'Marketing Cockpit — bitte anmelden.','login.email':'E-Mail','login.password':'Passwort','login.btn':'Anmelden',
   'app.sub':'Naming · UTM · Funnels & Conversions','app.howto':"So funktioniert's",'app.logout':'Abmelden','app.who':'Dein Name (created_by)',
   'howto.close':'Schließen',
-  'tab.naming':'1 · Naming','tab.utm':'2 · UTM-Builder','tab.fc':'3 · Funnels & Conversions',
+  'tab.naming':'1 · Naming','tab.utm':'2 · UTM-Builder','tab.fc':'3 · Funnels & Conversions','tab.campaigns':'4 · Kampagnen-Übersicht',
+  'ub.onlyopen':'Nur noch nicht verknüpfte zeigen','nm.linkcol':'UTM?','fn.producthint':'(oder neue tippen)',
+  'cm.note':'<b>Kampagnen-Übersicht.</b> Vogelperspektive je Kampagne (utm_campaign): welche Naming-Einträge, UTM-Links, Funnels und Conversions hängen zusammen — und was ist noch <b>offen</b> (Naming ohne UTM-Verknüpfung).',
+  'cm.filter':'Kampagne filtern','cm.empty':'Noch keine Kampagnen — im Naming- oder UTM-Tab anlegen.',
   'f.ptype':'Plattform-Typ','seg.paid':'Werbe (Paid)','seg.email':'E-Mail (AC)','seg.organic':'Organisch',
   'f.channel':'Channel','f.tag':'Funktions-Tag','f.funnelstage':'Funnel-Stufe',
   'f.thema':'Thema <span class="hint">(Slug)</span>','f.datum':'Datum <span class="hint">(YYYY-MM)</span>','f.variant':'Variant <span class="hint">(opt.)</span>',
@@ -609,7 +655,7 @@ const T={
   'fn.step.title':'Titel','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC-Tag (opt.)','fn.step.note':'Notiz (opt.)','fn.step.none':'— keine —',
   'fn.emptylist':'Noch keine Funnels — „+ Neuer Funnel".',
   'cv.title':'Conversions · Event-Katalog','cv.name':'Name','cv.notes':'Notizen','cv.new':'Neue Conversion','cv.edit':'Conversion bearbeiten',
-  'cv.keyhint':'(Slug, fix nach Anlage)','cv.value':'Wert (AED)','cv.purpose':'Zweck','cv.path':'Pfad (LP → … → Danke)','cv.status':'Status',
+  'cv.keyhint':'(Slug, fix nach Anlage)','cv.value':'Wert (AED)','cv.purpose':'Zweck','cv.path':'Pfad (LP → … → Danke)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
   'cv.cancel':'Abbrechen','cv.save':'Speichern','cv.saved':'Conversion gespeichert','cv.deleted':'Conversion gelöscht',
   'cv.needkey':'Key + Name nötig','cv.confirmdel':'Conversion „{key}" wirklich löschen?','cv.empty':'Noch keine Conversions.',
   'conn.load':'lade…','conn.ok':'DB verbunden','conn.err':'DB-Fehler',
@@ -623,7 +669,10 @@ const T={
   'login.lead':'Marketing Cockpit — please log in.','login.email':'Email','login.password':'Password','login.btn':'Log in',
   'app.sub':'Naming · UTM · Funnels & Conversions','app.howto':'How it works','app.logout':'Log out','app.who':'Your name (created_by)',
   'howto.close':'Close',
-  'tab.naming':'1 · Naming','tab.utm':'2 · UTM builder','tab.fc':'3 · Funnels & Conversions',
+  'tab.naming':'1 · Naming','tab.utm':'2 · UTM builder','tab.fc':'3 · Funnels & Conversions','tab.campaigns':'4 · Campaign overview',
+  'ub.onlyopen':'Show only not-yet-linked','nm.linkcol':'UTM?','fn.producthint':'(or type a new one)',
+  'cm.note':'<b>Campaign overview.</b> Bird-eye view per campaign (utm_campaign): which naming entries, UTM links, funnels and conversions belong together — and what is still <b>open</b> (naming without a UTM link).',
+  'cm.filter':'Filter campaign','cm.empty':'No campaigns yet — create them in the Naming or UTM tab.',
   'f.ptype':'Platform type','seg.paid':'Advertising (Paid)','seg.email':'Email (AC)','seg.organic':'Organic',
   'f.channel':'Channel','f.tag':'Function tag','f.funnelstage':'Funnel stage',
   'f.thema':'Topic <span class="hint">(slug)</span>','f.datum':'Date <span class="hint">(YYYY-MM)</span>','f.variant':'Variant <span class="hint">(opt.)</span>',
@@ -661,7 +710,7 @@ const T={
   'fn.step.title':'Title','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC tag (opt.)','fn.step.note':'Note (opt.)','fn.step.none':'— none —',
   'fn.emptylist':'No funnels yet — “+ New funnel”.',
   'cv.title':'Conversions · Event catalog','cv.name':'Name','cv.notes':'Notes','cv.new':'New conversion','cv.edit':'Edit conversion',
-  'cv.keyhint':'(slug, fixed after creation)','cv.value':'Value (AED)','cv.purpose':'Purpose','cv.path':'Path (LP → … → thank-you)','cv.status':'Status',
+  'cv.keyhint':'(slug, fixed after creation)','cv.value':'Value (AED)','cv.purpose':'Purpose','cv.path':'Path (LP → … → thank-you)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
   'cv.cancel':'Cancel','cv.save':'Save','cv.saved':'Conversion saved','cv.deleted':'Conversion deleted',
   'cv.needkey':'Key + name required','cv.confirmdel':'Really delete conversion “{key}”?','cv.empty':'No conversions yet.',
   'conn.load':'connecting…','conn.ok':'DB connected','conn.err':'DB error',
@@ -682,7 +731,7 @@ function applyLang(){
   $('howtoDE').style.display=LANG==='de'?'':'none';
   $('howtoEN').style.display=LANG==='en'?'':'none';
   setConn(connState);
-  if(authed){renderNamingOut();renderUtmOut();refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFunnelList();renderFunnelDetail();renderConversions();}
+  if(authed){renderNamingOut();renderUtmOut();refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderCampaigns();}
 }
 function setLang(l){LANG=l;localStorage.setItem('tn_cockpit_lang',l);applyLang();}
 
@@ -742,7 +791,20 @@ function fill(id,opts){const s=$(id);if(!s)return;s.innerHTML=opts.map(([v,l])=>
 // Naming-Dropdowns füllen (n-Präfix)
 [['nChannel','channel'],['nTag','tag'],['nFunnel','funnel'],['nVariant','variant'],['nAudtyp','audtyp'],['nGeo','geo'],
  ['nFmt','fmt'],['nLang','lang'],['nSeq','seq'],['nAudslug','audslug'],['nLangE','langE'],['nAudsuf','audsuf']].forEach(([id,k])=>fill(id,OPT[k]));
-fill('fnProduct',FUNNEL_GROUPS);
+// Gruppen-Label + geordnete Gruppenliste (Basis + eigene aus Funnels)
+const groupLabel=k=>{const m=FUNNEL_GROUPS.find(x=>x[0]===k);return m?m[1]:(k||(LANG==='de'?'ohne Gruppe':'ungrouped'))};
+function groupsInUse(){
+  const base=FUNNEL_GROUPS.map(x=>x[0]).filter(Boolean);
+  const used=[...new Set(state.funnels.map(f=>f.product).filter(Boolean))];
+  const custom=used.filter(g=>!base.includes(g));
+  return base.filter(g=>g!=='COMMON'&&used.includes(g)).concat(custom); // nur Gruppen mit Funnels + eigene
+}
+function fillGroupDatalist(){
+  const base=FUNNEL_GROUPS.filter(x=>x[0]&&x[0]!=='COMMON');
+  const used=[...new Set(state.funnels.map(f=>f.product).filter(Boolean))];
+  const all=[...new Set([...base.map(x=>x[0]),...used])];
+  const dl=$('fnGroupsList'); if(dl)dl.innerHTML=all.map(g=>`<option value="${esc(g)}">${esc(groupLabel(g))}</option>`).join('');
+}
 // Source-Dropdown (gruppiert) für UTM-Builder
 function fillSrc(id){
   const g=[['paid',LANG==='de'?'Werbe (paid)':'Advertising (paid)',SRC.paid],['organic',LANG==='de'?'Organisch':'Organic',SRC.organic],
@@ -753,7 +815,9 @@ function fillMed(id){$(id).innerHTML=MEDIUM_OPTS.map(m=>`<option>${m}</option>`)
 
 let nameMode='paid';
 let currentNamingId=null; // im UTM-Builder gewählter Naming-Eintrag
-const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null};
+const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null,fcTab:'all'};
+// Ist ein Naming-Eintrag schon mit einer UTM-Zeile verknüpft? (= „Übertragen"-Häkchen)
+function namingLinked(id){return state.rows.some(r=>r.naming_id===id)}
 function whoami(){return ($('who').value||'').trim()}
 
 /* ═══════════════ Auth (Supabase) ═══════════════ */
@@ -816,20 +880,22 @@ async function loadAll(){
     ]);
     state.rows=rows||[];state.naming=naming||[];state.funnels=funnels||[];state.convs=convs||[];
     setConn('ok');
-    refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFunnelList();renderFunnelDetail();renderConversions();
+    refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderCampaigns();
   }catch(e){setConn('err');toast(t('ct.loadfail')+': '+e.message,true)}
 }
 // Dropdowns, die von geladenen Daten abhängen (Naming-Picker, Funnel-Referenzen)
 function refreshDynamic(){
+  fillGroupDatalist();
   const fref=`<option value="">${LANG==='de'?'— (keine)':'— (none)'}</option>`+
     state.funnels.filter(f=>f.status!=='archived').map(f=>`<option value="${esc(f.name)}">${esc(f.name)}</option>`).join('');
   const nf=$('nFunnelRef'), uf=$('uFunnelRef');
   if(nf){const v=nf.value;nf.innerHTML=fref;nf.value=v;}
   if(uf){const v=uf.value;uf.innerHTML=fref;uf.value=v;}
   const un=$('uNaming');
-  if(un){const v=un.value;
-    un.innerHTML=`<option value="">${t('ub.pickmanual')}</option>`+state.naming.map(n=>
-      `<option value="${n.id}">${esc(n.campaign_name)} · ${esc(n.asset_identifier||n.utm_content||'')}</option>`).join('');
+  if(un){const v=un.value; const onlyOpen=$('uOnlyOpen')&&$('uOnlyOpen').checked;
+    const list=state.naming.filter(n=>!onlyOpen||!namingLinked(n.id));
+    un.innerHTML=`<option value="">${t('ub.pickmanual')}</option>`+list.map(n=>
+      `<option value="${n.id}">${namingLinked(n.id)?'✓ ':'• '}${esc(n.campaign_name)} · ${esc(n.asset_identifier||n.utm_content||'')}</option>`).join('');
     un.value=v;}
 }
 
@@ -923,8 +989,9 @@ function renderNamingList(){
     <td class="mono ident">${esc(n.asset_identifier)||'—'}</td>
     <td class="mono">${esc(n.utm_campaign)||'—'}</td>
     <td class="mono">${esc(n.utm_content)||'—'}</td>
+    <td>${namingLinked(n.id)?`<span class="cmlink on">✓ ${LANG==='de'?'verknüpft':'linked'}</span>`:`<span class="cmlink off">${LANG==='de'?'offen':'open'}</span>`}</td>
     <td><span class="act edit" onclick="editNaming(${n.id})">✎</span> <span class="act del" onclick="delNaming(${n.id})">✕</span></td>
-  </tr>`).join('')||`<tr><td colspan="7" style="color:#5b6090;padding:20px">${t('nm.empty')}</td></tr>`;
+  </tr>`).join('')||`<tr><td colspan="8" style="color:#5b6090;padding:20px">${t('nm.empty')}</td></tr>`;
   $('nCount').textContent=state.naming.length;
 }
 
@@ -1098,11 +1165,28 @@ function parseCsvLine(line){const out=[];let cur='',q=false;
   out.push(cur);return out;}
 
 /* ═══════════════ TAB 3 · FUNNELS & CONVERSIONS ═══════════════ */
+// Gruppen-Leiste (wie Excel-Tabs): Alle · <Gruppen mit Funnels> · Common Conversions
+function renderFcTabs(){
+  const bar=$('fcTabs'); if(!bar)return;
+  const activeF=state.funnels.filter(f=>f.status!=='archived');
+  // Ungültige Gruppe (keine Funnels mehr) → zurück auf „Alle"
+  if(state.fcTab!=='all'&&state.fcTab!=='conv'&&!groupsInUse().includes(state.fcTab))state.fcTab='all';
+  const chip=(key,label,count,cls)=>`<button class="${cls||''}${state.fcTab===key?' on':''}" onclick="setFcTab('${key}')">${esc(label)}${count!=null?`<span class="n">${count}</span>`:''}</button>`;
+  let h=chip('all',LANG==='de'?'Alle':'All',activeF.length);
+  groupsInUse().forEach(g=>h+=chip(g,(groupLabel(g).split(' · ')[0])||g,activeF.filter(f=>f.product===g).length));
+  h+=chip('conv','Common Conversions',state.convs.length);
+  bar.innerHTML=h;
+  const isConv=state.fcTab==='conv';
+  if($('fcFunnels'))$('fcFunnels').style.display=isConv?'none':'';
+  if($('fcConversions'))$('fcConversions').style.display=isConv?'':'none';
+}
+function setFcTab(k){state.fcTab=k;renderFcTabs();renderFunnelList();}
 function renderFunnelList(){
   if(!$('funnelTbl'))return;
   const showArch=$('showArch').checked;
   const order=FUNNEL_GROUPS.map(x=>x[0]).filter(Boolean).concat('—');
-  const list=state.funnels.filter(f=>showArch||f.status!=='archived')
+  const grp=state.fcTab;
+  const list=state.funnels.filter(f=>(showArch||f.status!=='archived') && (grp==='all'||grp==='conv'||f.product===grp))
     .slice().sort((a,b)=>{const ia=order.indexOf(a.product||'—'),ib=order.indexOf(b.product||'—');
       return ia!==ib?ia-ib:(a.name||'').localeCompare(b.name||'')});
   const glabel=k=>{const m=FUNNEL_GROUPS.find(x=>x[0]===k);return m?m[1].split(' · ')[0]:(k||'—')};
@@ -1225,7 +1309,7 @@ function renderConversions(){
   $('cvTbl').querySelector('tbody').innerHTML=state.convs.map(c=>`<tr>
     <td class="mono">${esc(c.key)}</td>
     <td>${esc(c.name)}<div class="hint">${esc(c.path||'')}</div></td>
-    <td><span class="mono">${esc(c.ga4_event)||'—'}</span> ${stChip(c.ga4_status)}</td>
+    <td><span class="mono">${esc(c.ga4_event)||'—'}</span> ${stChip(c.ga4_status)}${c.ga4_trigger?`<div class="hint">${esc(c.ga4_trigger)}</div>`:''}</td>
     <td><span class="mono">${esc(c.ads_label)||'—'}</span>${c.ads_value?' · '+esc(c.ads_value):''} ${stChip(c.ads_status)}</td>
     <td><span class="mono">${esc(c.meta_event)||'—'}</span> ${stChip(c.meta_status)}</td>
     <td style="max-width:220px">${esc(c.notes)||''}</td>
@@ -1242,7 +1326,7 @@ function editConv(id){
   $('cvKey').value=c.key;$('cvKey').disabled=true;
   $('cvName').value=c.name||'';$('cvValue').value=c.ads_value||'';
   $('cvPurpose').value=c.purpose||'';$('cvPath').value=c.path||'';
-  $('cvGa4').value=c.ga4_event||'';$('cvGa4St').value=c.ga4_status||'open';
+  $('cvGa4').value=c.ga4_event||'';$('cvTrigger').value=c.ga4_trigger||'';$('cvGa4St').value=c.ga4_status||'open';
   $('cvAdsId').value=c.ads_conversion_id||'';$('cvAdsLabel').value=c.ads_label||'';$('cvAdsSt').value=c.ads_status||'open';
   $('cvMeta').value=c.meta_event||'';$('cvMetaSt').value=c.meta_status||'open';
   $('cvNotes').value=c.notes||'';
@@ -1253,7 +1337,7 @@ function resetConvForm(){
   state.editCvId=null;
   $('cvEditTitle').textContent=t('cv.new');
   $('cvKey').value='';$('cvKey').disabled=false;
-  ['cvName','cvValue','cvPurpose','cvPath','cvGa4','cvAdsId','cvAdsLabel','cvMeta','cvNotes'].forEach(id=>$(id).value='');
+  ['cvName','cvValue','cvPurpose','cvPath','cvGa4','cvTrigger','cvAdsId','cvAdsLabel','cvMeta','cvNotes'].forEach(id=>$(id).value='');
   $('cvGa4St').value='open';$('cvAdsSt').value='open';$('cvMetaSt').value='open';
   $('cvCancel').style.display='none';
 }
@@ -1261,7 +1345,7 @@ async function saveConv(){
   const key=snake($('cvKey').value.trim()), name=$('cvName').value.trim();
   if((!key&&state.editCvId==null)||!name){toast(t('cv.needkey'),true);return}
   const body={name,purpose:$('cvPurpose').value.trim(),path:$('cvPath').value.trim(),
-    ga4_event:$('cvGa4').value.trim(),ga4_status:$('cvGa4St').value,
+    ga4_event:$('cvGa4').value.trim(),ga4_trigger:$('cvTrigger').value.trim(),ga4_status:$('cvGa4St').value,
     ads_conversion_id:$('cvAdsId').value.trim(),ads_label:$('cvAdsLabel').value.trim(),
     ads_value:$('cvValue').value.trim(),ads_status:$('cvAdsSt').value,
     meta_event:$('cvMeta').value.trim(),meta_status:$('cvMetaSt').value,
@@ -1277,6 +1361,36 @@ async function delConv(id){
   if(!confirm(t('cv.confirmdel',{key:c.key})))return;
   try{await sb(`conversions?id=eq.${id}`,{method:'DELETE'});if(state.editCvId===id)resetConvForm();await loadAll();toast(t('cv.deleted'))}
   catch(e){toast(t('ct.delfail')+': '+e.message,true)}
+}
+
+/* ═══════════════ TAB 4 · KAMPAGNEN-ÜBERSICHT ═══════════════ */
+// Vogelperspektive: je Kampagne (utm_campaign) der Baum Naming → UTM → Funnel + Conversion.
+function renderCampaigns(){
+  if(!$('cmList'))return;
+  const q=($('cmFilter').value||'').trim().toLowerCase();
+  const keys=[...new Set([...state.naming.map(n=>n.utm_campaign),...state.rows.map(r=>r.utm_campaign)].filter(Boolean))].sort();
+  const shown=keys.filter(k=>!q||k.toLowerCase().includes(q));
+  $('cmCount').textContent=shown.length+' '+(LANG==='de'?'Kampagnen':'campaigns');
+  if(!shown.length){$('cmList').innerHTML=`<p class="cmempty">${t('cm.empty')}</p>`;return}
+  const openTxt=LANG==='de'?'offen':'open';
+  const sec=(title,inner)=>`<div class="cmsec"><div class="cmsec-h">${title}</div>${inner||`<div class="cmempty">—</div>`}</div>`;
+  $('cmList').innerHTML=shown.map(k=>{
+    const nm=state.naming.filter(n=>n.utm_campaign===k);
+    const rows=state.rows.filter(r=>r.utm_campaign===k);
+    const funnelRefs=[...new Set(rows.map(r=>r.funnel_ref).filter(Boolean))];
+    const convKeys=new Set();
+    funnelRefs.forEach(fr=>{const f=state.funnels.find(x=>x.name===fr);if(f)(f.steps||[]).forEach(s=>{if(s.conversion_key)convKeys.add(s.conversion_key)})});
+    const nmHtml=nm.map(n=>`<div class="cmitem"><span class="mono">${esc(n.asset_identifier||n.campaign_name)}</span> ${namingLinked(n.id)?'<span class="cmlink on">✓</span>':`<span class="cmlink off">${openTxt}</span>`}</div>`).join('');
+    const rowHtml=rows.map(r=>`<div class="cmitem"><span class="mono">${esc(r.utm_id)}</span> <span class="tag ${esc(r.platform_type)}">${esc(r.utm_source)||''}</span> <span class="mono muted">${esc(r.target_url||'')}</span></div>`).join('');
+    const fnHtml=funnelRefs.map(fr=>`<div class="cmitem">${esc(fr)}</div>`).join('');
+    const cvHtml=[...convKeys].map(ck=>{const c=state.convs.find(x=>x.key===ck);return `<div class="cmitem"><span class="mono">${esc(ck)}</span> ${c?stChip(c.ga4_status):''}</div>`}).join('');
+    return `<div class="cmcamp"><h3>${esc(k)}</h3>
+      ${sec('Naming ('+nm.length+')',nmHtml)}
+      ${sec('UTM ('+rows.length+')',rowHtml)}
+      ${funnelRefs.length?sec('Funnels ('+funnelRefs.length+')',fnHtml):''}
+      ${convKeys.size?sec('Conversions ('+convKeys.size+')',cvHtml):''}
+    </div>`;
+  }).join('');
 }
 
 /* ─────────────── Utils ─────────────── */
@@ -1296,6 +1410,8 @@ function toggleHowto(show){$('howtoOverlay').classList.toggle('hidden',!show)}
 function switchView(v){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='view-'+v));
+  if(v==='campaigns')renderCampaigns();
+  if(v==='fc')renderFcTabs();
 }
 
 /* ─────────────── Init ─────────────── */
@@ -1311,7 +1427,9 @@ $('uSrc').addEventListener('change',onSrcChange);
 ['uCampaign','uContent','uMed','uTerm','uFunnelRef','uRef','uUrl','uAnchor','uNotes'].forEach(id=>$(id).addEventListener('input',renderUtmOut));
 $('ctrOverride').addEventListener('input',renderUtmOut);
 ['fYear','fCampaign','fSource','fFunnel','fChannel'].forEach(id=>$(id).addEventListener('input',renderRegistry));
-$('showArch').addEventListener('change',renderFunnelList);
+$('showArch').addEventListener('change',()=>{renderFcTabs();renderFunnelList();});
+$('uOnlyOpen').addEventListener('change',refreshDynamic);
+$('cmFilter').addEventListener('input',renderCampaigns);
 $('who').value=localStorage.getItem('tn_cockpit_who')||'';
 $('who').addEventListener('input',()=>localStorage.setItem('tn_cockpit_who',$('who').value));
 $('nSave').onclick=saveNaming;
