@@ -20,7 +20,7 @@
   body{margin:0;background:var(--tn-bg);color:var(--tn-ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     font-weight:300;line-height:1.6;padding:32px 20px 80px}
-  .wrap{max-width:1080px;margin:0 auto}
+  .wrap{max-width:1160px;margin:0 auto}
   h1{font-weight:700;font-size:clamp(22px,3vw,30px);margin:0 0 4px;
      background:var(--tn-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
   .sub{color:#aab0d6;font-size:14px;margin:0}
@@ -38,7 +38,7 @@
   .userchip{font-size:12px;color:#9aa0cc;display:flex;align-items:center;gap:6px}
   .linkbtn{background:none;border:none;color:var(--tn-teal);cursor:pointer;font-size:12px;font-family:inherit;text-decoration:underline;padding:0}
   .tabs{display:flex;gap:6px;margin:0 0 20px;background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:5px;flex-wrap:wrap}
-  .tabs button{flex:1;min-width:140px;background:transparent;border:none;color:#b9bee6;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all .2s var(--tn-ease)}
+  .tabs button{flex:1;min-width:150px;background:transparent;border:none;color:#b9bee6;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all .2s var(--tn-ease)}
   .tabs button.on{background:var(--tn-grad);color:#fff;box-shadow:var(--tn-glow)}
   .view{display:none}
   .view.on{display:block}
@@ -87,8 +87,14 @@
   .warn b{color:#fff}
   table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}
   th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--tn-border);vertical-align:top}
-  th{color:#8e94c0;font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:10px}
+  th{color:#8e94c0;font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:10px;white-space:nowrap}
   td.mono{font-family:"SF Mono",Menlo,Consolas,monospace}
+  .tblwrap{overflow-x:auto}
+  #tbl{min-width:1080px}
+  #tbl td.url{white-space:nowrap;max-width:300px;overflow:hidden;text-overflow:ellipsis}
+  #tbl td.ident{white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+  #namingTbl{min-width:900px}
+  #namingTbl td.ident{white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
   .tag{display:inline-block;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:600}
   .tag.paid{background:rgba(102,102,255,.18);color:#aab0ff}
   .tag.email{background:rgba(23,248,224,.15);color:#7df3e6}
@@ -97,6 +103,9 @@
   .st.done{background:rgba(74,222,128,.15);color:#7fe6a4}
   .st.open{background:rgba(255,132,106,.15);color:#ffb39f}
   .st.none{background:var(--tn-surf-3);color:#8e94c0}
+  .st.draft{background:var(--tn-surf-3);color:#aab0d6}
+  .st.live{background:rgba(74,222,128,.15);color:#7fe6a4}
+  .st.archived{background:rgba(255,255,255,.05);color:#6b7099}
   .counter{font-family:"SF Mono",Menlo,Consolas,monospace;color:var(--tn-teal)}
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
   .toolbar input,.toolbar select{width:auto;min-width:120px}
@@ -104,14 +113,18 @@
   .act.edit{color:var(--tn-teal)}
   .act.del{color:var(--tn-pink)}
   .act.ok{color:var(--tn-success)}
+  .act.arch{color:#9aa0cc}
   .full{grid-column:1/-1}
   td.editing{background:rgba(23,248,224,.06);outline:1px solid rgba(23,248,224,.3)}
-  /* Funnel-Flow */
-  .fchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-  .fchip{background:var(--tn-surf-2);border:1px solid var(--tn-border);border-radius:999px;padding:6px 14px;
-         font-size:13px;color:#cfd4f0;cursor:pointer;font-family:inherit;transition:all .2s var(--tn-ease)}
-  .fchip.on{background:var(--tn-grad);color:#fff;border-color:transparent;box-shadow:var(--tn-glow)}
-  .fchip .n{opacity:.7;font-size:11px;margin-left:5px}
+  .fname{color:var(--tn-strong);cursor:pointer;font-weight:400}
+  .fname:hover{color:var(--tn-teal)}
+  tr.archrow{opacity:.5}
+  .subhead{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#8e94c0;font-weight:600;margin:0}
+  .miniact{background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#b9bee6;border-radius:7px;cursor:pointer;font-size:12px;padding:4px 9px;font-family:inherit;width:auto}
+  .miniact:hover{color:#fff;border-color:var(--tn-primary)}
+  .chk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#b9bee6;cursor:pointer}
+  .chk input{width:auto}
+  /* Funnel step editor */
   .step{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:14px;position:relative}
   .step .shead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
   .step .shead select{width:auto;min-width:120px;padding:5px 9px;font-size:12px}
@@ -142,7 +155,7 @@
   .overlay.hidden{display:none}
   .modal{background:#0c0c22;border:1px solid var(--tn-border);border-radius:var(--tn-r-l);max-width:520px;width:100%;
          padding:28px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);max-height:88vh;overflow:auto}
-  .modal.wide{max-width:680px}
+  .modal.wide{max-width:700px}
   .modal h2{margin:0 0 6px;font-size:20px;color:#fff;font-weight:700}
   .modal .lead{color:#aab0d6;font-size:13px;margin:0 0 18px}
   .modal .err{color:#ff9bbf;font-size:12px;min-height:16px;margin-top:8px}
@@ -190,69 +203,59 @@
     <button class="close" onclick="toggleHowto(false)">×</button>
     <div id="howtoDE">
       <h2>So funktioniert das Cockpit</h2>
-      <p class="lead">Drei Module, eine Kette: Du skizzierst den Weg (Funnels) → jeder Schritt bekommt seinen Namen + UTM (UTM &amp; Naming) → die Messpunkte stehen im Katalog (Conversions). Die Klicks fließen mit den UTMs automatisch in GA4; das Reporting zeigt Looker Studio.</p>
-      <h3>Modul 1 · UTM &amp; Naming — in 3 Schritten</h3>
-      <ol>
-        <li><b>Plattform-Typ wählen</b> — <i>Werbe</i> (Meta/Google/…), <i>E-Mail</i> (Active Campaign) oder <i>Organisch</i>. Die Felder passen sich an.</li>
-        <li><b>Felder ausfüllen</b> — nur SOP-erlaubte Werte (Dropdowns). Rechts entstehen live: Campaign-Name, AdSet/Automation, Identifier und alle <code>utm_*</code>-Parameter (bei Google-Search auch <code>utm_term</code>).</li>
-        <li><b>„In Datenbank speichern"</b> — die <code>utm_id</code> (z.&nbsp;B. <code>tradeneon00050</code>) vergibt die Datenbank <b>automatisch und kollisionsfrei</b>. Die volle URL landet in der Registry und in Deiner Zwischenablage.</li>
-      </ol>
-      <h3>Registry pflegen</h3>
+      <p class="lead">Drei Tabs, eine Kette — genau wie die SOP es beschreibt: Du <b>benennst</b> die Kampagne (Naming) → Du <b>baust die Tracking-URL</b> dazu (UTM-Builder) → Du <b>skizzierst den Weg</b> und stimmst die Messpunkte ab (Funnels &amp; Conversions).</p>
+      <h3>1 · Naming — der Kampagnen-Namen-Generator</h3>
       <ul>
-        <li><b>✎</b> Zeile inline bearbeiten (✓ speichert) · <b>⧉</b> URL kopieren · <b>✕</b> löschen (mit Rückfrage).</li>
-        <li><b>Filter</b> Jahr/Kampagne/Source/Funnel · <b>CSV ⬇/⬆</b> als Backup/Import · <b>utm_id-Override</b> nur für bewusste Ausnahmen.</li>
+        <li>Felder ausfüllen (nur SOP-erlaubte Werte). Rechts entstehen live: <b>Campaign Name</b>, <b>AdSet/Automation</b>, <b>Ad-/E-Mail-Identifier</b> und die abgeleiteten <code>utm_campaign</code> + <code>utm_content</code>.</li>
+        <li>„Namen speichern" legt eine Zeile in der Namensliste an — eine pro Ad/E-Mail. Diese Namen benutzt Du im Ads Manager / in Active Campaign.</li>
+        <li>In die spätere URL fließt nur der <b>Campaign Name</b> (als <code>utm_campaign</code>). Der AdSet-Name hat bewusst <b>kein</b> UTM-Pendant.</li>
       </ul>
-      <h3>Modul 2 · Funnels — den Weg skizzieren</h3>
+      <h3>2 · UTM-Builder — die Tracking-URL</h3>
       <ul>
-        <li>Ein Funnel = eine Kette von Schritten (Anzeige → LP → Formular → E-Mail → Danke-Seite …).</li>
-        <li>Pro Schritt: Typ, Titel, URL, optional der <b>Conversion-Messpunkt</b> (verlinkt Modul 3) und eine Notiz.</li>
-        <li>Der <b>UTM-Chip</b> am Schritt zählt, wie viele Registry-Links auf die Schritt-URL zeigen — so siehst Du, was schon getaggt ist.</li>
-        <li>Schritte mit ↑↓ ordnen, ✕ entfernen, „+ Schritt" ergänzen — dann <b>Speichern</b>.</li>
+        <li>Oben einen <b>Naming-Eintrag wählen</b> → <code>utm_campaign</code> und <code>utm_content</code> werden übernommen. Oder manuell tippen.</li>
+        <li><b>Source</b> und <b>Medium</b> als Dropdown wählen (Medium füllt sich automatisch passend zur Source, bleibt aber änderbar), <b>Funnel-Referenz</b> zuordnen, <b>Ziel-URL</b> eintragen.</li>
+        <li>„In Registry speichern" → die <code>utm_id</code> (z.&nbsp;B. <code>tradeneon00050</code>) vergibt die Datenbank automatisch, die volle URL landet in Deiner Zwischenablage.</li>
+        <li>Registry: <b>✎</b> inline bearbeiten · <b>⧉</b> URL kopieren · <b>✕</b> löschen · Filter &amp; CSV.</li>
       </ul>
-      <h3>Modul 3 · Conversions — der Messpunkt-Katalog</h3>
+      <h3>3 · Funnels &amp; Conversions — der Weg + die Messpunkte</h3>
       <ul>
-        <li>Je Conversion: GA4-Event, Google-Ads-Label + Wert, Meta-Event — mit Status (<span class="st done">✓</span> verdrahtet, <span class="st open">offen</span>).</li>
-        <li>Das ist die Abstimm-Fläche mit dem Tracking (Praba): Was messen wir wo, und ist es live?</li>
-        <li>Neue Conversion unten anlegen; Details per ✎ bearbeiten.</li>
+        <li><b>Funnels</b> als Liste: Klick auf den Namen öffnet den Schritt-Editor (Anzeige → LP → Formular → … → Danke). Funnel <b>archivieren</b> statt löschen, wenn er nur ruht.</li>
+        <li>Ein Schritt kann auf einen <b>Conversion-Messpunkt</b> zeigen; darunter fächert auf, was Praba je Kanal (GA4/Ads/Meta) verdrahten muss.</li>
+        <li><b>Conversions</b> darunter als Liste: Praba pflegt hier den Status (<span class="st done">✓</span> verdrahtet, <span class="st open">offen</span>).</li>
       </ul>
       <h3>Wichtige Regeln</h3>
       <ul>
         <li><b>Interne Links nie taggen</b> (Menü, Footer) — sonst überschreibt der interne Klick die echte Quelle in GA4.</li>
-        <li>Neue <b>Source/Medium</b>-Werte erst in <code>SOP_Platform_Naming.md</code> aufnehmen — das Tool warnt.</li>
+        <li>Neue <b>Source/Medium</b>-Werte erst in <code>SOP_Platform_Naming.md</code> aufnehmen.</li>
         <li>Regelquelle bleibt die SOP; das Tool bildet sie nur ab.</li>
       </ul>
     </div>
     <div id="howtoEN" style="display:none">
       <h2>How the Cockpit works</h2>
-      <p class="lead">Three modules, one chain: sketch the path (Funnels) → every step gets its name + UTM (UTM &amp; Naming) → the measuring points live in the catalog (Conversions). Clicks flow into GA4 automatically via the UTMs; reporting happens in Looker Studio.</p>
-      <h3>Module 1 · UTM &amp; Naming — 3 steps</h3>
-      <ol>
-        <li><b>Pick the platform type</b> — <i>Advertising</i>, <i>Email</i> (Active Campaign) or <i>Organic</i>. Fields adapt.</li>
-        <li><b>Fill the fields</b> — SOP-allowed values only (dropdowns). Live output: campaign name, ad set/automation, identifier and all <code>utm_*</code> parameters (incl. <code>utm_term</code> for Google Search).</li>
-        <li><b>“Save to database”</b> — the <code>utm_id</code> (e.g. <code>tradeneon00050</code>) is assigned <b>automatically and collision-free</b>. The full URL lands in the registry and your clipboard.</li>
-      </ol>
-      <h3>Manage the registry</h3>
+      <p class="lead">Three tabs, one chain — exactly as the SOP describes: you <b>name</b> the campaign (Naming) → you <b>build the tracking URL</b> (UTM builder) → you <b>sketch the path</b> and align the measuring points (Funnels &amp; Conversions).</p>
+      <h3>1 · Naming — the campaign name generator</h3>
       <ul>
-        <li><b>✎</b> edit a row inline (✓ saves) · <b>⧉</b> copy URL · <b>✕</b> delete (with confirmation).</li>
-        <li><b>Filters</b> year/campaign/source/funnel · <b>CSV ⬇/⬆</b> backup/import · <b>utm_id override</b> for deliberate exceptions only.</li>
+        <li>Fill the fields (SOP-allowed values only). Live output: <b>campaign name</b>, <b>ad set/automation</b>, <b>ad/email identifier</b> and the derived <code>utm_campaign</code> + <code>utm_content</code>.</li>
+        <li>“Save name” adds a row to the name list — one per ad/email. You use these names in the ads manager / Active Campaign.</li>
+        <li>Only the <b>campaign name</b> flows into the later URL (as <code>utm_campaign</code>). The ad-set name deliberately has <b>no</b> UTM counterpart.</li>
       </ul>
-      <h3>Module 2 · Funnels — sketch the path</h3>
+      <h3>2 · UTM builder — the tracking URL</h3>
       <ul>
-        <li>A funnel = a chain of steps (ad → LP → form → email → thank-you page …).</li>
-        <li>Per step: type, title, URL, optionally the <b>conversion measuring point</b> (links module 3) and a note.</li>
-        <li>The <b>UTM chip</b> on a step counts how many registry links point at that URL — so you see what's tagged.</li>
-        <li>Reorder with ↑↓, remove with ✕, add via “+ Step” — then <b>Save</b>.</li>
+        <li>Pick a <b>naming entry</b> at the top → <code>utm_campaign</code> and <code>utm_content</code> are carried over. Or type manually.</li>
+        <li>Choose <b>source</b> and <b>medium</b> from dropdowns (medium auto-fills to match the source, stays editable), assign a <b>funnel reference</b>, enter the <b>target URL</b>.</li>
+        <li>“Save to registry” → the <code>utm_id</code> (e.g. <code>tradeneon00050</code>) is assigned automatically, the full URL lands in your clipboard.</li>
+        <li>Registry: <b>✎</b> edit inline · <b>⧉</b> copy URL · <b>✕</b> delete · filters &amp; CSV.</li>
       </ul>
-      <h3>Module 3 · Conversions — the measuring-point catalog</h3>
+      <h3>3 · Funnels &amp; Conversions — the path + the measuring points</h3>
       <ul>
-        <li>Per conversion: GA4 event, Google Ads label + value, Meta event — with status (<span class="st done">✓</span> wired, <span class="st open">open</span>).</li>
-        <li>This is the alignment surface with tracking (Praba): what do we measure where, and is it live?</li>
-        <li>Add new conversions below; edit details via ✎.</li>
+        <li><b>Funnels</b> as a list: click the name to open the step editor. <b>Archive</b> a funnel instead of deleting when it only rests.</li>
+        <li>A step can point at a <b>conversion measuring point</b>; below it fans out what Praba has to wire per channel (GA4/Ads/Meta).</li>
+        <li><b>Conversions</b> below as a list: Praba maintains the status here (<span class="st done">✓</span> wired, <span class="st open">open</span>).</li>
       </ul>
       <h3>Key rules</h3>
       <ul>
         <li><b>Never tag internal links</b> (menu, footer) — the internal click would overwrite the real source in GA4.</li>
-        <li>Add new <b>source/medium</b> values to <code>SOP_Platform_Naming.md</code> first — the tool warns you.</li>
+        <li>Add new <b>source/medium</b> values to <code>SOP_Platform_Naming.md</code> first.</li>
         <li>The SOP stays the rule source; the tool only reflects it.</li>
       </ul>
     </div>
@@ -264,7 +267,7 @@
   <div class="topbar">
     <div>
       <h1>TradeNeon Marketing Cockpit</h1>
-      <p class="sub"><span data-i18n="app.sub">UTM · Funnels · Conversions</span> <span class="pill">v2 · Supabase</span></p>
+      <p class="sub"><span data-i18n="app.sub">Naming · UTM · Funnels &amp; Conversions</span> <span class="pill">v3 · Supabase</span></p>
     </div>
     <div class="right">
       <div class="langsw"><button data-l="de" class="on">DE</button><button data-l="en">EN</button></div>
@@ -276,92 +279,135 @@
   </div>
 
   <div class="tabs" id="tabs">
-    <button data-v="utm" class="on" data-i18n="tab.utm">UTM &amp; Naming</button>
-    <button data-v="funnels" data-i18n="tab.funnels">Funnels</button>
-    <button data-v="conversions" data-i18n="tab.conversions">Conversions</button>
+    <button data-v="naming" class="on" data-i18n="tab.naming">1 · Naming</button>
+    <button data-v="utm" data-i18n="tab.utm">2 · UTM-Builder</button>
+    <button data-v="fc" data-i18n="tab.fc">3 · Funnels &amp; Conversions</button>
   </div>
 
-  <!-- ═══════════ VIEW · UTM & NAMING ═══════════ -->
-  <div class="view on" id="view-utm">
-  <div class="note" data-i18n="app.note"></div>
+  <!-- ═══════════ VIEW · NAMING ═══════════ -->
+  <div class="view on" id="view-naming">
+  <div class="note" data-i18n="nm.note"></div>
   <div class="grid">
     <div class="card">
-      <h2 data-i18n="s1.title">1 · Eingabe</h2>
+      <h2 data-i18n="nm.inputtitle">Eingabe — SOP-Bausteine</h2>
       <label data-i18n="f.ptype">Plattform-Typ</label>
-      <div class="seg" id="ptype">
+      <div class="seg" id="nptype">
         <button data-t="paid" class="on" data-i18n="seg.paid">Werbe (Paid)</button>
         <button data-t="email" data-i18n="seg.email">E-Mail (AC)</button>
         <button data-t="organic" data-i18n="seg.organic">Organisch</button>
       </div>
       <div class="row3">
-        <div><label data-i18n="f.channel">Channel</label><select id="channel"></select></div>
-        <div><label data-i18n="f.tag">Funktions-Tag</label><select id="tag"></select></div>
-        <div><label data-i18n="f.funnel">Funnel</label><select id="funnel"></select></div>
+        <div><label data-i18n="f.channel">Channel</label><select id="nChannel"></select></div>
+        <div><label data-i18n="f.tag">Funktions-Tag</label><select id="nTag"></select></div>
+        <div><label data-i18n="f.funnelstage">Funnel-Stufe</label><select id="nFunnel"></select></div>
       </div>
       <div class="row3">
-        <div><label data-i18n="f.thema">Thema <span class="hint">(Slug)</span></label><input id="thema" value="KI-im-Trading"></div>
-        <div><label data-i18n="f.datum">Datum <span class="hint">(YYYY-MM)</span></label><input id="datum" value="2026-06"></div>
-        <div class="paid-only"><label data-i18n="f.variant">Variant <span class="hint">(opt.)</span></label><select id="variant"></select></div>
+        <div><label data-i18n="f.thema">Thema <span class="hint">(Slug)</span></label><input id="nThema" value="KI-im-Trading"></div>
+        <div><label data-i18n="f.datum">Datum <span class="hint">(YYYY-MM)</span></label><input id="nDatum" value="2026-06"></div>
+        <div class="np-paid"><label data-i18n="f.variant">Variant <span class="hint">(opt.)</span></label><select id="nVariant"></select></div>
       </div>
-      <div class="paid-only">
+      <div class="np-paid">
         <label data-i18n="f.adset">AdSet — Audience &amp; Targeting</label>
         <div class="row3">
-          <select id="audtyp"></select>
-          <input id="targeting" data-i18n-ph="f.targeting" value="Daytrading-AI">
-          <select id="geo"></select>
+          <select id="nAudtyp"></select>
+          <input id="nTargeting" data-i18n-ph="f.targeting" value="Daytrading-AI">
+          <select id="nGeo"></select>
         </div>
       </div>
-      <div class="paid-only">
+      <div class="np-paid">
         <label data-i18n="f.ad">Ad — Asset</label>
         <div class="row3">
-          <select id="fmt"></select>
-          <input id="fmtnn" type="number" min="1" value="1" placeholder="NN">
-          <select id="lang"></select>
+          <select id="nFmt"></select>
+          <input id="nFmtnn" type="number" min="1" value="1" placeholder="NN">
+          <select id="nLang"></select>
         </div>
         <div class="row3" style="margin-top:8px">
-          <div><label style="margin-top:2px">Hook H[N]</label><input id="hook" type="number" min="1" value="1"></div>
-          <div><label style="margin-top:2px">CTA[N]</label><input id="cta" type="number" min="1" value="1"></div>
+          <div><label style="margin-top:2px">Hook H[N]</label><input id="nHook" type="number" min="1" value="1"></div>
+          <div><label style="margin-top:2px">CTA[N]</label><input id="nCta" type="number" min="1" value="1"></div>
           <div></div>
         </div>
       </div>
-      <div class="paid-only">
-        <div class="row2">
-          <div><label data-i18n="f.srcPaid">utm_source <span class="hint">(Werbe-Plattform)</span></label><select id="srcPaid"></select></div>
-          <div><label data-i18n="f.term">utm_term <span class="hint">(Keyword, opt. — Google Search)</span></label><input id="term" data-i18n-ph="f.termph"></div>
-        </div>
-      </div>
-      <div class="email-only">
+      <div class="np-email">
         <label data-i18n="f.automation">Automation — Sequenz &amp; Audience</label>
-        <div class="row2"><select id="seq"></select><select id="audslug"></select></div>
+        <div class="row2"><select id="nSeq"></select><select id="nAudslug"></select></div>
         <div class="row3" style="margin-top:8px">
-          <div><label style="margin-top:2px" data-i18n="f.lang">Sprache</label><select id="langE"></select></div>
-          <div><label style="margin-top:2px">E-Nummer E[N]</label><input id="enr" type="number" min="1" value="1"></div>
-          <div><label style="margin-top:2px" data-i18n="f.inhalt">Inhalt-Slug</label><input id="inhalt" value="Webinar-Invite"></div>
+          <div><label style="margin-top:2px" data-i18n="f.lang">Sprache</label><select id="nLangE"></select></div>
+          <div><label style="margin-top:2px">E-Nummer E[N]</label><input id="nEnr" type="number" min="1" value="1"></div>
+          <div><label style="margin-top:2px" data-i18n="f.inhalt">Inhalt-Slug</label><input id="nInhalt" value="Webinar-Invite"></div>
         </div>
         <div class="row2" style="margin-top:8px">
-          <div><label style="margin-top:2px" data-i18n="f.audsuf">Audience-Suffix</label><select id="audsuf"></select></div>
-          <div><label style="margin-top:2px" data-i18n="f.multilink">Multi-Link-Slug <span class="hint">(opt.)</span></label><input id="multilink" data-i18n-ph="f.multilinkph"></div>
+          <div><label style="margin-top:2px" data-i18n="f.audsuf">Audience-Suffix</label><select id="nAudsuf"></select></div>
+          <div><label style="margin-top:2px" data-i18n="f.multilink">Multi-Link-Slug <span class="hint">(opt.)</span></label><input id="nMultilink" data-i18n-ph="f.multilinkph"></div>
         </div>
-        <label data-i18n="f.srcEmail">utm_source <span class="hint">(E-Mail-Typ, SOP-Liste)</span></label>
-        <select id="srcEmail"></select>
       </div>
-      <div class="organic-only">
-        <label data-i18n="f.srcOrg">utm_source <span class="hint">(organischer Touchpoint)</span></label>
-        <select id="srcOrg"></select>
+      <div class="np-organic">
         <label data-i18n="f.orgcontent">Content-Slug</label>
-        <input id="orgcontent" data-i18n-ph="f.orgcontentph">
+        <input id="nOrgcontent" data-i18n-ph="f.orgcontentph">
       </div>
-      <label data-i18n="f.url">Ziel-URL <span class="hint">(Landingpage)</span></label>
-      <input id="url" value="https://tradeneon-academy.com/webinare/trading-mit-ki-lp/">
-      <label data-i18n="f.anchor">Anker <span class="hint">(opt. · #… · kein Tracking-Param)</span></label>
-      <input id="anchor" data-i18n-ph="f.anchorph">
-      <label data-i18n="f.notes">Notiz <span class="hint">(opt.)</span></label>
-      <input id="notes" data-i18n-ph="f.notesph">
+      <div class="row2">
+        <div><label data-i18n="nm.funnelref">Funnel-Referenz <span class="hint">(opt.)</span></label><select id="nFunnelRef"></select></div>
+        <div><label data-i18n="f.notes">Notiz <span class="hint">(opt.)</span></label><input id="nNotes" data-i18n-ph="f.notesph"></div>
+      </div>
     </div>
 
     <div class="card">
-      <h2><span data-i18n="s2.title">2 · Output</span> <span class="hint" id="modeLabel"></span></h2>
-      <div id="out"></div>
+      <h2><span data-i18n="nm.outtitle">Ergebnis — Namen</span> <span class="hint" id="nModeLabel"></span></h2>
+      <div id="nOut"></div>
+      <div class="btns">
+        <button class="btn sm ghost" id="nCancel" style="display:none" data-i18n="nm.cancel">Abbrechen</button>
+        <button class="btn sm" id="nSave" data-i18n="nm.save">+ Namen speichern</button>
+      </div>
+      <p class="hint" style="margin-top:8px" data-i18n="nm.savehint"></p>
+    </div>
+
+    <div class="card full">
+      <h2><span data-i18n="nm.listtitle">Gespeicherte Namen</span> <span class="pill" id="nCount">…</span></h2>
+      <div class="tblwrap">
+        <table id="namingTbl">
+          <thead><tr>
+            <th data-i18n="r.type">Typ</th><th>Campaign Name</th><th>AdSet / Automation</th><th data-i18n="nm.ident">Ad-/E-Mail-Identifier</th>
+            <th>utm_campaign</th><th>utm_content</th><th style="width:70px"></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- ═══════════ VIEW · UTM-BUILDER ═══════════ -->
+  <div class="view" id="view-utm">
+  <div class="note" data-i18n="ub.note"></div>
+  <div class="grid">
+    <div class="card">
+      <h2 data-i18n="ub.inputtitle">Tracking-URL bauen</h2>
+      <label data-i18n="ub.naming">Naming-Eintrag <span class="hint">(oder manuell)</span></label>
+      <select id="uNaming"></select>
+      <div class="row2">
+        <div><label>utm_campaign</label><input id="uCampaign" placeholder="aca-webinar-ki-im-trading-2026-06"></div>
+        <div><label>utm_content</label><input id="uContent" placeholder="cb01_h1_cta1"></div>
+      </div>
+      <div class="row2">
+        <div><label data-i18n="ub.source">utm_source</label><select id="uSrc"></select></div>
+        <div><label data-i18n="ub.medium">utm_medium <span class="hint">(auto, änderbar)</span></label><select id="uMed"></select></div>
+      </div>
+      <div class="row2">
+        <div><label data-i18n="ub.term">utm_term <span class="hint">(Google Search, opt.)</span></label><input id="uTerm" data-i18n-ph="f.termph"></div>
+        <div><label data-i18n="nm.funnelref">Funnel-Referenz <span class="hint">(opt.)</span></label><select id="uFunnelRef"></select></div>
+      </div>
+      <label data-i18n="ub.ref">Ad-/E-Mail-Identifier <span class="hint">(Referenz, kein UTM)</span></label>
+      <input id="uRef" placeholder="ADS_2026-06_ACA_LM_CB01_KI-im-Trading_DE_H1_CTA1">
+      <label data-i18n="f.url">Ziel-URL <span class="hint">(Landingpage)</span></label>
+      <input id="uUrl" value="https://tradeneon-academy.com/webinare/trading-mit-ki-lp/">
+      <label data-i18n="f.anchor">Anker <span class="hint">(opt. · #… · kein Tracking-Param)</span></label>
+      <input id="uAnchor" data-i18n-ph="f.anchorph">
+      <label data-i18n="f.notes">Notiz <span class="hint">(opt.)</span></label>
+      <input id="uNotes" data-i18n-ph="f.notesph">
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="ub.outtitle">Output</h2>
+      <div id="uOut"></div>
       <div class="warn" id="warnSource"></div>
       <div class="warn" id="warnInternal" data-i18n="warn.internal"></div>
       <label style="margin-top:16px" data-i18n="o.params">Nur URL-Parameter</label>
@@ -371,13 +417,13 @@
       <div class="btns">
         <button class="btn sm" onclick="copyText($('paramsOut').textContent)" data-i18n="o.copyParams">Parameter kopieren</button>
         <button class="btn sm" onclick="copyText($('urlOut').textContent)" data-i18n="o.copyUrl">Volle URL kopieren</button>
-        <button class="btn sm ghost" id="saveBtn" data-i18n="o.save">+ In Datenbank speichern</button>
+        <button class="btn sm ghost" id="saveBtn" data-i18n="ub.save">+ In Registry speichern</button>
       </div>
       <p class="hint" style="margin-top:8px" data-i18n="o.idhint"></p>
     </div>
 
     <div class="card full">
-      <h2><span data-i18n="s3.title">3 · Registry</span> <span class="pill" id="rowCount">…</span></h2>
+      <h2><span data-i18n="ub.regtitle">Registry</span> <span class="pill" id="rowCount">…</span></h2>
       <div class="toolbar">
         <input id="fYear" data-i18n-ph="r.fYear">
         <input id="fCampaign" data-i18n-ph="r.fCampaign">
@@ -391,11 +437,11 @@
         <button class="btn sm ghost" onclick="exportCSV()">CSV ⬇</button>
         <label class="btn sm ghost" style="margin:0">CSV ⬆<input type="file" id="imp" accept=".csv" hidden></label>
       </div>
-      <div style="overflow-x:auto">
+      <div class="tblwrap">
         <table id="tbl">
           <thead><tr>
-            <th>utm_id</th><th data-i18n="r.type">Typ</th><th>Campaign</th><th>Identifier</th>
-            <th>source</th><th>content</th><th data-i18n="r.fullurl">Volle URL</th><th style="width:110px"></th>
+            <th>utm_id</th><th data-i18n="r.type">Typ</th><th>utm_campaign</th><th data-i18n="nm.ident">Identifier</th>
+            <th>source</th><th>medium</th><th>content</th><th data-i18n="r.fullurl">Volle URL</th><th style="width:110px"></th>
           </tr></thead>
           <tbody></tbody>
         </table>
@@ -404,11 +450,29 @@
   </div>
   </div>
 
-  <!-- ═══════════ VIEW · FUNNELS ═══════════ -->
-  <div class="view" id="view-funnels">
-    <div class="note" data-i18n="fn.note"></div>
-    <div class="fchips" id="fchips"></div>
-    <div class="card" id="fnDetail" style="display:none">
+  <!-- ═══════════ VIEW · FUNNELS & CONVERSIONS ═══════════ -->
+  <div class="view" id="view-fc">
+    <div class="note" data-i18n="fc.note"></div>
+
+    <div class="card">
+      <div class="toolbar">
+        <h2 style="margin:0"><span data-i18n="fc.funnels">Funnels</span> <span class="pill" id="fnCount">…</span></h2>
+        <span style="flex:1"></span>
+        <label class="chk"><input type="checkbox" id="showArch"> <span data-i18n="fc.showarch">Archivierte zeigen</span></label>
+        <button class="btn sm" onclick="newFunnel()" data-i18n="fn.new">+ Neuer Funnel</button>
+      </div>
+      <div class="tblwrap">
+        <table id="funnelTbl">
+          <thead><tr>
+            <th>Funnel</th><th data-i18n="fn.product">Gruppe</th><th data-i18n="fn.traffic">Traffic</th>
+            <th data-i18n="fc.steps">Schritte</th><th data-i18n="fn.status">Status</th><th style="width:130px"></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="fnDetail" style="display:none;margin-top:20px">
       <h2><span data-i18n="fn.detail">Funnel</span> <span class="pill" id="fnStatusPill"></span></h2>
       <div class="row3">
         <div><label data-i18n="fn.name">Name</label><input id="fnName"></div>
@@ -436,18 +500,15 @@
       <div class="btns">
         <button class="btn sm ghost" onclick="addStep()" data-i18n="fn.addstep">+ Schritt</button>
         <span style="flex:1"></span>
+        <button class="btn sm ghost" id="fnArchive" data-i18n="fc.archive">Archivieren</button>
         <button class="btn sm danger" id="fnDelete" data-i18n="fn.delete">Funnel löschen</button>
         <button class="btn sm" id="fnSave" data-i18n="fn.save">Funnel speichern</button>
       </div>
     </div>
-  </div>
 
-  <!-- ═══════════ VIEW · CONVERSIONS ═══════════ -->
-  <div class="view" id="view-conversions">
-    <div class="note" data-i18n="cv.note"></div>
-    <div class="card">
+    <div class="card" style="margin-top:20px">
       <h2><span data-i18n="cv.title">Conversions · Event-Katalog</span> <span class="pill" id="cvCount">…</span></h2>
-      <div style="overflow-x:auto">
+      <div class="tblwrap">
         <table id="cvTbl">
           <thead><tr>
             <th>Key</th><th data-i18n="cv.name">Name</th><th>GA4</th><th>Google Ads</th><th>Meta</th>
@@ -505,92 +566,107 @@ let LANG=localStorage.getItem('tn_cockpit_lang')||'de';
 const T={
  de:{
   'login.lead':'Marketing Cockpit — bitte anmelden.','login.email':'E-Mail','login.password':'Passwort','login.btn':'Anmelden',
-  'app.sub':'UTM · Funnels · Conversions','app.howto':"So funktioniert's",'app.logout':'Abmelden','app.who':'Dein Name (created_by)',
-  'app.note':'Eingabe → alle Naming-Ebenen + fertige UTM-URL, SOP-konform. Gespeichert wird in der <b>Marketing-Cockpit-Datenbank</b>; der <code>utm_id</code>-Zähler ist kollisionsfrei. CSV bleibt als Backup. Regelquelle: <code>SOP_Platform_Naming.md</code>.',
+  'app.sub':'Naming · UTM · Funnels & Conversions','app.howto':"So funktioniert's",'app.logout':'Abmelden','app.who':'Dein Name (created_by)',
   'howto.close':'Schließen',
-  'tab.utm':'UTM &amp; Naming','tab.funnels':'Funnels','tab.conversions':'Conversions',
-  's1.title':'1 · Eingabe','s2.title':'2 · Output','s3.title':'3 · Registry',
+  'tab.naming':'1 · Naming','tab.utm':'2 · UTM-Builder','tab.fc':'3 · Funnels & Conversions',
   'f.ptype':'Plattform-Typ','seg.paid':'Werbe (Paid)','seg.email':'E-Mail (AC)','seg.organic':'Organisch',
-  'f.channel':'Channel','f.tag':'Funktions-Tag','f.funnel':'Funnel',
+  'f.channel':'Channel','f.tag':'Funktions-Tag','f.funnelstage':'Funnel-Stufe',
   'f.thema':'Thema <span class="hint">(Slug)</span>','f.datum':'Datum <span class="hint">(YYYY-MM)</span>','f.variant':'Variant <span class="hint">(opt.)</span>',
   'f.adset':'AdSet — Audience &amp; Targeting','f.targeting':'Targeting-Slug','f.ad':'Ad — Asset',
-  'f.srcPaid':'utm_source <span class="hint">(Werbe-Plattform)</span>',
   'f.term':'utm_term <span class="hint">(Keyword, opt. — Google Search)</span>','f.termph':'z.B. daytrading-ausbildung',
   'f.automation':'Automation — Sequenz &amp; Audience','f.lang':'Sprache','f.inhalt':'Inhalt-Slug','f.audsuf':'Audience-Suffix',
   'f.multilink':'Multi-Link-Slug <span class="hint">(opt.)</span>','f.multilinkph':'z.B. geschenk',
-  'f.srcEmail':'utm_source <span class="hint">(E-Mail-Typ, SOP-Liste)</span>',
-  'f.srcOrg':'utm_source <span class="hint">(organischer Touchpoint)</span>','f.orgcontent':'Content-Slug','f.orgcontentph':'z.B. reel_hook1',
+  'f.orgcontent':'Content-Slug','f.orgcontentph':'z.B. reel_hook1',
   'f.url':'Ziel-URL <span class="hint">(Landingpage)</span>','f.anchor':'Anker <span class="hint">(opt. · #… · kein Tracking-Param)</span>','f.anchorph':'z.B. anmeldung',
   'f.notes':'Notiz <span class="hint">(opt.)</span>','f.notesph':'frei — z.B. Kampagnen-Kontext',
-  'warn.internal':'<b>Interner Link?</b> Interne Verlinkungen (Menü, Footer, Cross-Sell) <b>nie</b> mit UTM taggen — sonst überschreibt der interne Klick die echte Kampagnen-Quelle in GA4.',
-  'o.params':'Nur URL-Parameter','o.url':'Volle UTM-URL','o.copyParams':'Parameter kopieren','o.copyUrl':'Volle URL kopieren','o.save':'+ In Datenbank speichern',
-  'o.idhint':'Die <code>utm_id</code> wird beim Speichern von der Datenbank vergeben (atomar). Override unten in der Registry.',
+  // Naming
+  'nm.note':'<b>Naming = Kampagne benennen.</b> Bausteine wählen → SOP-konforme Namen (Campaign · AdSet · Ad-/E-Mail-Identifier) + die abgeleiteten <code>utm_campaign</code>/<code>utm_content</code>. Gespeichert wird eine Zeile pro Ad/E-Mail. Diese Namen nutzt Du im Ads Manager / in AC. Regelquelle: <code>SOP_Platform_Naming.md</code>.',
+  'nm.inputtitle':'Eingabe — SOP-Bausteine','nm.outtitle':'Ergebnis — Namen','nm.funnelref':'Funnel-Referenz','nm.ident':'Ad-/E-Mail-Identifier',
+  'nm.save':'+ Namen speichern','nm.cancel':'Abbrechen','nm.saved':'Name gespeichert','nm.deleted':'Name gelöscht',
+  'nm.savehint':'Speichert eine Zeile in der Namensliste (kein UTM/URL — das kommt im UTM-Builder).',
+  'nm.listtitle':'Gespeicherte Namen','nm.empty':'Noch keine Namen — links bauen und „Namen speichern".',
+  'row.campaign':'Campaign Name','row.adset':'AdSet (kein UTM)','row.automation':'Automation','row.adid':'Ad-Identifier','row.emailid':'Email-Identifier',
+  // UTM
+  'ub.note':'<b>UTM-Builder = Tracking-URL bauen.</b> Naming-Eintrag wählen (übernimmt Campaign + Content) → Source/Medium/Funnel/URL ergänzen → die <code>utm_id</code> vergibt die Datenbank kollisionsfrei. In die URL fließt nur der Campaign-Name, nicht der AdSet-Name.',
+  'ub.inputtitle':'Tracking-URL bauen','ub.outtitle':'Output','ub.naming':'Naming-Eintrag <span class="hint">(oder manuell)</span>',
+  'ub.source':'utm_source','ub.medium':'utm_medium <span class="hint">(auto, änderbar)</span>','ub.term':'utm_term <span class="hint">(Google Search, opt.)</span>',
+  'ub.ref':'Ad-/E-Mail-Identifier <span class="hint">(Referenz, kein UTM)</span>','ub.save':'+ In Registry speichern','ub.regtitle':'Registry','ub.pickmanual':'— manuell —',
+  'o.params':'Nur URL-Parameter','o.url':'Volle UTM-URL','o.copyParams':'Parameter kopieren','o.copyUrl':'Volle URL kopieren',
+  'o.idhint':'Die <code>utm_id</code> wird beim Speichern von der Datenbank vergeben (atomar). Override oben in der Registry-Leiste.',
   'r.fYear':'Jahr filtern','r.fCampaign':'Kampagne filtern','r.chAll':'Channel: alle','r.srcAll':'Source: alle','r.funAll':'Funnel: alle',
-  'r.override':'utm_id-Override','r.reload':'↻ Neu laden','r.type':'Typ','r.fullurl':'Volle URL',
-  'row.campaign':'Campaign Name','row.adset':'AdSet (kein UTM)','row.automation':'Automation','row.adid':'Ad-Identifier','row.emailid':'Email-Identifier','row.idpending':'wird beim Speichern vergeben',
-  'tbl.empty':'Noch keine Zeilen — links bauen und „In Datenbank speichern".',
-  'fn.note':'<b>Funnels = den Weg skizzieren.</b> Jeder Funnel ist eine Kette von Schritten (Anzeige → LP → Formular → E-Mail → Danke). Schritte können auf einen <b>Conversion-Messpunkt</b> (Modul 3) zeigen; der UTM-Chip zählt Registry-Links auf die Schritt-URL. Das Reporting (Zahlen je Schritt) liefert Looker Studio.',
-  'fn.detail':'Funnel','fn.name':'Name','fn.product':'Gruppe/Produkt','fn.status':'Status','fn.slughint':'(fix nach Anlage)','fn.desc':'Beschreibung',
+  'r.override':'utm_id-Override','r.reload':'↻ Neu laden','r.type':'Typ','r.fullurl':'Volle URL','r.idpending':'wird beim Speichern vergeben',
+  'tbl.empty':'Noch keine Zeilen — oben bauen und „In Registry speichern".',
+  'warn.internal':'<b>Interner Link?</b> Interne Verlinkungen (Menü, Footer, Cross-Sell) <b>nie</b> mit UTM taggen — sonst überschreibt der interne Klick die echte Kampagnen-Quelle in GA4.',
+  // Funnels & Conversions
+  'fc.note':'<b>Funnels &amp; Conversions.</b> Oben die Funnels als Liste — Klick auf den Namen öffnet den Schritt-Editor. Darunter der Conversion-Katalog, in dem Praba den Status pflegt (GA4/Ads/Meta). Reporting: Looker Studio.',
+  'fc.funnels':'Funnels','fc.steps':'Schritte','fc.showarch':'Archivierte zeigen','fc.archive':'Archivieren','fc.unarchive':'Reaktivieren','fc.archived':'archiviert','fc.open':'öffnen',
+  'fn.detail':'Funnel','fn.name':'Name','fn.product':'Gruppe/Produkt','fn.status':'Status','fn.desc':'Beschreibung',
   'fn.purpose':'Zweck / Ziel des Funnels','fn.tracking':'Tracking (Praba)',
   'fn.traffic':'Traffic-Weg','fn.traffic.unset':'— offen —','fn.traffic.paid':'Bezahlt (Ads)','fn.traffic.organic':'Organisch','fn.traffic.both':'Beides (Ads + organisch)',
   'fn.steps':'Schritte (der Weg)','fn.addstep':'+ Schritt','fn.delete':'Funnel löschen','fn.save':'Funnel speichern',
-  'fn.new':'+ Neuer Funnel','fn.saved':'Funnel gespeichert','fn.deleted':'Funnel gelöscht',
+  'fn.new':'+ Neuer Funnel','fn.saved':'Funnel gespeichert','fn.deleted':'Funnel gelöscht','fn.archived':'Funnel archiviert','fn.reactivated':'Funnel reaktiviert',
   'fn.confirmdel':'Funnel „{name}" wirklich löschen?','fn.needname':'Bitte Namen eingeben','fn.nosteps':'Noch keine Schritte — „+ Schritt" klicken.',
   'fn.step.title':'Titel','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC-Tag (opt.)','fn.step.note':'Notiz (opt.)','fn.step.none':'— keine —',
-  'cv.note':'<b>Conversions = der Messpunkt-Katalog</b> (GA4 · Google Ads · Meta) — die Abstimm-Fläche mit dem Tracking: Was wird wo gemessen, und ist es verdrahtet? Quelle initial: Praba-Sheet Stand 2026-07. Werte sind Optimierungswerte in AED.',
+  'fn.emptylist':'Noch keine Funnels — „+ Neuer Funnel".',
   'cv.title':'Conversions · Event-Katalog','cv.name':'Name','cv.notes':'Notizen','cv.new':'Neue Conversion','cv.edit':'Conversion bearbeiten',
   'cv.keyhint':'(Slug, fix nach Anlage)','cv.value':'Wert (AED)','cv.purpose':'Zweck','cv.path':'Pfad (LP → … → Danke)','cv.status':'Status',
   'cv.cancel':'Abbrechen','cv.save':'Speichern','cv.saved':'Conversion gespeichert','cv.deleted':'Conversion gelöscht',
   'cv.needkey':'Key + Name nötig','cv.confirmdel':'Conversion „{key}" wirklich löschen?','cv.empty':'Noch keine Conversions.',
   'conn.load':'lade…','conn.ok':'DB verbunden','conn.err':'DB-Fehler',
   'ct.saved':'Gespeichert','ct.deleted':'Gelöscht','ct.updated':'Aktualisiert','ct.copied':'Kopiert','ct.copyfail':'Kopieren fehlgeschlagen',
-  'ct.urlcopied':'— URL kopiert','ct.needSource':'Bitte utm_source wählen','ct.dup':'utm_id schon vergeben — Override ändern',
+  'ct.urlcopied':'— URL kopiert','ct.needSource':'Bitte utm_source wählen','ct.needCampaign':'Bitte utm_campaign angeben','ct.dup':'utm_id schon vergeben — Override ändern',
   'ct.loadfail':'Laden fehlgeschlagen','ct.savefail':'Speichern fehlgeschlagen','ct.delfail':'Löschen fehlgeschlagen','ct.updfail':'Update fehlgeschlagen',
   'ct.importfail':'Import fehlgeschlagen','ct.imported':'Zeile(n) importiert','ct.nonew':'Nichts Neues zu importieren','ct.noexport':'Keine Zeilen zum Export','ct.csvok':'CSV exportiert','ct.sessexp':'Sitzung abgelaufen — bitte neu anmelden',
   'cf.del':'Zeile {id} wirklich löschen? Das lässt sich nicht rückgängig machen.','saving':'speichere…','copy':'kopieren'
  },
  en:{
   'login.lead':'Marketing Cockpit — please log in.','login.email':'Email','login.password':'Password','login.btn':'Log in',
-  'app.sub':'UTM · Funnels · Conversions','app.howto':'How it works','app.logout':'Log out','app.who':'Your name (created_by)',
-  'app.note':'Input → all naming levels + finished UTM URL, SOP-compliant. Saved to the <b>Marketing Cockpit database</b>; the <code>utm_id</code> counter is collision-free. CSV stays as backup. Rule source: <code>SOP_Platform_Naming.md</code>.',
+  'app.sub':'Naming · UTM · Funnels & Conversions','app.howto':'How it works','app.logout':'Log out','app.who':'Your name (created_by)',
   'howto.close':'Close',
-  'tab.utm':'UTM &amp; Naming','tab.funnels':'Funnels','tab.conversions':'Conversions',
-  's1.title':'1 · Input','s2.title':'2 · Output','s3.title':'3 · Registry',
+  'tab.naming':'1 · Naming','tab.utm':'2 · UTM builder','tab.fc':'3 · Funnels & Conversions',
   'f.ptype':'Platform type','seg.paid':'Advertising (Paid)','seg.email':'Email (AC)','seg.organic':'Organic',
-  'f.channel':'Channel','f.tag':'Function tag','f.funnel':'Funnel',
+  'f.channel':'Channel','f.tag':'Function tag','f.funnelstage':'Funnel stage',
   'f.thema':'Topic <span class="hint">(slug)</span>','f.datum':'Date <span class="hint">(YYYY-MM)</span>','f.variant':'Variant <span class="hint">(opt.)</span>',
   'f.adset':'Ad set — audience &amp; targeting','f.targeting':'Targeting slug','f.ad':'Ad — asset',
-  'f.srcPaid':'utm_source <span class="hint">(ad platform)</span>',
   'f.term':'utm_term <span class="hint">(keyword, opt. — Google Search)</span>','f.termph':'e.g. day-trading-course',
   'f.automation':'Automation — sequence &amp; audience','f.lang':'Language','f.inhalt':'Content slug','f.audsuf':'Audience suffix',
   'f.multilink':'Multi-link slug <span class="hint">(opt.)</span>','f.multilinkph':'e.g. gift',
-  'f.srcEmail':'utm_source <span class="hint">(email type, SOP list)</span>',
-  'f.srcOrg':'utm_source <span class="hint">(organic touchpoint)</span>','f.orgcontent':'Content slug','f.orgcontentph':'e.g. reel_hook1',
+  'f.orgcontent':'Content slug','f.orgcontentph':'e.g. reel_hook1',
   'f.url':'Target URL <span class="hint">(landing page)</span>','f.anchor':'Anchor <span class="hint">(opt. · #… · not a tracking param)</span>','f.anchorph':'e.g. signup',
   'f.notes':'Note <span class="hint">(opt.)</span>','f.notesph':'free — e.g. campaign context',
-  'warn.internal':'<b>Internal link?</b> Never tag internal links (menu, footer, cross-sell) with UTM — the internal click would overwrite the real campaign source in GA4.',
-  'o.params':'URL parameters only','o.url':'Full UTM URL','o.copyParams':'Copy parameters','o.copyUrl':'Copy full URL','o.save':'+ Save to database',
-  'o.idhint':'The <code>utm_id</code> is assigned by the database on save (atomic). Override below in the registry.',
+  'nm.note':'<b>Naming = name the campaign.</b> Pick components → SOP-compliant names (campaign · ad set · ad/email identifier) + the derived <code>utm_campaign</code>/<code>utm_content</code>. Saves one row per ad/email. Use these names in the ads manager / AC. Rule source: <code>SOP_Platform_Naming.md</code>.',
+  'nm.inputtitle':'Input — SOP components','nm.outtitle':'Result — names','nm.funnelref':'Funnel reference','nm.ident':'Ad/email identifier',
+  'nm.save':'+ Save name','nm.cancel':'Cancel','nm.saved':'Name saved','nm.deleted':'Name deleted',
+  'nm.savehint':'Saves a row to the name list (no UTM/URL — that comes in the UTM builder).',
+  'nm.listtitle':'Saved names','nm.empty':'No names yet — build on the left and “Save name”.',
+  'row.campaign':'Campaign name','row.adset':'Ad set (no UTM)','row.automation':'Automation','row.adid':'Ad identifier','row.emailid':'Email identifier',
+  'ub.note':'<b>UTM builder = build the tracking URL.</b> Pick a naming entry (carries campaign + content) → add source/medium/funnel/URL → the <code>utm_id</code> is assigned collision-free. Only the campaign name flows into the URL, not the ad-set name.',
+  'ub.inputtitle':'Build tracking URL','ub.outtitle':'Output','ub.naming':'Naming entry <span class="hint">(or manual)</span>',
+  'ub.source':'utm_source','ub.medium':'utm_medium <span class="hint">(auto, editable)</span>','ub.term':'utm_term <span class="hint">(Google Search, opt.)</span>',
+  'ub.ref':'Ad/email identifier <span class="hint">(reference, not UTM)</span>','ub.save':'+ Save to registry','ub.regtitle':'Registry','ub.pickmanual':'— manual —',
+  'o.params':'URL parameters only','o.url':'Full UTM URL','o.copyParams':'Copy parameters','o.copyUrl':'Copy full URL',
+  'o.idhint':'The <code>utm_id</code> is assigned by the database on save (atomic). Override in the registry toolbar above.',
   'r.fYear':'Filter year','r.fCampaign':'Filter campaign','r.chAll':'Channel: all','r.srcAll':'Source: all','r.funAll':'Funnel: all',
-  'r.override':'utm_id override','r.reload':'↻ Reload','r.type':'Type','r.fullurl':'Full URL',
-  'row.campaign':'Campaign name','row.adset':'Ad set (no UTM)','row.automation':'Automation','row.adid':'Ad identifier','row.emailid':'Email identifier','row.idpending':'assigned on save',
-  'tbl.empty':'No rows yet — build on the left and “Save to database”.',
-  'fn.note':'<b>Funnels = sketch the path.</b> Each funnel is a chain of steps (ad → LP → form → email → thank-you). Steps can point at a <b>conversion measuring point</b> (module 3); the UTM chip counts registry links targeting the step URL. Reporting (numbers per step) lives in Looker Studio.',
-  'fn.detail':'Funnel','fn.name':'Name','fn.product':'Group/Product','fn.status':'Status','fn.slughint':'(fixed after creation)','fn.desc':'Description',
+  'r.override':'utm_id override','r.reload':'↻ Reload','r.type':'Type','r.fullurl':'Full URL','r.idpending':'assigned on save',
+  'tbl.empty':'No rows yet — build above and “Save to registry”.',
+  'warn.internal':'<b>Internal link?</b> Never tag internal links (menu, footer, cross-sell) with UTM — the internal click would overwrite the real campaign source in GA4.',
+  'fc.note':'<b>Funnels &amp; Conversions.</b> Funnels as a list on top — click the name to open the step editor. Below, the conversion catalog where Praba maintains status (GA4/Ads/Meta). Reporting: Looker Studio.',
+  'fc.funnels':'Funnels','fc.steps':'Steps','fc.showarch':'Show archived','fc.archive':'Archive','fc.unarchive':'Reactivate','fc.archived':'archived','fc.open':'open',
+  'fn.detail':'Funnel','fn.name':'Name','fn.product':'Group/Product','fn.status':'Status','fn.desc':'Description',
   'fn.purpose':'Purpose / goal of the funnel','fn.tracking':'Tracking (Praba)',
   'fn.traffic':'Traffic path','fn.traffic.unset':'— open —','fn.traffic.paid':'Paid (ads)','fn.traffic.organic':'Organic','fn.traffic.both':'Both (ads + organic)',
   'fn.steps':'Steps (the path)','fn.addstep':'+ Step','fn.delete':'Delete funnel','fn.save':'Save funnel',
-  'fn.new':'+ New funnel','fn.saved':'Funnel saved','fn.deleted':'Funnel deleted',
+  'fn.new':'+ New funnel','fn.saved':'Funnel saved','fn.deleted':'Funnel deleted','fn.archived':'Funnel archived','fn.reactivated':'Funnel reactivated',
   'fn.confirmdel':'Really delete funnel “{name}”?','fn.needname':'Please enter a name','fn.nosteps':'No steps yet — click “+ Step”.',
   'fn.step.title':'Title','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC tag (opt.)','fn.step.note':'Note (opt.)','fn.step.none':'— none —',
-  'cv.note':'<b>Conversions = the measuring-point catalog</b> (GA4 · Google Ads · Meta) — the alignment surface with tracking: what is measured where, and is it wired? Initial source: Praba sheet as of 2026-07. Values are optimization values in AED.',
+  'fn.emptylist':'No funnels yet — “+ New funnel”.',
   'cv.title':'Conversions · Event catalog','cv.name':'Name','cv.notes':'Notes','cv.new':'New conversion','cv.edit':'Edit conversion',
   'cv.keyhint':'(slug, fixed after creation)','cv.value':'Value (AED)','cv.purpose':'Purpose','cv.path':'Path (LP → … → thank-you)','cv.status':'Status',
   'cv.cancel':'Cancel','cv.save':'Save','cv.saved':'Conversion saved','cv.deleted':'Conversion deleted',
   'cv.needkey':'Key + name required','cv.confirmdel':'Really delete conversion “{key}”?','cv.empty':'No conversions yet.',
   'conn.load':'connecting…','conn.ok':'DB connected','conn.err':'DB error',
   'ct.saved':'Saved','ct.deleted':'Deleted','ct.updated':'Updated','ct.copied':'Copied','ct.copyfail':'Copy failed',
-  'ct.urlcopied':'— URL copied','ct.needSource':'Please pick a utm_source','ct.dup':'utm_id already taken — change override',
+  'ct.urlcopied':'— URL copied','ct.needSource':'Please pick a utm_source','ct.needCampaign':'Please provide utm_campaign','ct.dup':'utm_id already taken — change override',
   'ct.loadfail':'Load failed','ct.savefail':'Save failed','ct.delfail':'Delete failed','ct.updfail':'Update failed',
   'ct.importfail':'Import failed','ct.imported':'row(s) imported','ct.nonew':'Nothing new to import','ct.noexport':'No rows to export','ct.csvok':'CSV exported','ct.sessexp':'Session expired — please log in again',
   'cf.del':'Really delete row {id}? This cannot be undone.','saving':'saving…','copy':'copy'
@@ -606,7 +682,7 @@ function applyLang(){
   $('howtoDE').style.display=LANG==='de'?'':'none';
   $('howtoEN').style.display=LANG==='en'?'':'none';
   setConn(connState);
-  if(authed){render();refreshFilters();renderTable();renderFunnels();renderConversions();}
+  if(authed){renderNamingOut();renderUtmOut();refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFunnelList();renderFunnelDetail();renderConversions();}
 }
 function setLang(l){LANG=l;localStorage.setItem('tn_cockpit_lang',l);applyLang();}
 
@@ -621,14 +697,6 @@ const OPT = {
   geo:[['','— (kein Geo)'],['DACH','DACH'],['DE','DE'],['AT-CH','AT-CH'],['EN-Worldwide','EN-Worldwide']],
   fmt:[['CB','CB · Creative Bundle Video'],['IMG','IMG · Static Image'],['CAR','CAR · Carousel'],['SF','SF · Short Form'],['LINK','LINK · Pure Link']],
   lang:[['DE','DE'],['EN','EN']],
-  srcPaid:[['meta_ads','meta_ads'],['facebook_ads','facebook_ads'],['instagram_ads','instagram_ads'],['google','google'],
-           ['youtube_ads','youtube_ads'],['bing_ads','bing_ads'],['tiktok_ads','tiktok_ads'],['linkedin_ads','linkedin_ads']],
-  srcEmail:[['email_campaign','email_campaign'],['webinar_campaign','webinar_campaign'],['newsletter','newsletter'],
-            ['welcome_email','welcome_email'],['confirmation_email','confirmation_email'],['sales_campaign','sales_campaign'],
-            ['onboarding_email','onboarding_email'],['nurture_email','nurture_email'],['crm_flow','crm_flow']],
-  srcOrg:[['facebook','facebook'],['instagram','instagram'],['youtube','youtube'],['tiktok','tiktok'],['linkedin','linkedin'],
-          ['pinterest','pinterest'],['reddit','reddit'],['x','x'],['blog','blog'],['podcast','podcast'],['homepage','homepage'],
-          ['qr_code','qr_code'],['event','event'],['affiliate_partner','affiliate_partner']],
   seq:[['Pre-Launch-Sequenz','Pre-Launch-Sequenz'],['Post-Webinar-Followup','Post-Webinar-Followup'],['Replay-Sequenz','Replay-Sequenz'],
        ['Reminder-Sequenz','Reminder-Sequenz'],['Nurture-Sequenz','Nurture-Sequenz']],
   audslug:[['AllSubs-NotRegistered','AllSubs-NotRegistered'],['AllSubs-NotCustomers','AllSubs-NotCustomers'],['Registered-Only','Registered-Only'],
@@ -636,16 +704,28 @@ const OPT = {
   langE:[['DE','DE'],['EN','EN']],
   audsuf:[['','— (keiner)'],['Registered','Registered → _registered'],['NotRegistered','NotRegistered → _notregistered']]
 };
+// utm_source nach Kategorie (SOP-Liste + Marnies Source-Liste)
+const SRC = {
+  paid:['meta_ads','facebook_ads','instagram_ads','google','youtube_ads','bing_ads','tiktok_ads','linkedin_ads'],
+  organic:['facebook','instagram','youtube','tiktok','linkedin','snapchat','pinterest','reddit','x','blog','podcast','homepage','qr_code','event'],
+  email:['newsletter','email_campaign','welcome_email','confirmation_email','webinar_campaign','sales_campaign','onboarding_email','nurture_email','crm_flow'],
+  other:['affiliate_partner','partner_name']
+};
+// utm_source → utm_medium Default-Mapping (Marnies Medium-Liste)
 const MEDIUM = {
   meta_ads:'paid_social',facebook_ads:'paid_social',instagram_ads:'paid_social',tiktok_ads:'paid_social',linkedin_ads:'paid_social',
-  google:'cpc',bing_ads:'cpc',youtube_ads:'video',facebook:'social',instagram:'social',linkedin:'social',tiktok:'social',
-  pinterest:'social',reddit:'social',x:'social',youtube:'social',qr_code:'offline',event:'offline',affiliate_partner:'referral',
-  partner_name:'referral',blog:'referral',podcast:'audio',homepage:'internal',
-  email_campaign:'email',webinar_campaign:'email',newsletter:'email',welcome_email:'email',confirmation_email:'email',
-  sales_campaign:'email',onboarding_email:'email',nurture_email:'email',crm_flow:'email'
+  google:'cpc',bing_ads:'cpc',youtube_ads:'video',
+  facebook:'organic_social',instagram:'organic_social',youtube:'organic_social',tiktok:'organic_social',linkedin:'organic_social',
+  snapchat:'organic_social',pinterest:'organic_social',reddit:'organic_social',x:'organic_social',
+  blog:'referral',podcast:'referral',homepage:'referral',qr_code:'offline',event:'offline',
+  newsletter:'email',email_campaign:'email',welcome_email:'email',confirmation_email:'email',webinar_campaign:'email',
+  sales_campaign:'email',onboarding_email:'email',nurture_email:'email',crm_flow:'email',
+  affiliate_partner:'affiliate',partner_name:'affiliate'
 };
-const KNOWN_SOURCES=new Set([...OPT.srcPaid.map(x=>x[0]),...OPT.srcOrg.map(x=>x[0]),...OPT.srcEmail.map(x=>x[0])]);
-const KNOWN_MEDIUMS=new Set([...Object.values(MEDIUM)]);
+const MEDIUM_OPTS=['paid_social','cpc','organic_social','video','display','email','affiliate','referral','messaging','offline'];
+const KNOWN_SOURCES=new Set([...SRC.paid,...SRC.organic,...SRC.email,...SRC.other]);
+const KNOWN_MEDIUMS=new Set(MEDIUM_OPTS);
+function srcType(s){if(SRC.paid.includes(s))return 'paid';if(SRC.email.includes(s))return 'email';return 'organic'}
 const STEP_TYPES=['ad','lp','form','email','page','call','purchase'];
 const FUNNEL_GROUPS=[['','— (keine)'],['DAY','DAY · Daytrading'],['SWG','SWG · Swingtrading'],['LOI','LOI'],['FI','FI'],
   ['ACA','ACA · Academy'],['PSY','PSY · Psychologie'],['SWA','SWA · Software'],['LOT','LOT'],['BRAND','Brand'],['COMMON','Common · Conversions']];
@@ -659,11 +739,21 @@ const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 const fmtId=n=>'tradeneon'+String(parseInt(n,10)).padStart(5,'0');
 const normUrl=u=>(u||'').trim().replace(/\/+$/,'').replace(/^https?:\/\//,'');
 function fill(id,opts){const s=$(id);if(!s)return;s.innerHTML=opts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}
-Object.keys(OPT).forEach(k=>fill(k,OPT[k]));
+// Naming-Dropdowns füllen (n-Präfix)
+[['nChannel','channel'],['nTag','tag'],['nFunnel','funnel'],['nVariant','variant'],['nAudtyp','audtyp'],['nGeo','geo'],
+ ['nFmt','fmt'],['nLang','lang'],['nSeq','seq'],['nAudslug','audslug'],['nLangE','langE'],['nAudsuf','audsuf']].forEach(([id,k])=>fill(id,OPT[k]));
 fill('fnProduct',FUNNEL_GROUPS);
+// Source-Dropdown (gruppiert) für UTM-Builder
+function fillSrc(id){
+  const g=[['paid',LANG==='de'?'Werbe (paid)':'Advertising (paid)',SRC.paid],['organic',LANG==='de'?'Organisch':'Organic',SRC.organic],
+           ['email','E-Mail',SRC.email],['other',LANG==='de'?'Sonstige':'Other',SRC.other]];
+  $(id).innerHTML=g.map(([k,l,arr])=>`<optgroup label="${l}">`+arr.map(s=>`<option>${s}</option>`).join('')+`</optgroup>`).join('');
+}
+function fillMed(id){$(id).innerHTML=MEDIUM_OPTS.map(m=>`<option>${m}</option>`).join('')}
 
-let mode='paid';
-const state={rows:[],funnels:[],convs:[],editF:null,editCvId:null};
+let nameMode='paid';
+let currentNamingId=null; // im UTM-Builder gewählter Naming-Eintrag
+const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null};
 function whoami(){return ($('who').value||'').trim()}
 
 /* ═══════════════ Auth (Supabase) ═══════════════ */
@@ -697,7 +787,7 @@ function onAuthed(){
   $('loginOverlay').classList.add('hidden');
   $('app').style.filter='';$('app').style.opacity='';$('app').style.pointerEvents='';
   $('userEmail').textContent=session&&session.email?session.email:'';
-  loadAll();render();
+  loadAll();renderNamingOut();renderUtmOut();
 }
 function showLogin(){
   authed=false;
@@ -718,49 +808,155 @@ async function sb(path,opts={},_retried){
 async function loadAll(){
   try{
     setConn('load');
-    const [rows,funnels,convs]=await Promise.all([
+    const [rows,naming,funnels,convs]=await Promise.all([
       sb('utm_registry?select=*&order=created_at.desc'),
+      sb('naming_registry?select=*&order=created_at.desc').catch(()=>[]),
       sb('funnels?select=*&order=id.asc').catch(()=>[]),
       sb('conversions?select=*&order=id.asc').catch(()=>[])
     ]);
-    state.rows=rows||[];state.funnels=funnels||[];state.convs=convs||[];
+    state.rows=rows||[];state.naming=naming||[];state.funnels=funnels||[];state.convs=convs||[];
     setConn('ok');
-    refreshFilters();renderTable();renderFunnels();renderConversions();
+    refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFunnelList();renderFunnelDetail();renderConversions();
   }catch(e){setConn('err');toast(t('ct.loadfail')+': '+e.message,true)}
 }
+// Dropdowns, die von geladenen Daten abhängen (Naming-Picker, Funnel-Referenzen)
+function refreshDynamic(){
+  const fref=`<option value="">${LANG==='de'?'— (keine)':'— (none)'}</option>`+
+    state.funnels.filter(f=>f.status!=='archived').map(f=>`<option value="${esc(f.name)}">${esc(f.name)}</option>`).join('');
+  const nf=$('nFunnelRef'), uf=$('uFunnelRef');
+  if(nf){const v=nf.value;nf.innerHTML=fref;nf.value=v;}
+  if(uf){const v=uf.value;uf.innerHTML=fref;uf.value=v;}
+  const un=$('uNaming');
+  if(un){const v=un.value;
+    un.innerHTML=`<option value="">${t('ub.pickmanual')}</option>`+state.naming.map(n=>
+      `<option value="${n.id}">${esc(n.campaign_name)} · ${esc(n.asset_identifier||n.utm_content||'')}</option>`).join('');
+    un.value=v;}
+}
 
-/* ─────────────── Modul 1 · Ableitung ─────────────── */
-function derive(){
-  const channel=$('channel').value, tag=$('tag').value, funnel=$('funnel').value,
-        thema=$('thema').value.trim(), datum=$('datum').value.trim();
+/* ═══════════════ TAB 1 · NAMING ═══════════════ */
+function deriveNaming(){
+  const channel=$('nChannel').value, tag=$('nTag').value, funnel=$('nFunnel').value,
+        thema=$('nThema').value.trim(), datum=$('nDatum').value.trim();
   const campaignBase=join_(channel,funnel,thema,datum);
   const utm_campaign=kebab([channel,funnel,thema,datum].join('-'));
-  let o={platform_type:mode,channel,function_tag:tag,funnel_type:funnel,topic_slug:thema,period:datum,variant:'',
-         campaign_name:campaignBase,utm_campaign,adset_or_automation:'',asset_identifier:'',
-         utm_source:'',utm_medium:'',utm_content:'',utm_term:'',audience_suffix:'',
-         target_url:$('url').value.trim(),anchor:$('anchor').value.trim().replace(/^#/,''),notes:$('notes').value.trim()};
-  if(mode==='paid'){
-    const variant=$('variant').value; o.variant=variant;
+  let o={platform_type:nameMode,channel,function_tag:tag,funnel_type:funnel,topic_slug:thema,period:datum,variant:'',
+         campaign_name:campaignBase,adset_or_automation:'',asset_identifier:'',funnel_reference:$('nFunnelRef').value||'',
+         utm_campaign,utm_content:'',notes:$('nNotes').value.trim()};
+  if(nameMode==='paid'){
+    const variant=$('nVariant').value; o.variant=variant;
     if(variant)o.campaign_name=campaignBase+'_'+variant;
-    o.adset_or_automation=join_($('audtyp').value,$('targeting').value.trim(),$('geo').value);
-    const code=$('fmt').value+String($('fmtnn').value).padStart(2,'0');
-    const hcta='H'+$('hook').value+'_CTA'+$('cta').value;
-    o.asset_identifier=join_('ADS',datum,channel,tag,code,thema,$('lang').value,'H'+$('hook').value,'CTA'+$('cta').value);
-    o.utm_source=$('srcPaid').value; o.utm_medium=MEDIUM[o.utm_source]||''; o.utm_content=snake(code+'_'+hcta);
-    o.utm_term=snake($('term').value.trim());
-  }else if(mode==='email'){
-    o.adset_or_automation=join_(campaignBase,$('seq').value,$('audslug').value);
-    const inhalt=$('inhalt').value.trim(), enr=$('enr').value, suf=$('audsuf').value;
-    o.audience_suffix=suf?snake(suf):'';
-    o.asset_identifier=join_('EMAIL',datum,channel,tag,funnel,thema,$('langE').value,'E'+enr,inhalt)+(suf?'_'+suf:'');
-    o.utm_source=$('srcEmail').value; o.utm_medium='email';
-    let c='email'+enr+'_'+snake(inhalt); const ml=$('multilink').value.trim();
+    o.adset_or_automation=join_($('nAudtyp').value,$('nTargeting').value.trim(),$('nGeo').value);
+    const code=$('nFmt').value+String($('nFmtnn').value).padStart(2,'0');
+    o.asset_identifier=join_('ADS',datum,channel,tag,code,thema,$('nLang').value,'H'+$('nHook').value,'CTA'+$('nCta').value);
+    o.utm_content=snake(code+'_H'+$('nHook').value+'_CTA'+$('nCta').value);
+  }else if(nameMode==='email'){
+    o.adset_or_automation=join_(campaignBase,$('nSeq').value,$('nAudslug').value);
+    const inhalt=$('nInhalt').value.trim(), enr=$('nEnr').value, suf=$('nAudsuf').value;
+    o.asset_identifier=join_('EMAIL',datum,channel,tag,funnel,thema,$('nLangE').value,'E'+enr,inhalt)+(suf?'_'+suf:'');
+    let c='email'+enr+'_'+snake(inhalt); const ml=$('nMultilink').value.trim();
     if(ml)c+='_'+snake(ml); if(suf)c+='_'+snake(suf); o.utm_content=c;
   }else{
-    o.utm_source=$('srcOrg').value; o.utm_medium=MEDIUM[o.utm_source]||'social'; o.utm_content=snake($('orgcontent').value);
-    o.asset_identifier=''; o.adset_or_automation='';
+    o.utm_content=snake($('nOrgcontent').value); o.asset_identifier=''; o.adset_or_automation='';
   }
   return o;
+}
+function orow(k,v,copyable){
+  const val=`<span class="v ${v?'':'empty'}">${esc(v)||'—'}</span>`;
+  const btn=copyable&&v?`<button class="minicopy" onclick="copyText(${JSON.stringify(String(v))})">${t('copy')}</button>`:'';
+  return `<div class="outrow"><div class="kv"><span class="k">${k}</span>${val}</div>${btn}</div>`;
+}
+function renderNamingOut(){
+  if(!$('nOut'))return;
+  const o=deriveNaming();
+  $('nModeLabel').textContent='· '+(nameMode==='paid'?t('seg.paid').replace(/ .*/,''):nameMode==='email'?'E-Mail':t('seg.organic'));
+  let h=orow(t('row.campaign'),o.campaign_name,true);
+  if(nameMode!=='organic')h+=orow(nameMode==='email'?t('row.automation'):t('row.adset'),o.adset_or_automation,true);
+  if(nameMode!=='organic')h+=orow(nameMode==='email'?t('row.emailid'):t('row.adid'),o.asset_identifier,true);
+  h+=orow('utm_campaign',o.utm_campaign,true)+orow('utm_content',o.utm_content,true);
+  $('nOut').innerHTML=h;
+}
+function setNameMode(m){nameMode=m;
+  document.querySelectorAll('#nptype button').forEach(b=>b.classList.toggle('on',b.dataset.t===m));
+  document.querySelectorAll('.np-paid').forEach(e=>e.style.display=m==='paid'?'':'none');
+  document.querySelectorAll('.np-email').forEach(e=>e.style.display=m==='email'?'':'none');
+  document.querySelectorAll('.np-organic').forEach(e=>e.style.display=m==='organic'?'':'none');
+  renderNamingOut();}
+async function saveNaming(){
+  const o=deriveNaming();
+  if(!o.campaign_name){toast(t('ct.needCampaign'),true);return}
+  o.created_by=whoami()||null;
+  try{
+    if(state.editN==null){
+      await sb('naming_registry',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(o)});
+    }else{
+      await sb(`naming_registry?id=eq.${state.editN}`,{method:'PATCH',body:JSON.stringify(o)});
+    }
+    resetNaming();await loadAll();toast(t('nm.saved'));
+  }catch(e){toast(t('ct.savefail')+': '+e.message,true)}
+}
+function resetNaming(){
+  state.editN=null;$('nCancel').style.display='none';$('nSave').textContent=t('nm.save');
+}
+function editNaming(id){
+  const n=state.naming.find(x=>x.id===id);if(!n)return;
+  state.editN=id;
+  setNameMode(n.platform_type||'paid');
+  document.querySelectorAll('#nptype button').forEach(b=>b.classList.toggle('on',b.dataset.t===(n.platform_type||'paid')));
+  $('nChannel').value=n.channel||'';$('nTag').value=n.function_tag||'';$('nFunnel').value=n.funnel_type||'';
+  $('nThema').value=n.topic_slug||'';$('nDatum').value=n.period||'';$('nVariant').value=n.variant||'';
+  $('nFunnelRef').value=n.funnel_reference||'';$('nNotes').value=n.notes||'';
+  $('nSave').textContent=t('cv.save');$('nCancel').style.display='';
+  renderNamingOut();window.scrollTo({top:0,behavior:'smooth'});
+}
+async function delNaming(id){
+  const n=state.naming.find(x=>x.id===id);if(!n)return;
+  if(!confirm((LANG==='de'?'Namen „':'Delete name “')+n.campaign_name+(LANG==='de'?'" löschen?':'”?')))return;
+  try{await sb(`naming_registry?id=eq.${id}`,{method:'DELETE'});if(state.editN===id)resetNaming();await loadAll();toast(t('nm.deleted'))}
+  catch(e){toast(t('ct.delfail')+': '+e.message,true)}
+}
+function renderNamingList(){
+  if(!$('namingTbl'))return;
+  $('namingTbl').querySelector('tbody').innerHTML=state.naming.map(n=>`<tr>
+    <td><span class="tag ${esc(n.platform_type||'paid')}">${esc(n.platform_type||'—')}</span></td>
+    <td class="mono">${esc(n.campaign_name)||'—'}</td>
+    <td class="mono ident">${esc(n.adset_or_automation)||'—'}</td>
+    <td class="mono ident">${esc(n.asset_identifier)||'—'}</td>
+    <td class="mono">${esc(n.utm_campaign)||'—'}</td>
+    <td class="mono">${esc(n.utm_content)||'—'}</td>
+    <td><span class="act edit" onclick="editNaming(${n.id})">✎</span> <span class="act del" onclick="delNaming(${n.id})">✕</span></td>
+  </tr>`).join('')||`<tr><td colspan="7" style="color:#5b6090;padding:20px">${t('nm.empty')}</td></tr>`;
+  $('nCount').textContent=state.naming.length;
+}
+
+/* ═══════════════ TAB 2 · UTM-BUILDER ═══════════════ */
+function onNamingPick(){
+  const id=$('uNaming').value;
+  currentNamingId=id?parseInt(id,10):null;
+  if(currentNamingId){
+    const n=state.naming.find(x=>x.id===currentNamingId);
+    if(n){
+      $('uCampaign').value=n.utm_campaign||'';$('uContent').value=n.utm_content||'';$('uRef').value=n.asset_identifier||'';
+      if(n.funnel_reference)$('uFunnelRef').value=n.funnel_reference;
+      // Source-Default nach Plattform-Typ
+      if(!$('uSrc').value||true){
+        const def=n.platform_type==='email'?'email_campaign':n.platform_type==='paid'?'meta_ads':'';
+        if(def){$('uSrc').value=def;onSrcChange();}
+      }
+    }
+  }
+  renderUtmOut();
+}
+function onSrcChange(){
+  const s=$('uSrc').value;
+  if(MEDIUM[s])$('uMed').value=MEDIUM[s];
+  renderUtmOut();
+}
+function deriveUtm(){
+  const src=$('uSrc').value, med=$('uMed').value;
+  return {platform_type:srcType(src),utm_campaign:$('uCampaign').value.trim(),
+    utm_source:src,utm_medium:med,utm_content:$('uContent').value.trim(),utm_term:snake($('uTerm').value.trim()),
+    asset_identifier:$('uRef').value.trim(),funnel_ref:$('uFunnelRef').value||'',
+    target_url:$('uUrl').value.trim(),anchor:$('uAnchor').value.trim().replace(/^#/,''),notes:$('uNotes').value.trim()};
 }
 function buildParams(o,id){
   const p=[];
@@ -786,62 +982,25 @@ function validate(o){
   else w.classList.remove('show');
   $('warnInternal').classList.toggle('show',/tradeneon(-academy)?\.com/.test(o.target_url||''));
 }
-function orow(k,v,copyable){
-  const val=`<span class="v ${v?'':'empty'}">${esc(v)||'—'}</span>`;
-  const btn=copyable&&v?`<button class="minicopy" onclick="copyText(${JSON.stringify(String(v))})">${t('copy')}</button>`:'';
-  return `<div class="outrow"><div class="kv"><span class="k">${k}</span>${val}</div>${btn}</div>`;
-}
-function render(){
-  const o=derive();
-  const ov=$('ctrOverride').value.trim();
+function renderUtmOut(){
+  if(!$('uOut'))return;
+  const o=deriveUtm();
+  const ov=$('ctrOverride')?$('ctrOverride').value.trim():'';
   const previewId=ov?fmtId(ov):null;
-  $('modeLabel').textContent='· '+(mode==='paid'?t('seg.paid').replace(/ .*/,''):mode==='email'?'E-Mail':t('seg.organic'));
-  let h=orow(t('row.campaign'),o.campaign_name,true);
-  if(mode!=='organic')h+=orow(mode==='email'?t('row.automation'):t('row.adset'),o.adset_or_automation,true);
-  if(mode!=='organic')h+=orow(mode==='email'?t('row.emailid'):t('row.adid'),o.asset_identifier,true);
-  h+=orow('utm_source',o.utm_source)+orow('utm_medium',o.utm_medium)+orow('utm_campaign',o.utm_campaign)
+  let h=orow('utm_campaign',o.utm_campaign)+orow('utm_source',o.utm_source)+orow('utm_medium',o.utm_medium)
     +orow('utm_content',o.utm_content);
   if(o.utm_term)h+=orow('utm_term',o.utm_term);
-  h+=orow('utm_id',previewId||t('row.idpending'));
-  $('out').innerHTML=h;
+  h+=orow('utm_id',previewId||t('r.idpending'));
+  $('uOut').innerHTML=h;
   $('paramsOut').textContent=buildParams(o,previewId);
   $('urlOut').textContent=buildUrl(o,previewId);
   validate(o);
 }
-
-/* ─────────────── Modul 1 · Registry ─────────────── */
-function refreshFilters(){
-  const srcs=[...new Set(state.rows.map(r=>r.utm_source).filter(Boolean))].sort();
-  const funs=[...new Set(state.rows.map(r=>r.funnel_type).filter(Boolean))].sort();
-  const chs=[...new Set(state.rows.map(r=>r.channel).filter(Boolean))].sort();
-  const fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
-  $('fChannel').innerHTML=`<option value="">${t('r.chAll')}</option>`+chs.map(s=>`<option${s===fch?' selected':''}>${esc(s)}</option>`).join('');
-  $('fSource').innerHTML=`<option value="">${t('r.srcAll')}</option>`+srcs.map(s=>`<option${s===fs?' selected':''}>${esc(s)}</option>`).join('');
-  $('fFunnel').innerHTML=`<option value="">${t('r.funAll')}</option>`+funs.map(s=>`<option${s===ff?' selected':''}>${esc(s)}</option>`).join('');
-}
-function renderTable(){
-  const fy=$('fYear').value.trim(), fc=$('fCampaign').value.trim().toLowerCase(), fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
-  const flt=state.rows.filter(r=>(!fy||(r.period||'').includes(fy))&&(!fc||(r.campaign_name||'').toLowerCase().includes(fc))
-    &&(!fs||r.utm_source===fs)&&(!ff||r.funnel_type===ff)&&(!fch||r.channel===fch));
-  $('tbl').querySelector('tbody').innerHTML=flt.map(r=>`<tr data-id="${esc(r.utm_id)}">
-    <td class="mono counter">${esc(r.utm_id)}</td>
-    <td><span class="tag ${esc(r.platform_type)}">${esc(r.platform_type)}</span></td>
-    <td class="mono" data-col="campaign_name">${esc(r.campaign_name)||'—'}</td>
-    <td class="mono" data-col="asset_identifier" style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${esc(r.asset_identifier)||'—'}</td>
-    <td class="mono" data-col="utm_source">${esc(r.utm_source)||'—'}</td>
-    <td class="mono" data-col="utm_content">${esc(r.utm_content)||'—'}</td>
-    <td class="mono" data-col="full_url" style="max-width:240px;word-break:break-all">${esc(r.full_url)||'—'}</td>
-    <td>
-      <span class="act edit" title="Edit" onclick="startEdit('${esc(r.utm_id)}')">✎</span>
-      <span class="minicopy" title="Copy URL" onclick="copyText(${JSON.stringify(String(r.full_url||''))})">⧉</span>
-      <span class="act del" title="Delete" onclick="delRow('${esc(r.utm_id)}')">✕</span>
-    </td></tr>`).join('')||`<tr><td colspan="8" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
-  $('rowCount').textContent=state.rows.length+' '+(state.rows.length===1?(LANG==='de'?'Zeile':'row'):(LANG==='de'?'Zeilen':'rows'));
-}
-async function save(){
-  const btn=$('saveBtn'); const o=derive();
+async function saveUtm(){
+  const btn=$('saveBtn'); const o=deriveUtm();
   if(!o.utm_source){toast(t('ct.needSource'),true);return}
-  o.created_by=whoami()||null;
+  if(!o.utm_campaign){toast(t('ct.needCampaign'),true);return}
+  o.created_by=whoami()||null; o.naming_id=currentNamingId||null;
   const ov=$('ctrOverride').value.trim();
   btn.disabled=true; const prev=btn.innerHTML; btn.innerHTML='<span class="spin"></span>'+t('saving');
   try{
@@ -859,12 +1018,42 @@ async function save(){
     toast(dup?t('ct.dup'):(t('ct.savefail')+': '+e.message),true);
   }finally{btn.disabled=false;btn.innerHTML=prev;}
 }
+/* ── Registry ── */
+function refreshFilters(){
+  const srcs=[...new Set(state.rows.map(r=>r.utm_source).filter(Boolean))].sort();
+  const funs=[...new Set(state.rows.map(r=>r.funnel_ref||r.funnel_type).filter(Boolean))].sort();
+  const chs=[...new Set(state.rows.map(r=>r.channel).filter(Boolean))].sort();
+  const fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
+  $('fChannel').innerHTML=`<option value="">${t('r.chAll')}</option>`+chs.map(s=>`<option${s===fch?' selected':''}>${esc(s)}</option>`).join('');
+  $('fSource').innerHTML=`<option value="">${t('r.srcAll')}</option>`+srcs.map(s=>`<option${s===fs?' selected':''}>${esc(s)}</option>`).join('');
+  $('fFunnel').innerHTML=`<option value="">${t('r.funAll')}</option>`+funs.map(s=>`<option${s===ff?' selected':''}>${esc(s)}</option>`).join('');
+}
+function renderRegistry(){
+  const fy=$('fYear').value.trim(), fc=$('fCampaign').value.trim().toLowerCase(), fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
+  const flt=state.rows.filter(r=>(!fy||(r.period||'').includes(fy)||(r.utm_campaign||'').includes(fy))&&(!fc||(r.utm_campaign||'').toLowerCase().includes(fc))
+    &&(!fs||r.utm_source===fs)&&(!ff||(r.funnel_ref||r.funnel_type)===ff)&&(!fch||r.channel===fch));
+  $('tbl').querySelector('tbody').innerHTML=flt.map(r=>`<tr data-id="${esc(r.utm_id)}">
+    <td class="mono counter">${esc(r.utm_id)}</td>
+    <td><span class="tag ${esc(r.platform_type)}">${esc(r.platform_type)}</span></td>
+    <td class="mono" data-col="utm_campaign">${esc(r.utm_campaign)||'—'}</td>
+    <td class="mono ident" data-col="asset_identifier">${esc(r.asset_identifier)||'—'}</td>
+    <td class="mono" data-col="utm_source">${esc(r.utm_source)||'—'}</td>
+    <td class="mono" data-col="utm_medium">${esc(r.utm_medium)||'—'}</td>
+    <td class="mono" data-col="utm_content">${esc(r.utm_content)||'—'}</td>
+    <td class="mono url" data-col="full_url" title="${esc(r.full_url)}">${esc(r.full_url)||'—'}</td>
+    <td>
+      <span class="act edit" title="Edit" onclick="startEdit('${esc(r.utm_id)}')">✎</span>
+      <span class="minicopy" title="Copy URL" onclick="copyText(${JSON.stringify(String(r.full_url||''))})">⧉</span>
+      <span class="act del" title="Delete" onclick="delRow('${esc(r.utm_id)}')">✕</span>
+    </td></tr>`).join('')||`<tr><td colspan="9" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
+  $('rowCount').textContent=state.rows.length+' '+(state.rows.length===1?(LANG==='de'?'Zeile':'row'):(LANG==='de'?'Zeilen':'rows'));
+}
 async function delRow(id){
   if(!confirm(t('cf.del',{id})))return;
   try{await sb(`utm_registry?utm_id=eq.${encodeURIComponent(id)}`,{method:'DELETE'});await loadAll();toast(t('ct.deleted')+': '+id)}
   catch(e){toast(t('ct.delfail')+': '+e.message,true)}
 }
-const EDITABLE=['campaign_name','asset_identifier','utm_source','utm_content','full_url'];
+const EDITABLE=['utm_campaign','asset_identifier','utm_source','utm_medium','utm_content','full_url'];
 let editing=null;
 function startEdit(id){
   if(editing&&editing!==id)cancelEdit();
@@ -873,18 +1062,18 @@ function startEdit(id){
   tr.querySelectorAll('td[data-col]').forEach(td=>{if(EDITABLE.includes(td.dataset.col)){td.contentEditable='true';td.classList.add('editing')}});
   tr.querySelector('td:last-child').innerHTML=`<span class="act ok" title="Save" onclick="commitEdit('${esc(id)}')">✓</span>
     <span class="act del" title="Cancel" onclick="cancelEdit()">↩</span>`;
-  const c=tr.querySelector('td[data-col="campaign_name"]');if(c)c.focus();
+  const c=tr.querySelector('td[data-col="utm_campaign"]');if(c)c.focus();
 }
-function cancelEdit(){editing=null;renderTable()}
+function cancelEdit(){editing=null;renderRegistry()}
 async function commitEdit(id){
   const tr=$('tbl').querySelector(`tr[data-id="${CSS.escape(id)}"]`);if(!tr){editing=null;return}
   const patch={};tr.querySelectorAll('td[data-col]').forEach(td=>{if(EDITABLE.includes(td.dataset.col)){let v=td.textContent.trim();patch[td.dataset.col]=v==='—'?'':v}});
   try{await sb(`utm_registry?utm_id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify(patch)});editing=null;await loadAll();toast(t('ct.updated')+': '+id)}
   catch(e){toast(t('ct.updfail')+': '+e.message,true)}
 }
-const COLS=['utm_id','platform_type','channel','function_tag','funnel_type','topic_slug','period','variant','campaign_name',
+const COLS=['utm_id','platform_type','channel','function_tag','funnel_type','funnel_ref','topic_slug','period','variant','campaign_name',
   'adset_or_automation','asset_identifier','utm_source','utm_medium','utm_campaign','utm_content','utm_term','audience_suffix',
-  'target_url','anchor','full_url','notes','created_by','created_at'];
+  'target_url','anchor','full_url','notes','naming_id','created_by','created_at'];
 function exportCSV(){
   if(!state.rows.length){toast(t('ct.noexport'),true);return}
   const q=v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`;
@@ -908,42 +1097,55 @@ function parseCsvLine(line){const out=[];let cur='',q=false;
     else{if(c==='"')q=true;else if(c===','){out.push(cur);cur=''}else cur+=c}}
   out.push(cur);return out;}
 
-/* ─────────────── Modul 2 · Funnels ─────────────── */
-function renderFunnels(){
-  const groups={};
-  state.funnels.forEach(f=>{const g=f.product||'—';(groups[g]=groups[g]||[]).push(f)});
+/* ═══════════════ TAB 3 · FUNNELS & CONVERSIONS ═══════════════ */
+function renderFunnelList(){
+  if(!$('funnelTbl'))return;
+  const showArch=$('showArch').checked;
   const order=FUNNEL_GROUPS.map(x=>x[0]).filter(Boolean).concat('—');
-  const glabel=k=>{const m=FUNNEL_GROUPS.find(x=>x[0]===k);return m?m[1]:(k==='—'?(LANG==='de'?'ohne Gruppe':'ungrouped'):k)};
-  let html='';
-  order.forEach(g=>{if(!groups[g])return;
-    html+=`<div style="width:100%;font-size:11px;color:#8e94c0;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 0">${esc(glabel(g))}</div>`;
-    html+=groups[g].map(f=>{
-      const tb=f.traffic==='paid'?'Ads':f.traffic==='organic'?'Org':f.traffic==='both'?'Ads+Org':'';
-      return `<button class="fchip${state.editF&&state.editF.id===f.id?' on':''}" onclick="selectFunnel(${f.id})">${esc(f.name)} <span class="n">${(f.steps||[]).length}</span>${tb?` <span class="n">${tb}</span>`:''}</button>`;
-    }).join('');
-  });
-  html+=`<div style="width:100%;margin-top:10px"><button class="fchip${state.editF&&state.editF.id==null?' on':''}" onclick="newFunnel()">${t('fn.new')}</button></div>`;
-  $('fchips').innerHTML=html;
-  renderFunnelDetail();
+  const list=state.funnels.filter(f=>showArch||f.status!=='archived')
+    .slice().sort((a,b)=>{const ia=order.indexOf(a.product||'—'),ib=order.indexOf(b.product||'—');
+      return ia!==ib?ia-ib:(a.name||'').localeCompare(b.name||'')});
+  const glabel=k=>{const m=FUNNEL_GROUPS.find(x=>x[0]===k);return m?m[1].split(' · ')[0]:(k||'—')};
+  const tb=f=>f.traffic==='paid'?'Ads':f.traffic==='organic'?'Org':f.traffic==='both'?'Ads+Org':'—';
+  $('funnelTbl').querySelector('tbody').innerHTML=list.map(f=>`<tr${f.status==='archived'?' class="archrow"':''}>
+    <td><span class="fname" onclick="selectFunnel(${f.id})">${esc(f.name)}</span></td>
+    <td>${esc(glabel(f.product))}</td>
+    <td>${tb(f)}</td>
+    <td>${(f.steps||[]).length}</td>
+    <td><span class="st ${esc(f.status||'draft')}">${esc(f.status||'draft')}</span></td>
+    <td>
+      <button class="miniact" onclick="selectFunnel(${f.id})" title="${t('fc.open')}">✎</button>
+      ${f.status==='archived'
+        ?`<button class="miniact" onclick="setFunnelStatus(${f.id},'draft')" title="${t('fc.unarchive')}">↑</button>`
+        :`<button class="miniact" onclick="setFunnelStatus(${f.id},'archived')" title="${t('fc.archive')}">⤓</button>`}
+    </td></tr>`).join('')||`<tr><td colspan="6" style="color:#5b6090;padding:20px">${t('fn.emptylist')}</td></tr>`;
+  const active=state.funnels.filter(f=>f.status!=='archived').length;
+  $('fnCount').textContent=active+(state.funnels.length>active?' / '+state.funnels.length:'');
+}
+async function setFunnelStatus(id,status){
+  try{await sb(`funnels?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status})});
+    if(state.editF&&state.editF.id===id)state.editF.status=status;
+    await loadAll();toast(status==='archived'?t('fn.archived'):t('fn.reactivated'))}
+  catch(e){toast(t('ct.updfail')+': '+e.message,true)}
 }
 function selectFunnel(id){
   const f=state.funnels.find(x=>x.id===id);if(!f)return;
   state.editF=JSON.parse(JSON.stringify(f));
   if(!Array.isArray(state.editF.steps))state.editF.steps=[];
-  renderFunnels();
+  renderFunnelDetail();$('fnDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function newFunnel(){
   state.editF={id:null,slug:'',name:'',purpose:'',description:'',status:'draft',product:'',traffic:'',steps:[]};
-  renderFunnels();
+  renderFunnelDetail();$('fnDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderFunnelDetail(){
-  const f=state.editF;
-  const card=$('fnDetail');
+  const f=state.editF; const card=$('fnDetail'); if(!card)return;
   if(!f){card.style.display='none';return}
   card.style.display='';
   $('fnName').value=f.name||'';$('fnStatus').value=f.status||'draft';$('fnProduct').value=f.product||'';
   $('fnPurpose').value=f.purpose||'';$('fnDesc').value=f.description||'';$('fnTraffic').value=f.traffic||'';
   $('fnStatusPill').textContent=(f.id==null?(LANG==='de'?'neu':'new'):('#'+f.id))+(f.slug?' · '+f.slug:'');
+  $('fnArchive').style.display=(f.id!=null&&f.status!=='archived')?'':'none';
   const convOpts=k=>`<option value="">${t('fn.step.none')}</option>`+state.convs.map(c=>`<option value="${esc(c.key)}"${c.key===k?' selected':''}>${esc(c.key)}</option>`).join('');
   const utmCount=url=>{if(!url)return 0;const n=normUrl(url);return state.rows.filter(r=>normUrl(r.target_url)===n).length};
   $('fnSteps').innerHTML=(f.steps||[]).map((s,i)=>{
@@ -979,8 +1181,6 @@ function renderFunnelDetail(){
     </div>${i<f.steps.length-1?'<div class="connector">↓</div>':''}`;
   }).join('')||`<p class="hint" style="margin:8px 0">${t('fn.nosteps')}</p>`;
 }
-// Vor jeder Struktur-Änderung erst die aktuell getippten Feld-Werte in den State sichern,
-// damit Hinzufügen/Löschen/Verschieben eines Schritts die anderen Schritte NICHT verwirft.
 function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:'',url:'',conversion_key:'',ac_tag:'',note:''});renderFunnelDetail()}
 function delStep(i){if(!state.editF)return;syncFunnelInputs();state.editF.steps.splice(i,1);renderFunnelDetail()}
 function moveStep(i,d){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps;const j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];renderFunnelDetail()}
@@ -1007,21 +1207,21 @@ async function saveFunnel(){
     }
     await loadAll();
     const saved=state.funnels.find(x=>x.id===state.editF.id);
-    if(saved){state.editF=JSON.parse(JSON.stringify(saved));renderFunnels()}
+    if(saved){state.editF=JSON.parse(JSON.stringify(saved));renderFunnelDetail()}
     toast(t('fn.saved'));
   }catch(e){toast(t('ct.savefail')+': '+e.message,true)}
 }
 async function deleteFunnel(){
   const f=state.editF;if(!f)return;
-  if(f.id==null){state.editF=null;renderFunnels();return}
+  if(f.id==null){state.editF=null;renderFunnelDetail();return}
   if(!confirm(t('fn.confirmdel',{name:f.name})))return;
   try{await sb(`funnels?id=eq.${f.id}`,{method:'DELETE'});state.editF=null;await loadAll();toast(t('fn.deleted'))}
   catch(e){toast(t('ct.delfail')+': '+e.message,true)}
 }
-
-/* ─────────────── Modul 3 · Conversions ─────────────── */
+/* ── Conversions ── */
 function stChip(s){return `<span class="st ${s==='done'?'done':s==='open'?'open':'none'}">${s==='done'?'✓':s==='open'?(LANG==='de'?'offen':'open'):'—'}</span>`}
 function renderConversions(){
+  if(!$('cvTbl'))return;
   $('cvTbl').querySelector('tbody').innerHTML=state.convs.map(c=>`<tr>
     <td class="mono">${esc(c.key)}</td>
     <td>${esc(c.name)}<div class="hint">${esc(c.path||'')}</div></td>
@@ -1093,30 +1293,34 @@ function toast(m,err){const el=$('toast');el.textContent=m;el.classList.toggle('
 function setConn(s){connState=s;const d=$('connDot'),l=$('connLabel');if(!d)return;
   d.className='dot'+(s==='ok'?' ok':s==='err'?' err':'');l.textContent=t('conn.'+s);}
 function toggleHowto(show){$('howtoOverlay').classList.toggle('hidden',!show)}
-function setMode(t2){mode=t2;
-  document.querySelectorAll('#ptype button').forEach(b=>b.classList.toggle('on',b.dataset.t===t2));
-  document.querySelectorAll('.paid-only').forEach(e=>e.style.display=t2==='paid'?'':'none');
-  document.querySelectorAll('.email-only').forEach(e=>e.style.display=t2==='email'?'':'none');
-  document.querySelectorAll('.organic-only').forEach(e=>e.style.display=t2==='organic'?'':'none');
-  render();}
 function switchView(v){
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='view-'+v));
 }
 
 /* ─────────────── Init ─────────────── */
+fillSrc('uSrc');fillMed('uMed');
 document.querySelectorAll('.langsw').forEach(sw=>sw.querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.l)));
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
-document.querySelectorAll('#ptype button').forEach(b=>b.onclick=()=>setMode(b.dataset.t));
-document.querySelectorAll('#view-utm .card input,#view-utm .card select').forEach(el=>el.addEventListener('input',render));
-$('ctrOverride').addEventListener('input',render);
-['fYear','fCampaign','fSource','fFunnel','fChannel'].forEach(id=>$(id).addEventListener('input',renderTable));
+document.querySelectorAll('#nptype button').forEach(b=>b.onclick=()=>setNameMode(b.dataset.t));
+// Naming-Formular live
+document.querySelectorAll('#view-naming .card input,#view-naming .card select').forEach(el=>el.addEventListener('input',renderNamingOut));
+// UTM-Formular live
+$('uNaming').addEventListener('change',onNamingPick);
+$('uSrc').addEventListener('change',onSrcChange);
+['uCampaign','uContent','uMed','uTerm','uFunnelRef','uRef','uUrl','uAnchor','uNotes'].forEach(id=>$(id).addEventListener('input',renderUtmOut));
+$('ctrOverride').addEventListener('input',renderUtmOut);
+['fYear','fCampaign','fSource','fFunnel','fChannel'].forEach(id=>$(id).addEventListener('input',renderRegistry));
+$('showArch').addEventListener('change',renderFunnelList);
 $('who').value=localStorage.getItem('tn_cockpit_who')||'';
 $('who').addEventListener('input',()=>localStorage.setItem('tn_cockpit_who',$('who').value));
-$('saveBtn').onclick=save;
+$('nSave').onclick=saveNaming;
+$('nCancel').onclick=()=>{resetNaming();renderNamingOut()};
+$('saveBtn').onclick=saveUtm;
 $('imp').onchange=e=>{if(e.target.files[0])importCSV(e.target.files[0]);e.target.value=''};
 $('fnSave').onclick=saveFunnel;
 $('fnDelete').onclick=deleteFunnel;
+$('fnArchive').onclick=()=>{if(state.editF&&state.editF.id!=null)setFunnelStatus(state.editF.id,'archived')};
 $('cvSave').onclick=saveConv;
 $('cvCancel').onclick=resetConvForm;
 $('logoutBtn').onclick=()=>{clearSession();showLogin()};
@@ -1129,7 +1333,7 @@ async function doLogin(){
   catch(e){$('loginErr').textContent=(LANG==='de'?'Anmeldung fehlgeschlagen: ':'Login failed: ')+e.message}
   finally{b.disabled=false}
 }
-setMode('paid');
+setNameMode('paid');
 applyLang();
 (async()=>{session=loadSession();if(session&&await ensureToken()){onAuthed()}else{clearSession();showLogin()}})();
 </script>
