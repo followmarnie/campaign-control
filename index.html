@@ -142,6 +142,20 @@
   .cmlink.on{background:rgba(74,222,128,.15);color:#7fe6a4}
   .cmlink.off{background:rgba(255,132,106,.15);color:#ffb39f}
   .cmempty{color:#5b6090;font-size:12px;padding:2px 0}
+  /* Prabas Tracking-Felder unter dem Funnel */
+  .praba{margin-top:22px;border-top:1px solid var(--tn-border);padding-top:16px}
+  .praba>.praba-h{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tn-teal);font-weight:700;margin-bottom:4px}
+  .praba>.praba-sub{font-size:12px;color:#8e94c0;margin-bottom:14px}
+  .pcard{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:14px;margin-bottom:12px}
+  .pcard-h{font-size:13px;color:#fff;font-weight:600;margin-bottom:2px}
+  .pcard-h .mono{font-family:"SF Mono",Menlo,Consolas,monospace;color:#8e94c0;font-size:11px;font-weight:400}
+  .pcard .prow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-top:8px}
+  @media(max-width:640px){.pcard .prow{grid-template-columns:1fr}}
+  .pcard label{margin:0 0 3px}
+  .pcard input{padding:7px 9px;font-size:13px}
+  .pchk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#b9bee6;white-space:nowrap;padding-bottom:8px}
+  .pchk input{width:auto}
+  .praba-none{color:#7e84ad;font-size:12.5px;padding:6px 0}
   .miniact{background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#b9bee6;border-radius:7px;cursor:pointer;font-size:12px;padding:4px 9px;font-family:inherit;width:auto}
   .miniact:hover{color:#fff;border-color:var(--tn-primary)}
   .chk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#b9bee6;cursor:pointer}
@@ -533,6 +547,7 @@
         <button class="btn sm danger" id="fnDelete" data-i18n="fn.delete">Funnel löschen</button>
         <button class="btn sm" id="fnSave" data-i18n="fn.save">Funnel speichern</button>
       </div>
+      <div id="fnPraba"></div>
     </div>
     </div><!-- /fcFunnels -->
 
@@ -563,16 +578,16 @@
       <div class="row3">
         <div><label>GA4-Event</label><input id="cvGa4"></div>
         <div><label data-i18n="cv.trigger">Trigger (GA4)</label><input id="cvTrigger" placeholder="PV - /danke-…"></div>
-        <div><label data-i18n="cv.status">GA4-Status</label><select id="cvGa4St"><option value="done">done</option><option value="open">open</option><option value="-">—</option></select></div>
+        <div><label data-i18n="cv.impl">Implementiert?</label><label class="chk" style="padding-top:8px"><input type="checkbox" id="cvGa4St"> <span data-i18n="cv.implga4">GA4 gesetzt</span></label></div>
       </div>
       <div class="row3">
         <div><label>Ads Conversion-ID</label><input id="cvAdsId" placeholder="16719590969"></div>
         <div><label>Ads Label</label><input id="cvAdsLabel"></div>
-        <div><label data-i18n="cv.status">Ads-Status</label><select id="cvAdsSt"><option value="done">done</option><option value="open">open</option><option value="-">—</option></select></div>
+        <div><label data-i18n="cv.impl">Implementiert?</label><label class="chk" style="padding-top:8px"><input type="checkbox" id="cvAdsSt"> <span data-i18n="cv.implads">Google Ads gesetzt</span></label></div>
       </div>
       <div class="row3">
         <div><label>Meta-Event</label><input id="cvMeta"></div>
-        <div><label data-i18n="cv.status">Meta-Status</label><select id="cvMetaSt"><option value="done">done</option><option value="open">open</option><option value="-">—</option></select></div>
+        <div><label data-i18n="cv.impl">Implementiert?</label><label class="chk" style="padding-top:8px"><input type="checkbox" id="cvMetaSt"> <span data-i18n="cv.implfb">Meta gesetzt</span></label></div>
         <div></div>
       </div>
       <label data-i18n="cv.notes">Notizen</label>
@@ -656,6 +671,8 @@ const T={
   'fn.emptylist':'Noch keine Funnels — „+ Neuer Funnel".',
   'cv.title':'Conversions · Event-Katalog','cv.name':'Name','cv.notes':'Notizen','cv.new':'Neue Conversion','cv.edit':'Conversion bearbeiten',
   'cv.keyhint':'(Slug, fix nach Anlage)','cv.value':'Wert (AED)','cv.purpose':'Zweck','cv.path':'Pfad (LP → … → Danke)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
+  'cv.impl':'Implementiert?','cv.implga4':'GA4 gesetzt','cv.implads':'Google Ads gesetzt','cv.implfb':'Meta gesetzt',
+  'fn.prabahead':'Prabas Tracking-Felder','fn.prabasub':'Für die in den Schritten verknüpften Conversions. Änderungen gelten im ganzen Katalog (Common Conversions).','fn.prabanone':'Noch keine Conversion an einem Schritt verknüpft — oben bei einem Schritt eine Conversion wählen.','fn.prabasave':'Speichern',
   'cv.cancel':'Abbrechen','cv.save':'Speichern','cv.saved':'Conversion gespeichert','cv.deleted':'Conversion gelöscht',
   'cv.needkey':'Key + Name nötig','cv.confirmdel':'Conversion „{key}" wirklich löschen?','cv.empty':'Noch keine Conversions.',
   'conn.load':'lade…','conn.ok':'DB verbunden','conn.err':'DB-Fehler',
@@ -711,6 +728,8 @@ const T={
   'fn.emptylist':'No funnels yet — “+ New funnel”.',
   'cv.title':'Conversions · Event catalog','cv.name':'Name','cv.notes':'Notes','cv.new':'New conversion','cv.edit':'Edit conversion',
   'cv.keyhint':'(slug, fixed after creation)','cv.value':'Value (AED)','cv.purpose':'Purpose','cv.path':'Path (LP → … → thank-you)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
+  'cv.impl':'Implemented?','cv.implga4':'GA4 set','cv.implads':'Google Ads set','cv.implfb':'Meta set',
+  'fn.prabahead':'Praba’s tracking fields','fn.prabasub':'For the conversions linked at the steps. Changes apply across the whole catalog (Common Conversions).','fn.prabanone':'No conversion linked at a step yet — pick one at a step above.','fn.prabasave':'Save',
   'cv.cancel':'Cancel','cv.save':'Save','cv.saved':'Conversion saved','cv.deleted':'Conversion deleted',
   'cv.needkey':'Key + name required','cv.confirmdel':'Really delete conversion “{key}”?','cv.empty':'No conversions yet.',
   'conn.load':'connecting…','conn.ok':'DB connected','conn.err':'DB error',
@@ -1264,6 +1283,34 @@ function renderFunnelDetail(){
       </div>`:''}
     </div>${i<f.steps.length-1?'<div class="connector">↓</div>':''}`;
   }).join('')||`<p class="hint" style="margin:8px 0">${t('fn.nosteps')}</p>`;
+  renderFunnelPraba(f);
+}
+// Prabas Tracking-Felder für die im Funnel verwendeten Conversions (editierbar; schreibt in den EINEN Katalog).
+function renderFunnelPraba(f){
+  const box=$('fnPraba'); if(!box)return;
+  if(!f){box.innerHTML='';return}
+  const keys=[...new Set((f.steps||[]).map(s=>s.conversion_key).filter(Boolean))];
+  const convs=keys.map(k=>state.convs.find(c=>c.key===k)).filter(Boolean);
+  let h=`<div class="praba"><div class="praba-h">${t('fn.prabahead')}</div><div class="praba-sub">${t('fn.prabasub')}</div>`;
+  if(!convs.length){box.innerHTML=h+`<div class="praba-none">${t('fn.prabanone')}</div></div>`;return}
+  const inp=(c,fld,label,ph)=>`<div><label>${label}</label><input data-cf="${fld}" value="${esc(c[fld]||'')}"${ph?` placeholder="${ph}"`:''}></div>`;
+  const chk=(c,fld,label)=>`<label class="pchk"><input type="checkbox" data-cf="${fld}"${c[fld]==='done'?' checked':''}> ${label}</label>`;
+  h+=convs.map(c=>`<div class="pcard" data-key="${esc(c.key)}">
+    <div class="pcard-h">${esc(c.name)} <span class="mono">${esc(c.key)}</span></div>
+    <div class="prow">${inp(c,'ga4_event','GA4-Event')}${inp(c,'ga4_trigger',t('cv.trigger'),'PV - /danke-…')}${chk(c,'ga4_status',t('cv.implga4'))}</div>
+    <div class="prow">${inp(c,'ads_conversion_id','Ads Conversion-ID','16719590969')}${inp(c,'ads_label','Ads Label')}${chk(c,'ads_status',t('cv.implads'))}</div>
+    <div class="prow">${inp(c,'ads_value',t('cv.value'),'60 / dynamic')}${inp(c,'meta_event','Meta-Event')}${chk(c,'meta_status',t('cv.implfb'))}</div>
+    <div class="prow" style="grid-template-columns:1fr auto"><div><label>${t('cv.notes')}</label><input data-cf="notes" value="${esc(c.notes||'')}"></div>
+      <button class="btn sm" onclick="savePrabaConv('${esc(c.key)}')">${t('fn.prabasave')}</button></div>
+  </div>`).join('');
+  box.innerHTML=h+`</div>`;
+}
+async function savePrabaConv(key){
+  const card=document.querySelector(`#fnPraba .pcard[data-key="${CSS.escape(key)}"]`); if(!card)return;
+  const patch={};
+  card.querySelectorAll('[data-cf]').forEach(el=>{patch[el.dataset.cf]=el.type==='checkbox'?(el.checked?'done':'open'):el.value.trim()});
+  try{await sb(`conversions?key=eq.${encodeURIComponent(key)}`,{method:'PATCH',body:JSON.stringify(patch)});await loadAll();toast(t('cv.saved'))}
+  catch(e){toast(t('ct.savefail')+': '+e.message,true)}
 }
 function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:'',url:'',conversion_key:'',ac_tag:'',note:''});renderFunnelDetail()}
 function delStep(i){if(!state.editF)return;syncFunnelInputs();state.editF.steps.splice(i,1);renderFunnelDetail()}
@@ -1326,9 +1373,9 @@ function editConv(id){
   $('cvKey').value=c.key;$('cvKey').disabled=true;
   $('cvName').value=c.name||'';$('cvValue').value=c.ads_value||'';
   $('cvPurpose').value=c.purpose||'';$('cvPath').value=c.path||'';
-  $('cvGa4').value=c.ga4_event||'';$('cvTrigger').value=c.ga4_trigger||'';$('cvGa4St').value=c.ga4_status||'open';
-  $('cvAdsId').value=c.ads_conversion_id||'';$('cvAdsLabel').value=c.ads_label||'';$('cvAdsSt').value=c.ads_status||'open';
-  $('cvMeta').value=c.meta_event||'';$('cvMetaSt').value=c.meta_status||'open';
+  $('cvGa4').value=c.ga4_event||'';$('cvTrigger').value=c.ga4_trigger||'';$('cvGa4St').checked=(c.ga4_status==='done');
+  $('cvAdsId').value=c.ads_conversion_id||'';$('cvAdsLabel').value=c.ads_label||'';$('cvAdsSt').checked=(c.ads_status==='done');
+  $('cvMeta').value=c.meta_event||'';$('cvMetaSt').checked=(c.meta_status==='done');
   $('cvNotes').value=c.notes||'';
   $('cvCancel').style.display='';
   $('cvEditCard').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -1338,17 +1385,17 @@ function resetConvForm(){
   $('cvEditTitle').textContent=t('cv.new');
   $('cvKey').value='';$('cvKey').disabled=false;
   ['cvName','cvValue','cvPurpose','cvPath','cvGa4','cvTrigger','cvAdsId','cvAdsLabel','cvMeta','cvNotes'].forEach(id=>$(id).value='');
-  $('cvGa4St').value='open';$('cvAdsSt').value='open';$('cvMetaSt').value='open';
+  $('cvGa4St').checked=false;$('cvAdsSt').checked=false;$('cvMetaSt').checked=false;
   $('cvCancel').style.display='none';
 }
 async function saveConv(){
   const key=snake($('cvKey').value.trim()), name=$('cvName').value.trim();
   if((!key&&state.editCvId==null)||!name){toast(t('cv.needkey'),true);return}
   const body={name,purpose:$('cvPurpose').value.trim(),path:$('cvPath').value.trim(),
-    ga4_event:$('cvGa4').value.trim(),ga4_trigger:$('cvTrigger').value.trim(),ga4_status:$('cvGa4St').value,
+    ga4_event:$('cvGa4').value.trim(),ga4_trigger:$('cvTrigger').value.trim(),ga4_status:$('cvGa4St').checked?'done':'open',
     ads_conversion_id:$('cvAdsId').value.trim(),ads_label:$('cvAdsLabel').value.trim(),
-    ads_value:$('cvValue').value.trim(),ads_status:$('cvAdsSt').value,
-    meta_event:$('cvMeta').value.trim(),meta_status:$('cvMetaSt').value,
+    ads_value:$('cvValue').value.trim(),ads_status:$('cvAdsSt').checked?'done':'open',
+    meta_event:$('cvMeta').value.trim(),meta_status:$('cvMetaSt').checked?'done':'open',
     notes:$('cvNotes').value.trim(),created_by:whoami()||null};
   try{
     if(state.editCvId==null){body.key=key;await sb('conversions',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)})}
