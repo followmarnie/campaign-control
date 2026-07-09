@@ -185,6 +185,29 @@
   .ttype.page{background:var(--tn-surf-3);color:#aab0d6}
   .ttype.call{background:rgba(255,132,106,.18);color:#ffb39f}
   .ttype.purchase{background:rgba(255,60,141,.18);color:#ff9bbf}
+  /* Ausklappbare Step-Übersicht */
+  .steps-hd{display:flex;align-items:center;gap:8px;margin-top:16px}
+  .steps-hd label{margin:0}
+  .btn.xs{padding:4px 9px;font-size:11px;font-weight:400}
+  .step.collapsed{padding:0}
+  .step.collapsed .shead{margin-bottom:0}
+  .step.collapsed .sbody{display:none}
+  .step .shead{cursor:pointer;padding:2px}
+  .step.collapsed .shead{padding:9px 12px}
+  .step .scaret{color:#8e94c0;font-size:11px;width:12px;flex:none;text-align:center}
+  .step .snum{font-size:10px;font-weight:700;color:#9639f3;background:rgba(150,57,243,.14);border-radius:6px;padding:2px 7px;letter-spacing:.03em;white-space:nowrap;flex:none}
+  .step .ssum{flex:1;min-width:60px;color:#cfd4f0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .step .ssum-empty{color:#6b7099;font-style:italic}
+  .step .schips2{display:flex;gap:5px;align-items:center;flex:none}
+  .step .pill.conv{background:rgba(23,248,224,.1);border-color:rgba(23,248,224,.28);color:#7df3e6;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .step .strack{display:inline-flex;gap:3px}
+  .step .mini{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:5px;font-size:9px;font-weight:800}
+  .step .mini.ok{background:rgba(74,222,128,.16);color:#7fe6a4}
+  .step .mini.wait{background:rgba(255,132,106,.16);color:#ffb39f}
+  .step .mini.na{background:var(--tn-surf-3);color:#6b7099}
+  .step .sbody{padding:0 12px 12px}
+  .step .stype-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .step .stype-row label{margin:0;font-size:11px;color:#8e94c0}
   /* Overlay */
   .overlay{position:fixed;inset:0;background:rgba(3,3,14,.82);backdrop-filter:blur(6px);z-index:50;
            display:flex;align-items:center;justify-content:center;padding:20px}
@@ -538,7 +561,12 @@
       </div>
       <label data-i18n="fn.desc">Beschreibung <span class="hint">(opt.)</span></label>
       <textarea id="fnDesc" rows="2"></textarea>
-      <label style="margin-top:16px" data-i18n="fn.steps">Schritte (der Weg)</label>
+      <div class="steps-hd">
+        <label data-i18n="fn.steps">Schritte (der Weg)</label>
+        <span style="flex:1"></span>
+        <button class="btn xs ghost" onclick="expandAll()" data-i18n="fn.expandall">Alle ausklappen</button>
+        <button class="btn xs ghost" onclick="collapseAll()" data-i18n="fn.collapseall">Alle einklappen</button>
+      </div>
       <div id="fnSteps"></div>
       <div class="btns">
         <button class="btn sm ghost" onclick="addStep()" data-i18n="fn.addstep">+ Schritt</button>
@@ -668,6 +696,7 @@ const T={
   'fn.new':'+ Neuer Funnel','fn.saved':'Funnel gespeichert','fn.deleted':'Funnel gelöscht','fn.archived':'Funnel archiviert','fn.reactivated':'Funnel reaktiviert',
   'fn.confirmdel':'Funnel „{name}" wirklich löschen?','fn.needname':'Bitte Namen eingeben','fn.nosteps':'Noch keine Schritte — „+ Schritt" klicken.',
   'fn.step.title':'Titel','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC-Tag (opt.)','fn.step.note':'Notiz (opt.)','fn.step.none':'— keine —',
+  'fn.stepn':'Step {n}','fn.step.empty':'(leer)','fn.step.type':'Typ','fn.expandall':'Alle ausklappen','fn.collapseall':'Alle einklappen',
   'fn.emptylist':'Noch keine Funnels — „+ Neuer Funnel".',
   'cv.title':'Conversions · Event-Katalog','cv.name':'Name','cv.notes':'Notizen','cv.new':'Neue Conversion','cv.edit':'Conversion bearbeiten',
   'cv.keyhint':'(Slug, fix nach Anlage)','cv.value':'Wert (AED)','cv.purpose':'Zweck','cv.path':'Pfad (LP → … → Danke)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
@@ -725,6 +754,7 @@ const T={
   'fn.new':'+ New funnel','fn.saved':'Funnel saved','fn.deleted':'Funnel deleted','fn.archived':'Funnel archived','fn.reactivated':'Funnel reactivated',
   'fn.confirmdel':'Really delete funnel “{name}”?','fn.needname':'Please enter a name','fn.nosteps':'No steps yet — click “+ Step”.',
   'fn.step.title':'Title','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC tag (opt.)','fn.step.note':'Note (opt.)','fn.step.none':'— none —',
+  'fn.stepn':'Step {n}','fn.step.empty':'(empty)','fn.step.type':'Type','fn.expandall':'Expand all','fn.collapseall':'Collapse all',
   'fn.emptylist':'No funnels yet — “+ New funnel”.',
   'cv.title':'Conversions · Event catalog','cv.name':'Name','cv.notes':'Notes','cv.new':'New conversion','cv.edit':'Edit conversion',
   'cv.keyhint':'(slug, fixed after creation)','cv.value':'Value (AED)','cv.purpose':'Purpose','cv.path':'Path (LP → … → thank-you)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
@@ -834,7 +864,7 @@ function fillMed(id){$(id).innerHTML=MEDIUM_OPTS.map(m=>`<option>${m}</option>`)
 
 let nameMode='paid';
 let currentNamingId=null; // im UTM-Builder gewählter Naming-Eintrag
-const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null,fcTab:'all'};
+const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null,fcTab:'all',stepOpen:new Set()};
 // Ist ein Naming-Eintrag schon mit einer UTM-Zeile verknüpft? (= „Übertragen"-Häkchen)
 function namingLinked(id){return state.rows.some(r=>r.naming_id===id)}
 function whoami(){return ($('who').value||'').trim()}
@@ -1235,10 +1265,12 @@ function selectFunnel(id){
   const f=state.funnels.find(x=>x.id===id);if(!f)return;
   state.editF=JSON.parse(JSON.stringify(f));
   if(!Array.isArray(state.editF.steps))state.editF.steps=[];
+  state.stepOpen=new Set();
   renderFunnelDetail();$('fnDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function newFunnel(){
   state.editF={id:null,slug:'',name:'',purpose:'',description:'',status:'draft',product:'',traffic:'',steps:[]};
+  state.stepOpen=new Set();
   renderFunnelDetail();$('fnDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderFunnelDetail(){
@@ -1251,36 +1283,45 @@ function renderFunnelDetail(){
   $('fnArchive').style.display=(f.id!=null&&f.status!=='archived')?'':'none';
   const convOpts=k=>`<option value="">${t('fn.step.none')}</option>`+state.convs.map(c=>`<option value="${esc(c.key)}"${c.key===k?' selected':''}>${esc(c.key)}</option>`).join('');
   const utmCount=url=>{if(!url)return 0;const n=normUrl(url);return state.rows.filter(r=>normUrl(r.target_url)===n).length};
+  const mini=(lab,st)=>`<span class="mini ${st==='done'?'ok':st==='open'?'wait':'na'}" title="${lab}: ${esc(st||'—')}">${lab}</span>`;
   $('fnSteps').innerHTML=(f.steps||[]).map((s,i)=>{
     const cv=state.convs.find(c=>c.key===s.conversion_key);
-    const stDot=cv?`<span class="st ${cv.ga4_status==='done'?'done':cv.ga4_status==='open'?'open':'none'}" title="GA4 ${esc(cv.ga4_status)}">${cv.ga4_status==='done'?'✓ GA4':'GA4 '+esc(cv.ga4_status)}</span>`:'';
+    const isOpen=state.stepOpen.has(i);
     const uc=utmCount(s.url);
     const ucChip=s.url?`<span class="pill" title="Registry-Links auf diese URL">${uc} UTM</span>`:'';
-    return `<div class="step" data-idx="${i}">
-      <div class="shead">
+    const track=cv?`<span class="strack">${mini('G',cv.ga4_status)}${mini('A',cv.ads_status)}${mini('M',cv.meta_status)}</span>`:'';
+    const convChip=cv?`<span class="pill conv" title="Conversion: ${esc(cv.key)}">${esc(cv.key)}</span>`:'';
+    const summ=(s.title||s.url)?esc(s.title||s.url):`<span class="ssum-empty">${t('fn.step.empty')}</span>`;
+    return `<div class="step ${isOpen?'open':'collapsed'}" data-idx="${i}">
+      <div class="shead" onclick="toggleStep(${i},event)">
+        <span class="scaret">${isOpen?'▾':'▸'}</span>
+        <span class="snum">${t('fn.stepn',{n:i+1})}</span>
         <span class="ttype ${esc(s.type||'page')}">${esc(s.type||'page')}</span>
-        <select data-f="type">${STEP_TYPES.map(x=>`<option${x===(s.type||'page')?' selected':''}>${x}</option>`).join('')}</select>
-        <div class="schips">${stDot}${ucChip}
-          <div class="sctrl">
-            <button onclick="moveStep(${i},-1)" title="up">↑</button>
-            <button onclick="moveStep(${i},1)" title="down">↓</button>
-            <button onclick="delStep(${i})" title="remove" style="color:var(--tn-pink)">✕</button>
-          </div>
+        <span class="ssum">${summ}</span>
+        <span class="schips2">${convChip}${track}${ucChip}</span>
+        <span class="sctrl" onclick="event.stopPropagation()">
+          <button onclick="moveStep(${i},-1)" title="up">↑</button>
+          <button onclick="moveStep(${i},1)" title="down">↓</button>
+          <button onclick="delStep(${i})" title="remove" style="color:var(--tn-pink)">✕</button>
+        </span>
+      </div>
+      <div class="sbody">
+        <div class="stype-row"><label>${t('fn.step.type')}</label>
+          <select data-f="type">${STEP_TYPES.map(x=>`<option${x===(s.type||'page')?' selected':''}>${x}</option>`).join('')}</select></div>
+        <div class="sgrid">
+          <input data-f="title" placeholder="${t('fn.step.title')}" value="${esc(s.title)}">
+          <input data-f="url" placeholder="${t('fn.step.url')}" value="${esc(s.url)}">
+          <select data-f="conversion_key">${convOpts(s.conversion_key)}</select>
+          <input data-f="ac_tag" placeholder="${t('fn.step.actag')}" value="${esc(s.ac_tag)}">
+          <input data-f="note" placeholder="${t('fn.step.note')}" value="${esc(s.note)}" style="grid-column:1/-1">
         </div>
+        ${cv?`<div class="cvfan">
+          <div class="cvfan-h">→ ${t('fn.tracking')}: <b>${esc(cv.name)}</b></div>
+          <div class="cvfan-row"><span>GA4</span><span class="mono">${esc(cv.ga4_event)||'—'}</span>${stChip(cv.ga4_status)}</div>
+          <div class="cvfan-row"><span>Google Ads</span><span class="mono">${esc(cv.ads_label)||'—'}${cv.ads_value?' · '+esc(cv.ads_value):''}</span>${stChip(cv.ads_status)}</div>
+          <div class="cvfan-row"><span>Meta</span><span class="mono">${esc(cv.meta_event)||'—'}</span>${stChip(cv.meta_status)}</div>
+        </div>`:''}
       </div>
-      <div class="sgrid">
-        <input data-f="title" placeholder="${t('fn.step.title')}" value="${esc(s.title)}">
-        <input data-f="url" placeholder="${t('fn.step.url')}" value="${esc(s.url)}">
-        <select data-f="conversion_key">${convOpts(s.conversion_key)}</select>
-        <input data-f="ac_tag" placeholder="${t('fn.step.actag')}" value="${esc(s.ac_tag)}">
-        <input data-f="note" placeholder="${t('fn.step.note')}" value="${esc(s.note)}" style="grid-column:1/-1">
-      </div>
-      ${cv?`<div class="cvfan">
-        <div class="cvfan-h">→ ${t('fn.tracking')}: <b>${esc(cv.name)}</b></div>
-        <div class="cvfan-row"><span>GA4</span><span class="mono">${esc(cv.ga4_event)||'—'}</span>${stChip(cv.ga4_status)}</div>
-        <div class="cvfan-row"><span>Google Ads</span><span class="mono">${esc(cv.ads_label)||'—'}${cv.ads_value?' · '+esc(cv.ads_value):''}</span>${stChip(cv.ads_status)}</div>
-        <div class="cvfan-row"><span>Meta</span><span class="mono">${esc(cv.meta_event)||'—'}</span>${stChip(cv.meta_status)}</div>
-      </div>`:''}
     </div>${i<f.steps.length-1?'<div class="connector">↓</div>':''}`;
   }).join('')||`<p class="hint" style="margin:8px 0">${t('fn.nosteps')}</p>`;
   renderFunnelPraba(f);
@@ -1312,9 +1353,12 @@ async function savePrabaConv(key){
   try{await sb(`conversions?key=eq.${encodeURIComponent(key)}`,{method:'PATCH',body:JSON.stringify(patch)});await loadAll();toast(t('cv.saved'))}
   catch(e){toast(t('ct.savefail')+': '+e.message,true)}
 }
-function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:'',url:'',conversion_key:'',ac_tag:'',note:''});renderFunnelDetail()}
-function delStep(i){if(!state.editF)return;syncFunnelInputs();state.editF.steps.splice(i,1);renderFunnelDetail()}
-function moveStep(i,d){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps;const j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];renderFunnelDetail()}
+function toggleStep(i,ev){if(ev&&ev.target.closest('.sctrl'))return;syncFunnelInputs();if(state.stepOpen.has(i))state.stepOpen.delete(i);else state.stepOpen.add(i);renderFunnelDetail()}
+function expandAll(){if(!state.editF)return;syncFunnelInputs();(state.editF.steps||[]).forEach((_,i)=>state.stepOpen.add(i));renderFunnelDetail()}
+function collapseAll(){if(!state.editF)return;syncFunnelInputs();state.stepOpen=new Set();renderFunnelDetail()}
+function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:'',url:'',conversion_key:'',ac_tag:'',note:''});state.stepOpen.add(state.editF.steps.length-1);renderFunnelDetail()}
+function delStep(i){if(!state.editF)return;syncFunnelInputs();state.editF.steps.splice(i,1);const ns=new Set();state.stepOpen.forEach(x=>{if(x<i)ns.add(x);else if(x>i)ns.add(x-1)});state.stepOpen=ns;renderFunnelDetail()}
+function moveStep(i,d){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps;const j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];const oi=state.stepOpen.has(i),oj=state.stepOpen.has(j);oj?state.stepOpen.add(i):state.stepOpen.delete(i);oi?state.stepOpen.add(j):state.stepOpen.delete(j);renderFunnelDetail()}
 function syncFunnelInputs(){
   const f=state.editF;if(!f)return;
   f.name=$('fnName').value;f.status=$('fnStatus').value;f.description=$('fnDesc').value;f.product=$('fnProduct').value;f.purpose=$('fnPurpose').value;f.traffic=$('fnTraffic').value;
