@@ -276,6 +276,8 @@
   .editor-sec .sec-n{width:24px;height:24px;border-radius:8px;background:rgba(150,57,243,.16);border:1px solid rgba(150,57,243,.32);color:#cfa6ff;display:inline-flex;align-items:center;justify-content:center;font-weight:900;flex:none}
   .goalchk{margin:14px 0 0;font-size:12.5px;color:#cbd0ff}
   .goal-panel{margin-top:10px;background:rgba(23,248,224,.05);border:1px solid rgba(23,248,224,.22);border-radius:12px;padding:12px}
+  .derivefrom{margin:10px 0 2px;padding:10px 12px;background:rgba(102,102,255,.06);border:1px solid rgba(102,102,255,.18);border-radius:12px}
+  .derivefrom label{margin-top:0}
   .fn-id{display:inline-block;font-size:10px;font-weight:800;color:#cfa6ff;background:rgba(150,57,243,.16);border:1px solid rgba(150,57,243,.3);border-radius:6px;padding:1px 5px;vertical-align:middle;letter-spacing:.02em}
   .fn-id.new{color:#7df3e6;background:rgba(23,248,224,.12);border-color:rgba(23,248,224,.3)}
   table.reg .rfunnel{white-space:nowrap;min-width:250px}
@@ -484,6 +486,10 @@
         <label style="margin-top:0" data-i18n="af.label">Asset-first: fertigen Asset-Namen einfügen</label>
         <input id="nAssetPaste" class="out" data-i18n-ph="af.ph" placeholder="ADS_2026_009_LOI_LM_CB01_KI-im-Trading_DE_H1_CTA1_16x9_260505_V3">
         <div class="af-status" id="nParseStatus"></div>
+      </div>
+      <div class="derivefrom">
+        <label style="margin-top:0" data-i18n="nm.derivelabel">Oder: von bestehender Kampagne/AdSet ableiten <span class="hint">(nur Hook/CTA/Asset ändern)</span></label>
+        <select id="nDerive" onchange="deriveFrom(this.value);this.value=''"></select>
       </div>
       <label data-i18n="f.ptype">Plattform-Typ</label>
       <div class="seg" id="nptype">
@@ -857,6 +863,7 @@ const T={
   'nm.listtitle':'Gespeicherte Namen','nm.empty':'Noch keine Namen — links bauen und „Namen speichern".',
   'row.campaign':'Campaign Name','row.adset':'AdSet (kein UTM)','row.automation':'Automation','row.adid':'Ad-Identifier','row.emailid':'Email-Identifier',
   'af.label':'Asset-first: fertigen Asset-Namen einfügen <span class="hint">(aus dem Name-Wizard)</span>','af.ph':'ADS_2026_009_LOI_LM_CB01_KI-im-Trading_DE_H1_CTA1_16x9_260505_V3','af.recognized':'Erkannt','af.stillpick':'Noch wählen: Funnel-Typ + Monat (stecken nicht im Asset-Namen).',
+  'nm.derivelabel':'Oder: von bestehender Kampagne/AdSet ableiten <span class="hint">(nur Hook/CTA/Asset ändern)</span>','nm.derivenone':'— bestehende Kampagne wählen —',
   // UTM
   'ub.note':'<b>UTM-Builder = Tracking-URL bauen.</b> Naming-Eintrag wählen (übernimmt Campaign + Content) → Source/Medium/Funnel/URL ergänzen → die <code>utm_id</code> vergibt die Datenbank kollisionsfrei. In die URL fließt nur der Campaign-Name, nicht der AdSet-Name.',
   'ub.inputtitle':'Tracking-URL bauen','ub.outtitle':'Output','ub.naming':'Naming-Eintrag <span class="hint">(oder manuell)</span>',
@@ -924,6 +931,7 @@ const T={
   'nm.listtitle':'Saved names','nm.empty':'No names yet — build on the left and “Save name”.',
   'row.campaign':'Campaign name','row.adset':'Ad set (no UTM)','row.automation':'Automation','row.adid':'Ad identifier','row.emailid':'Email identifier',
   'af.label':'Asset-first: paste a finished asset name <span class="hint">(from the Name Wizard)</span>','af.ph':'ADS_2026_009_LOI_LM_CB01_KI-im-Trading_DE_H1_CTA1_16x9_260505_V3','af.recognized':'Recognized','af.stillpick':'Still to pick: funnel type + month (not contained in the asset name).',
+  'nm.derivelabel':'Or: derive from an existing campaign/adset <span class="hint">(only change hook/CTA/asset)</span>','nm.derivenone':'— pick an existing campaign —',
   'ub.note':'<b>UTM builder = build the tracking URL.</b> Pick a naming entry (carries campaign + content) → add source/medium/funnel/URL → the <code>utm_id</code> is assigned collision-free. Only the campaign name flows into the URL, not the ad-set name.',
   'ub.inputtitle':'Build tracking URL','ub.outtitle':'Output','ub.naming':'Naming entry <span class="hint">(or manual)</span>',
   'ub.source':'utm_source','ub.medium':'utm_medium <span class="hint">(auto, editable)</span>','ub.term':'utm_term <span class="hint">(Google Search, opt.)</span>',
@@ -1139,6 +1147,12 @@ function refreshDynamic(){
     un.innerHTML=`<option value="">${t('ub.pickmanual')}</option>`+list.map(n=>
       `<option value="${n.id}">${namingLinked(n.id)?'✓ ':'• '}${esc(n.campaign_name)} · ${esc(n.asset_identifier||n.utm_content||'')}</option>`).join('');
     un.value=v;}
+  // Ableiten-Picker: eine Option je Kampagne+AdSet-Kombi (Paid) — zum Anhängen weiterer Ads
+  const nd=$('nDerive');
+  if(nd){const combos=new Map();
+    state.naming.filter(n=>(n.platform_type||'paid')==='paid').forEach(n=>{const k=(n.campaign_name||'')+'||'+(n.adset_or_automation||'');if(!combos.has(k))combos.set(k,n);});
+    nd.innerHTML=`<option value="">${t('nm.derivenone')}</option>`+[...combos.values()].map(n=>
+      `<option value="${n.id}">${esc(n.campaign_name)} · ${esc(n.adset_or_automation||'—')}</option>`).join('');}
 }
 
 /* ═══════════════ TAB 1 · NAMING ═══════════════ */
@@ -1253,6 +1267,26 @@ function editNaming(id){
   $('nFunnelRef').value=n.funnel_reference||'';$('nNotes').value=n.notes||'';
   $('nSave').textContent=t('cv.save');$('nCancel').style.display='';
   renderNamingOut();window.scrollTo({top:0,behavior:'smooth'});
+}
+// Von bestehender Kampagne/AdSet ableiten: Kampagnen- + AdSet-Ebene übernehmen, NEUE Zeile (editN bleibt null),
+// nur Hook/CTA/Asset ändert der User → weitere Ad in derselben Kampagne, ohne alles neu zu tippen.
+function deriveFrom(id){
+  if(!id)return;
+  const n=state.naming.find(x=>String(x.id)===String(id));if(!n)return;
+  state.editN=null;$('nCancel').style.display='none';$('nSave').textContent=t('nm.save');
+  setNameMode(n.platform_type||'paid');
+  $('nChannel').value=n.channel||'';$('nTag').value=n.function_tag||'';$('nFunnel').value=n.funnel_type||'';
+  $('nThema').value=n.topic_slug||'';$('nDatum').value=n.period||'';$('nVariant').value=n.variant||'';
+  $('nFunnelRef').value=n.funnel_reference||'';
+  // AdSet aus dem gespeicherten String zurückgewinnen (Paid): Audtyp_Targeting_Geo
+  if((n.platform_type||'paid')==='paid' && n.adset_or_automation){
+    const parts=n.adset_or_automation.split('_');
+    if(parts.length>=3){$('nAudtyp').value=parts[0];$('nGeo').value=parts[parts.length-1];$('nTargeting').value=parts.slice(1,-1).join('_');}
+    else if(parts.length===2){$('nAudtyp').value=parts[0];$('nTargeting').value=parts[1];}
+    else if(parts.length===1){$('nTargeting').value=parts[0];}
+  }
+  renderNamingOut();
+  toast(LANG==='de'?'Kampagne + AdSet übernommen — jetzt Hook/CTA/Asset für die neue Ad anpassen und speichern.':'Campaign + adset copied — now adjust hook/CTA/asset for the new ad and save.');
 }
 async function delNaming(id){
   const n=state.naming.find(x=>x.id===id);if(!n)return;
