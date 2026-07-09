@@ -209,6 +209,41 @@
   .step .sbody{padding:0 12px 12px}
   .step .stype-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .step .stype-row label{margin:0;font-size:11px;color:#8e94c0}
+  /* Funnel-Board: horizontale Step-Karten + Editor darunter */
+  .flow{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 14px;align-items:stretch}
+  .flow .fcard{position:relative;min-width:212px;max-width:212px;background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:12px;cursor:pointer;transition:.15s}
+  .flow .fcard:hover{border-color:rgba(255,255,255,.22);transform:translateY(-2px)}
+  .flow .fcard.sel{border-color:var(--tn-pink);box-shadow:0 0 0 1px rgba(255,60,141,.35),0 0 30px rgba(255,60,141,.14)}
+  .flow .fcard.goal{background:linear-gradient(180deg,rgba(23,248,224,.08),var(--tn-surf-1));border-color:rgba(23,248,224,.4)}
+  .flow .fcard.add{min-width:120px;max-width:120px;display:flex;align-items:center;justify-content:center;border-style:dashed;color:#8e94c0;font-weight:600}
+  .flow .fcard:not(.add):not(:last-child)::after{content:'→';position:absolute;right:-13px;top:50%;transform:translateY(-50%);color:#5b6090;font-size:18px;z-index:2}
+  .fcard .fc-no{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#8e94c0}
+  .fcard .fc-goal{color:#7df3e6;font-weight:800}
+  .fcard .fc-title{font-size:14px;font-weight:700;color:#eef0ff;margin:7px 0 4px;line-height:1.25;word-break:break-word}
+  .fcard .fc-url{font-size:11px;color:#8b91bd;word-break:break-all}
+  .fcard .fc-int{font-size:11.5px;color:#b6bce6;background:rgba(150,57,243,.12);border:1px solid rgba(150,57,243,.22);border-radius:8px;padding:6px 8px;margin-top:7px}
+  .fcard .fc-track{margin-top:9px}
+  .fcard .prog{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:5px}
+  .fcard .prog>i{display:block;height:100%;background:linear-gradient(90deg,#4ade80,#17f8e0)}
+  .step-editor{margin-top:4px;background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:14px}
+  .step-editor .se-h{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--tn-teal);font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:8px}
+  .step-editor .se-ctrl{margin-left:auto;display:flex;gap:5px}
+  .step-editor .se-ctrl button{background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#b9bee6;border-radius:7px;padding:3px 9px;cursor:pointer;font-size:12px}
+  .se-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .se-grid .full{grid-column:1/-1}
+  @media(max-width:700px){.se-grid{grid-template-columns:1fr}.flow .fcard{min-width:184px;max-width:184px}}
+  /* Excel-Breitsicht Registry */
+  table.reg{border-collapse:collapse;min-width:2400px;font-size:11.5px}
+  table.reg th{position:sticky;top:0;background:#191a3a;color:#bfc5ff;text-align:left;text-transform:uppercase;letter-spacing:.05em;font-size:9.5px;padding:8px 9px;border-bottom:1px solid var(--tn-border);white-space:nowrap;z-index:1}
+  table.reg td{vertical-align:top;padding:8px 9px;border-bottom:1px solid var(--tn-border);line-height:1.35;min-width:110px}
+  table.reg tr:hover td{background:rgba(102,102,255,.07)}
+  table.reg .rstep{min-width:170px}
+  table.reg .rstep b{color:#eef0ff;font-weight:600;display:block}
+  table.reg .rstep small{color:#8b91bd;word-break:break-all}
+  table.reg .rmono{font-family:"SF Mono",Menlo,Consolas,monospace;color:#cfd4f0}
+  table.reg .fname{cursor:pointer;color:#c9a6ff}
+  table.reg .fname:hover{text-decoration:underline}
+  #fnRegistry.collapsed #regWrap{display:none}
   /* Overlay */
   .overlay{position:fixed;inset:0;background:rgba(3,3,14,.82);backdrop-filter:blur(6px);z-index:50;
            display:flex;align-items:center;justify-content:center;padding:20px}
@@ -620,10 +655,10 @@
       <div class="steps-hd">
         <label data-i18n="fn.steps">Schritte (der Weg)</label>
         <span style="flex:1"></span>
-        <button class="btn xs ghost" onclick="expandAll()" data-i18n="fn.expandall">Alle ausklappen</button>
-        <button class="btn xs ghost" onclick="collapseAll()" data-i18n="fn.collapseall">Alle einklappen</button>
+        <span class="hint" data-i18n="fn.stepshint">Karte anklicken → unten bearbeiten</span>
       </div>
-      <div id="fnSteps"></div>
+      <div id="fnSteps" class="flow"></div>
+      <div id="fnStepEditor"></div>
       <div class="btns">
         <button class="btn sm ghost" onclick="addStep()" data-i18n="fn.addstep">+ Schritt</button>
         <span style="flex:1"></span>
@@ -632,6 +667,16 @@
         <button class="btn sm" id="fnSave" data-i18n="fn.save">Funnel speichern</button>
       </div>
       <div id="fnPraba"></div>
+    </div>
+
+    <div class="card" id="fnRegistry" style="margin-top:20px">
+      <div class="toolbar">
+        <h2 style="margin:0"><span data-i18n="reg.title">Alle Funnel &amp; Tracking · Breitsicht</span> <span class="pill" id="regCount">…</span></h2>
+        <span style="flex:1"></span>
+        <button class="btn sm ghost" onclick="toggleRegistry()" data-i18n="reg.toggle">Ein-/ausklappen</button>
+      </div>
+      <p class="hint" data-i18n="reg.sub" style="margin:-4px 0 12px">Eine Zeile pro Funnel — alle Steps + Prabas Tracking nebeneinander (wie die Ursprungs-Excel). Folgt den Tabs oben. Horizontal scrollen.</p>
+      <div class="tblwrap" id="regWrap"><table id="regTable" class="reg"></table></div>
     </div>
     </div><!-- /fcFunnels -->
 
@@ -780,6 +825,8 @@ const T={
   'fn.confirmdel':'Funnel „{name}" wirklich löschen?','fn.needname':'Bitte Namen eingeben','fn.nosteps':'Noch keine Schritte — „+ Schritt" klicken.',
   'fn.step.title':'Titel','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC-Tag (opt.)','fn.step.note':'Notiz (opt.)','fn.step.none':'— keine —',
   'fn.stepn':'Step {n}','fn.step.empty':'(leer)','fn.step.type':'Typ','fn.expandall':'Alle ausklappen','fn.collapseall':'Alle einklappen',
+  'fn.step.interaction':'Was passiert hier? (opt.)','fn.step.edit':'Schritt bearbeiten','fn.stepshint':'Karte anklicken → unten bearbeiten',
+  'reg.title':'Alle Funnel & Tracking · Breitsicht','reg.toggle':'Ein-/ausklappen','reg.sub':'Eine Zeile pro Funnel — alle Steps + Prabas Tracking nebeneinander (wie die Ursprungs-Excel). Folgt den Tabs oben. Horizontal scrollen.','reg.step':'Step','reg.notes':'Notizen (TradeNeon)','reg.qa':'QA / MeasureSchool',
   'fn.emptylist':'Noch keine Funnels — „+ Neuer Funnel".',
   'cv.title':'Conversions · Event-Katalog','cv.name':'Name','cv.notes':'Notizen','cv.new':'Neue Conversion','cv.edit':'Conversion bearbeiten',
   'cv.keyhint':'(Slug, fix nach Anlage)','cv.value':'Wert (AED)','cv.purpose':'Zweck','cv.path':'Pfad (LP → … → Danke)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
@@ -842,6 +889,8 @@ const T={
   'fn.confirmdel':'Really delete funnel “{name}”?','fn.needname':'Please enter a name','fn.nosteps':'No steps yet — click “+ Step”.',
   'fn.step.title':'Title','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC tag (opt.)','fn.step.note':'Note (opt.)','fn.step.none':'— none —',
   'fn.stepn':'Step {n}','fn.step.empty':'(empty)','fn.step.type':'Type','fn.expandall':'Expand all','fn.collapseall':'Collapse all',
+  'fn.step.interaction':'What happens here? (opt.)','fn.step.edit':'Edit step','fn.stepshint':'Click a card → edit below',
+  'reg.title':'All funnels & tracking · wide view','reg.toggle':'Collapse/expand','reg.sub':'One row per funnel — all steps + Praba tracking side by side (like the original Excel). Follows the tabs above. Scroll horizontally.','reg.step':'Step','reg.notes':'Notes (TradeNeon)','reg.qa':'QA / MeasureSchool',
   'fn.emptylist':'No funnels yet — “+ New funnel”.',
   'cv.title':'Conversions · Event catalog','cv.name':'Name','cv.notes':'Notes','cv.new':'New conversion','cv.edit':'Edit conversion',
   'cv.keyhint':'(slug, fixed after creation)','cv.value':'Value (AED)','cv.purpose':'Purpose','cv.path':'Path (LP → … → thank-you)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
@@ -867,7 +916,7 @@ function applyLang(){
   $('howtoDE').style.display=LANG==='de'?'':'none';
   $('howtoEN').style.display=LANG==='en'?'':'none';
   setConn(connState);
-  if(authed){renderNamingOut();renderUtmOut();refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderCampaigns();renderDashboard();}
+  if(authed){renderNamingOut();renderUtmOut();refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderFunnelRegistry();renderCampaigns();renderDashboard();}
 }
 function setLang(l){LANG=l;localStorage.setItem('tn_cockpit_lang',l);applyLang();}
 
@@ -951,7 +1000,7 @@ function fillMed(id){$(id).innerHTML=MEDIUM_OPTS.map(m=>`<option>${m}</option>`)
 
 let nameMode='paid';
 let currentNamingId=null; // im UTM-Builder gewählter Naming-Eintrag
-const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null,fcTab:'all',stepOpen:new Set()};
+const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null,fcTab:'all',stepSel:0};
 // Ist ein Naming-Eintrag schon mit einer UTM-Zeile verknüpft? (= „Übertragen"-Häkchen)
 function namingLinked(id){return state.rows.some(r=>r.naming_id===id)}
 function whoami(){return ($('who').value||'').trim()}
@@ -1016,7 +1065,7 @@ async function loadAll(){
     ]);
     state.rows=rows||[];state.naming=naming||[];state.funnels=funnels||[];state.convs=convs||[];
     setConn('ok');
-    refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderCampaigns();renderDashboard();
+    refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderFunnelRegistry();renderCampaigns();renderDashboard();
   }catch(e){setConn('err');toast(t('ct.loadfail')+': '+e.message,true)}
 }
 // Dropdowns, die von geladenen Daten abhängen (Naming-Picker, Funnel-Referenzen)
@@ -1354,7 +1403,7 @@ function renderFcTabs(){
   if($('fcFunnels'))$('fcFunnels').style.display=isConv?'none':'';
   if($('fcConversions'))$('fcConversions').style.display=isConv?'':'none';
 }
-function setFcTab(k){state.fcTab=k;renderFcTabs();renderFunnelList();}
+function setFcTab(k){state.fcTab=k;renderFcTabs();renderFunnelList();renderFunnelRegistry();}
 function renderFunnelList(){
   if(!$('funnelTbl'))return;
   const showArch=$('showArch').checked;
@@ -1390,12 +1439,12 @@ function selectFunnel(id){
   const f=state.funnels.find(x=>x.id===id);if(!f)return;
   state.editF=JSON.parse(JSON.stringify(f));
   if(!Array.isArray(state.editF.steps))state.editF.steps=[];
-  state.stepOpen=new Set();
+  state.stepSel=0;
   renderFunnelDetail();$('fnDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function newFunnel(){
   state.editF={id:null,slug:'',name:'',purpose:'',description:'',status:'draft',product:'',traffic:'',steps:[]};
-  state.stepOpen=new Set();
+  state.stepSel=0;
   renderFunnelDetail();$('fnDetail').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function renderFunnelDetail(){
@@ -1406,50 +1455,85 @@ function renderFunnelDetail(){
   $('fnPurpose').value=f.purpose||'';$('fnDesc').value=f.description||'';$('fnTraffic').value=f.traffic||'';
   $('fnStatusPill').textContent=(f.id==null?(LANG==='de'?'neu':'new'):('#'+f.id))+(f.slug?' · '+f.slug:'');
   $('fnArchive').style.display=(f.id!=null&&f.status!=='archived')?'':'none';
-  const convOpts=k=>`<option value="">${t('fn.step.none')}</option>`+state.convs.map(c=>`<option value="${esc(c.key)}"${c.key===k?' selected':''}>${esc(c.key)}</option>`).join('');
-  const utmCount=url=>{if(!url)return 0;const n=normUrl(url);return state.rows.filter(r=>normUrl(r.target_url)===n).length};
-  const mini=(lab,st)=>`<span class="mini ${st==='done'?'ok':st==='open'?'wait':'na'}" title="${lab}: ${esc(st||'—')}">${lab}</span>`;
   $('fnSteps').innerHTML=(f.steps||[]).map((s,i)=>{
     const cv=state.convs.find(c=>c.key===s.conversion_key);
-    const isOpen=state.stepOpen.has(i);
-    const uc=utmCount(s.url);
-    const ucChip=s.url?`<span class="pill" title="Registry-Links auf diese URL">${uc} UTM</span>`:'';
-    const track=cv?`<span class="strack">${mini('G',cv.ga4_status)}${mini('A',cv.ads_status)}${mini('M',cv.meta_status)}</span>`:'';
-    const convChip=cv?`<span class="pill conv" title="Conversion: ${esc(cv.key)}">${esc(cv.key)}</span>`:'';
-    const summ=(s.title||s.url)?esc(s.title||s.url):`<span class="ssum-empty">${t('fn.step.empty')}</span>`;
-    return `<div class="step ${isOpen?'open':'collapsed'}" data-idx="${i}">
-      <div class="shead" onclick="toggleStep(${i},event)">
-        <span class="scaret">${isOpen?'▾':'▸'}</span>
-        <span class="snum">${t('fn.stepn',{n:i+1})}</span>
-        <span class="ttype ${esc(s.type||'page')}">${esc(s.type||'page')}</span>
-        <span class="ssum">${summ}</span>
-        <span class="schips2">${convChip}${track}${ucChip}</span>
-        <span class="sctrl" onclick="event.stopPropagation()">
-          <button onclick="moveStep(${i},-1)" title="up">↑</button>
-          <button onclick="moveStep(${i},1)" title="down">↓</button>
-          <button onclick="delStep(${i})" title="remove" style="color:var(--tn-pink)">✕</button>
-        </span>
-      </div>
-      <div class="sbody">
-        <div class="stype-row"><label>${t('fn.step.type')}</label>
-          <select data-f="type">${STEP_TYPES.map(x=>`<option${x===(s.type||'page')?' selected':''}>${x}</option>`).join('')}</select></div>
-        <div class="sgrid">
-          <input data-f="title" placeholder="${t('fn.step.title')}" value="${esc(s.title)}">
-          <input data-f="url" placeholder="${t('fn.step.url')}" value="${esc(s.url)}">
-          <select data-f="conversion_key">${convOpts(s.conversion_key)}</select>
-          <input data-f="ac_tag" placeholder="${t('fn.step.actag')}" value="${esc(s.ac_tag)}">
-          <input data-f="note" placeholder="${t('fn.step.note')}" value="${esc(s.note)}" style="grid-column:1/-1">
-        </div>
-        ${cv?`<div class="cvfan">
-          <div class="cvfan-h">→ ${t('fn.tracking')}: <b>${esc(cv.name)}</b></div>
-          <div class="cvfan-row"><span>GA4</span><span class="mono">${esc(cv.ga4_event)||'—'}</span>${stChip(cv.ga4_status)}</div>
-          <div class="cvfan-row"><span>Google Ads</span><span class="mono">${esc(cv.ads_label)||'—'}${cv.ads_value?' · '+esc(cv.ads_value):''}</span>${stChip(cv.ads_status)}</div>
-          <div class="cvfan-row"><span>Meta</span><span class="mono">${esc(cv.meta_event)||'—'}</span>${stChip(cv.meta_status)}</div>
-        </div>`:''}
-      </div>
-    </div>${i<f.steps.length-1?'<div class="connector">↓</div>':''}`;
-  }).join('')||`<p class="hint" style="margin:8px 0">${t('fn.nosteps')}</p>`;
+    const sel=i===state.stepSel;
+    const p=cv?convPct(cv):null;
+    const title=(s.title||s.url)?esc(s.title||s.url):`<span style="color:#6b7099;font-style:italic">${t('fn.step.empty')}</span>`;
+    return `<div class="fcard${sel?' sel':''}${cv?' goal':''}" onclick="selectStep(${i})">
+      <div class="fc-no"><span>${t('fn.stepn',{n:i+1})}</span>${cv?`<span class="fc-goal">GOAL</span>`:`<span class="ttype ${esc(s.type||'page')}">${esc(s.type||'page')}</span>`}</div>
+      <div class="fc-title">${title}</div>
+      ${s.url?`<div class="fc-url">${esc(s.url)}</div>`:''}
+      ${s.interaction?`<div class="fc-int">${esc(s.interaction)}</div>`:''}
+      ${cv?`<div class="fc-track"><div class="fc-no"><span>Tracking</span><span class="fc-goal">${p}%</span></div><div class="prog"><i style="width:${p}%"></i></div></div>`:''}
+    </div>`;
+  }).join('')+`<div class="fcard add" onclick="addStep()">${t('fn.addstep')}</div>`;
+  renderStepEditor(f);
   renderFunnelPraba(f);
+}
+function convPct(c){if(!c)return 0;const parts=[c.ga4_status==='done',c.ads_status==='done',c.meta_status==='done'];return Math.round(parts.filter(Boolean).length/parts.length*100)}
+function renderStepEditor(f){
+  const box=$('fnStepEditor');if(!box)return;
+  const steps=f.steps||[];
+  if(!steps.length){box.innerHTML=`<p class="hint" style="margin:8px 0">${t('fn.nosteps')}</p>`;return}
+  if(state.stepSel>=steps.length)state.stepSel=steps.length-1;
+  if(state.stepSel<0)state.stepSel=0;
+  const i=state.stepSel,s=steps[i];
+  const convOpts=k=>`<option value="">${t('fn.step.none')}</option>`+state.convs.map(c=>`<option value="${esc(c.key)}"${c.key===k?' selected':''}>${esc(c.key)}</option>`).join('');
+  const cv=state.convs.find(c=>c.key===s.conversion_key);
+  box.innerHTML=`<div class="step-editor" data-eidx="${i}">
+    <div class="se-h">${t('fn.step.edit')} · ${t('fn.stepn',{n:i+1})}
+      <span class="se-ctrl">
+        <button onclick="moveStep(${i},-1)" title="up">↑</button>
+        <button onclick="moveStep(${i},1)" title="down">↓</button>
+        <button onclick="delStep(${i})" title="remove" style="color:var(--tn-pink)">✕</button>
+      </span></div>
+    <div class="se-grid">
+      <div><label>${t('fn.step.type')}</label><select data-f="type">${STEP_TYPES.map(x=>`<option${x===(s.type||'page')?' selected':''}>${x}</option>`).join('')}</select></div>
+      <div><label>${t('fn.step.conv')}</label><select data-f="conversion_key">${convOpts(s.conversion_key)}</select></div>
+      <div class="full"><label>${t('fn.step.title')}</label><input data-f="title" value="${esc(s.title)}"></div>
+      <div class="full"><label>${t('fn.step.url')}</label><input data-f="url" value="${esc(s.url)}"></div>
+      <div class="full"><label>${t('fn.step.interaction')}</label><input data-f="interaction" value="${esc(s.interaction)}"></div>
+      <div><label>${t('fn.step.actag')}</label><input data-f="ac_tag" value="${esc(s.ac_tag)}"></div>
+      <div><label>${t('fn.step.note')}</label><input data-f="note" value="${esc(s.note)}"></div>
+    </div>
+    ${cv?`<div class="cvfan" style="margin-top:12px">
+      <div class="cvfan-h">→ ${t('fn.tracking')}: <b>${esc(cv.name)}</b></div>
+      <div class="cvfan-row"><span>GA4</span><span class="mono">${esc(cv.ga4_event)||'—'}</span>${stChip(cv.ga4_status)}</div>
+      <div class="cvfan-row"><span>Google Ads</span><span class="mono">${esc(cv.ads_label)||'—'}${cv.ads_value?' · '+esc(cv.ads_value):''}</span>${stChip(cv.ads_status)}</div>
+      <div class="cvfan-row"><span>Meta</span><span class="mono">${esc(cv.meta_event)||'—'}</span>${stChip(cv.meta_status)}</div>
+    </div>`:''}
+  </div>`;
+}
+function selectStep(i){if(!state.editF)return;syncFunnelInputs();state.stepSel=i;renderFunnelDetail()}
+function toggleRegistry(){const el=$('fnRegistry');if(el)el.classList.toggle('collapsed')}
+// Excel-Breitsicht: eine Zeile pro Funnel, alle Steps + verknüpftes Tracking (aus dem Katalog) nebeneinander.
+function renderFunnelRegistry(){
+  const tbl=$('regTable');if(!tbl)return;
+  const showArch=$('showArch')?.checked;
+  const grp=state.fcTab;
+  const list=state.funnels.filter(f=>(showArch||f.status!=='archived') && (grp==='all'||grp==='conv'||f.product===grp));
+  const order=FUNNEL_GROUPS.map(x=>x[0]).filter(Boolean).concat('—');
+  list.sort((a,b)=>{const ia=order.indexOf(a.product||'—'),ib=order.indexOf(b.product||'—');return ia!==ib?ia-ib:(a.name||'').localeCompare(b.name||'')});
+  const glabel=k=>{const m=FUNNEL_GROUPS.find(x=>x[0]===k);return m?m[1].split(' · ')[0]:(k||'—')};
+  const maxSteps=Math.max(4,...list.map(f=>(f.steps||[]).length),0);
+  const goalConv=f=>{const ks=(f.steps||[]).filter(s=>s.conversion_key);const s=ks[ks.length-1];return s?state.convs.find(c=>c.key===s.conversion_key):null};
+  const yn=st=>st==='done'?'<span class="st done">✓</span>':'<span class="st open">offen</span>';
+  let head='<tr><th>'+esc(t('fn.product'))+'</th><th>Funnel</th><th>'+esc(t('fn.purpose'))+'</th>';
+  for(let i=0;i<maxSteps;i++)head+=`<th>${t('reg.step')} ${String(i+1).padStart(2,'0')}</th>`;
+  head+=`<th>${t('reg.notes')}</th><th>GA4 Event</th><th>GA4</th><th>Trigger</th><th>Ads ID</th><th>Ads Label</th><th>Value</th><th>Meta Event</th><th>Meta</th><th>${t('reg.qa')}</th></tr>`;
+  const rows=list.map(f=>{
+    const cv=goalConv(f);
+    let cells='';
+    for(let i=0;i<maxSteps;i++){const s=(f.steps||[])[i];cells+=`<td class="rstep">${s?`<b>${esc(s.title)||'—'}</b>${(s.url||s.interaction)?`<small>${esc(s.url||s.interaction)}</small>`:''}`:''}</td>`}
+    const notes=(f.steps||[]).map(s=>s.note).filter(Boolean).join(' · ');
+    return `<tr><td>${esc(glabel(f.product))}</td><td><span class="fname" onclick="selectFunnel(${f.id})">${esc(f.name)}</span></td><td>${esc(f.purpose||'')}</td>${cells}<td>${esc(notes)}</td>`
+      +`<td class="rmono">${cv?(esc(cv.ga4_event)||'—'):'—'}</td><td>${cv?yn(cv.ga4_status):'—'}</td><td class="rmono">${cv?esc(cv.ga4_trigger||''):''}</td>`
+      +`<td class="rmono">${cv?esc(cv.ads_conversion_id||''):''}</td><td class="rmono">${cv?esc(cv.ads_label||''):''}</td><td>${cv?esc(cv.ads_value||''):''}</td>`
+      +`<td class="rmono">${cv?(esc(cv.meta_event)||'—'):'—'}</td><td>${cv?yn(cv.meta_status):'—'}</td><td>${cv?esc(cv.notes||''):''}</td></tr>`;
+  }).join('')||`<tr><td colspan="${maxSteps+13}" style="color:#5b6090;padding:20px">${t('fn.emptylist')}</td></tr>`;
+  tbl.innerHTML=head+rows;
+  if($('regCount'))$('regCount').textContent=list.length;
 }
 // Prabas Tracking-Felder für die im Funnel verwendeten Conversions (editierbar; schreibt in den EINEN Katalog).
 function renderFunnelPraba(f){
@@ -1478,19 +1562,14 @@ async function savePrabaConv(key){
   try{await sb(`conversions?key=eq.${encodeURIComponent(key)}`,{method:'PATCH',body:JSON.stringify(patch)});await loadAll();toast(t('cv.saved'))}
   catch(e){toast(t('ct.savefail')+': '+e.message,true)}
 }
-function toggleStep(i,ev){if(ev&&ev.target.closest('.sctrl'))return;syncFunnelInputs();if(state.stepOpen.has(i))state.stepOpen.delete(i);else state.stepOpen.add(i);renderFunnelDetail()}
-function expandAll(){if(!state.editF)return;syncFunnelInputs();(state.editF.steps||[]).forEach((_,i)=>state.stepOpen.add(i));renderFunnelDetail()}
-function collapseAll(){if(!state.editF)return;syncFunnelInputs();state.stepOpen=new Set();renderFunnelDetail()}
-function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:'',url:'',conversion_key:'',ac_tag:'',note:''});state.stepOpen.add(state.editF.steps.length-1);renderFunnelDetail()}
-function delStep(i){if(!state.editF)return;syncFunnelInputs();state.editF.steps.splice(i,1);const ns=new Set();state.stepOpen.forEach(x=>{if(x<i)ns.add(x);else if(x>i)ns.add(x-1)});state.stepOpen=ns;renderFunnelDetail()}
-function moveStep(i,d){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps;const j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];const oi=state.stepOpen.has(i),oj=state.stepOpen.has(j);oj?state.stepOpen.add(i):state.stepOpen.delete(i);oi?state.stepOpen.add(j):state.stepOpen.delete(j);renderFunnelDetail()}
+function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:'',url:'',conversion_key:'',ac_tag:'',note:'',interaction:''});state.stepSel=state.editF.steps.length-1;renderFunnelDetail()}
+function delStep(i){if(!state.editF)return;syncFunnelInputs();state.editF.steps.splice(i,1);if(state.stepSel>=state.editF.steps.length)state.stepSel=state.editF.steps.length-1;if(state.stepSel<0)state.stepSel=0;renderFunnelDetail()}
+function moveStep(i,d){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps;const j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];if(state.stepSel===i)state.stepSel=j;else if(state.stepSel===j)state.stepSel=i;renderFunnelDetail()}
 function syncFunnelInputs(){
   const f=state.editF;if(!f)return;
   f.name=$('fnName').value;f.status=$('fnStatus').value;f.description=$('fnDesc').value;f.product=$('fnProduct').value;f.purpose=$('fnPurpose').value;f.traffic=$('fnTraffic').value;
-  $('fnSteps').querySelectorAll('.step').forEach(box=>{
-    const i=parseInt(box.dataset.idx,10);
-    box.querySelectorAll('[data-f]').forEach(el=>{f.steps[i][el.dataset.f]=el.value});
-  });
+  const ed=document.querySelector('#fnStepEditor .step-editor');
+  if(ed){const i=parseInt(ed.dataset.eidx,10);if(f.steps[i])ed.querySelectorAll('[data-f]').forEach(el=>{f.steps[i][el.dataset.f]=el.value});}
 }
 async function saveFunnel(){
   syncFunnelInputs();
@@ -1650,7 +1729,7 @@ $('uSrc').addEventListener('change',onSrcChange);
 ['uCampaign','uContent','uMed','uTerm','uFunnelRef','uRef','uUrl','uAnchor','uNotes'].forEach(id=>$(id).addEventListener('input',renderUtmOut));
 $('ctrOverride').addEventListener('input',renderUtmOut);
 ['fYear','fCampaign','fSource','fFunnel','fChannel'].forEach(id=>$(id).addEventListener('input',renderRegistry));
-$('showArch').addEventListener('change',()=>{renderFcTabs();renderFunnelList();});
+$('showArch').addEventListener('change',()=>{renderFcTabs();renderFunnelList();renderFunnelRegistry();});
 $('uOnlyOpen').addEventListener('change',refreshDynamic);
 $('cmFilter').addEventListener('input',renderCampaigns);
 $('who').value=localStorage.getItem('tn_cockpit_who')||'';
