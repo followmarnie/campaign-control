@@ -281,8 +281,23 @@
   .fn-id{display:inline-block;font-size:10px;font-weight:800;color:#cfa6ff;background:rgba(150,57,243,.16);border:1px solid rgba(150,57,243,.3);border-radius:6px;padding:1px 5px;vertical-align:middle;letter-spacing:.02em}
   .fn-id.new{color:#7df3e6;background:rgba(23,248,224,.12);border-color:rgba(23,248,224,.3)}
   table.reg .rfunnel{white-space:nowrap;min-width:250px}
-  table.reg .reg-edit{background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#cfa6ff;border-radius:6px;padding:1px 6px;cursor:pointer;font-size:11px;margin-right:7px}
+  table.reg .reg-edit{background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#cfa6ff;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:12px}
   table.reg .reg-edit:hover{background:rgba(150,57,243,.2);border-color:rgba(150,57,243,.4)}
+  /* Ownership-Split: „meine" Spalten lila, Prabas Spalten (ab GA4) blau */
+  table.reg th.col-mine{background:#241a44;color:#d7c3ff}
+  table.reg th.col-praba{background:#16234e;color:#a9c2ff}
+  table.reg td.col-mine{background:rgba(150,57,243,.05)}
+  table.reg td.col-praba{background:rgba(70,120,245,.06)}
+  table.reg .pcol-first{border-left:2px solid rgba(102,102,255,.45)}
+  table.reg th.col-edit,table.reg td.col-edit{background:#16234e;text-align:center;min-width:48px}
+  table.reg .rdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:middle;flex:none}
+  table.reg .rdot.ok{background:#4ade80}
+  table.reg .rdot.wait{background:#ffb36a}
+  table.reg .rdot.na{background:#5b6090}
+  .reg-flabel{color:#8e94c0;font-size:12px;margin-right:2px}
+  .segfilter{display:inline-flex;background:var(--tn-surf-3);border:1px solid var(--tn-border);border-radius:9px;padding:2px;gap:2px;margin-right:6px}
+  .segfilter button{background:transparent;border:0;color:#b9bee6;padding:5px 11px;border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;font-weight:600}
+  .segfilter button.on{background:var(--tn-grad);color:#fff}
   .minicopy{margin-left:4px}
   /* Gestylte Scrollbars (statt hässlicher nativer) */
   *::-webkit-scrollbar{height:9px;width:9px}
@@ -326,7 +341,8 @@
   .nav button{width:100%;text-align:left;background:transparent;border:1px solid transparent;color:#b9bee6;padding:9px 11px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;display:flex;align-items:center;gap:9px;transition:all .18s var(--tn-ease)}
   .nav button:hover{background:var(--tn-surf-2)}
   .nav button.on{background:var(--tn-grad);color:#fff;box-shadow:var(--tn-glow)}
-  .nav .ic{width:22px;height:22px;border-radius:7px;background:var(--tn-surf-3);display:grid;place-items:center;font-size:11px;flex:none;font-weight:700}
+  .nav .ic{width:24px;height:24px;border-radius:7px;background:var(--tn-surf-3);display:grid;place-items:center;font-size:11px;flex:none;font-weight:700}
+  .nav .ic svg{width:15px;height:15px;display:block}
   .nav button.on .ic{background:rgba(255,255,255,.2)}
   .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--tn-border);padding-top:14px}
   .side-foot .who input{width:100%}
@@ -442,12 +458,12 @@
       <p class="sub">Campaign Control</p>
     </div>
     <nav class="nav" id="nav">
-      <button data-v="dashboard" class="on"><span class="ic">▚</span><span data-i18n="nav.dashboard">Dashboard</span></button>
-      <button data-v="naming"><span class="ic">N</span><span data-i18n="nav.naming">Naming Studio</span></button>
-      <button data-v="utm"><span class="ic">U</span><span data-i18n="nav.utm">UTM-Builder</span></button>
-      <button data-v="fc"><span class="ic">F</span><span data-i18n="nav.fc">Funnel &amp; Tracking</span></button>
-      <button data-v="campaigns"><span class="ic">C</span><span data-i18n="nav.campaigns">Kampagnen-Übersicht</span></button>
-      <button data-v="settings"><span class="ic">S</span><span data-i18n="nav.settings">SOP / Settings</span></button>
+      <button data-v="dashboard" class="on"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span><span data-i18n="nav.dashboard">Dashboard</span></button>
+      <button data-v="naming"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span data-i18n="nav.naming">Naming Studio</span></button>
+      <button data-v="utm"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span data-i18n="nav.utm">UTM-Builder</span></button>
+      <button data-v="fc"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></span><span data-i18n="nav.fc">Funnel &amp; Tracking</span></button>
+      <button data-v="campaigns"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg></span><span data-i18n="nav.campaigns">Kampagnen-Übersicht</span></button>
+      <button data-v="settings"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span data-i18n="nav.settings">SOP / Settings</span></button>
     </nav>
     <div class="side-foot">
       <div class="langsw"><button data-l="de" class="on">DE</button><button data-l="en">EN</button></div>
@@ -733,6 +749,12 @@
       <div class="toolbar">
         <h2 style="margin:0"><span data-i18n="reg.title">Alle Funnel &amp; Tracking · Breitsicht</span> <span class="pill" id="regCount">…</span></h2>
         <span style="flex:1"></span>
+        <span class="reg-flabel" data-i18n="reg.f.label">Prabas Tracking:</span>
+        <div class="segfilter" id="regFilter">
+          <button class="on" onclick="setRegFilter('all')" data-i18n="reg.f.all">Alle</button>
+          <button onclick="setRegFilter('open')" data-i18n="reg.f.open">offen</button>
+          <button onclick="setRegFilter('done')" data-i18n="reg.f.done">komplett</button>
+        </div>
         <button class="btn sm ghost" onclick="toggleRegistry()" data-i18n="reg.toggle">Ein-/ausklappen</button>
       </div>
       <p class="hint" data-i18n="reg.sub" style="margin:-4px 0 12px">Eine Zeile pro Funnel — alle Steps + Prabas Tracking nebeneinander (wie die Ursprungs-Excel). Folgt den Tabs oben. Horizontal scrollen.</p>
@@ -887,7 +909,7 @@ const T={
   'fn.step.title':'Titel','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC-Tag (opt.)','fn.step.note':'Notiz (opt.)','fn.step.none':'— keine —',
   'fn.stepn':'Step {n}','fn.step.empty':'(leer)','fn.step.type':'Typ','fn.expandall':'Alle ausklappen','fn.collapseall':'Alle einklappen',
   'fn.step.interaction':'Was passiert hier? (opt.)','fn.step.edit':'Schritt bearbeiten','fn.stepshint':'Karte anklicken → unten bearbeiten',
-  'reg.title':'Alle Funnel & Tracking · Breitsicht','reg.toggle':'Ein-/ausklappen','reg.sub':'Eine Zeile pro Funnel — alle Steps + Prabas Tracking nebeneinander (wie die Ursprungs-Excel). Folgt den Tabs oben. Horizontal scrollen.','reg.step':'Step','reg.notes':'Notizen (TradeNeon)','reg.qa':'QA / MeasureSchool',
+  'reg.title':'Alle Funnel & Tracking · Breitsicht','reg.toggle':'Ein-/ausklappen','reg.sub':'Eine Zeile pro Funnel — alle Steps + Prabas Tracking nebeneinander (wie die Ursprungs-Excel). Folgt den Tabs oben. Horizontal scrollen.','reg.step':'Step','reg.notes':'Notizen (TradeNeon)','reg.qa':'QA / MeasureSchool','reg.f.label':'Prabas Tracking:','reg.f.all':'Alle','reg.f.open':'offen','reg.f.done':'komplett','reg.f.empty':'Keine Funnels in diesem Filter.',
   'fc.search':'Suchen…','fc.worksub':'Website-/App-Conversion-Pfade bauen: Step-Kette → Goal (Conversion) setzen → Prabas Tracking klappt darunter auf → unten die Excel-Registry prüfen.','fc.lg.step':'Interaction Step','fc.lg.goal':'Conversion Goal / Ende','fc.lg.sel':'Ausgewählt','fc.hint.step.h':'Step-Logik','fc.hint.step.p':'Jede Karte beantwortet: Wo ist der User? Welche URL / welcher Ort? Welche Interaktion passiert?','fc.hint.track.h':'Tracking-Logik','fc.hint.track.p':'Tracking hängt am Goal-Step. Sobald ein Step als Goal eine Conversion trägt, öffnet sich Prabas Tracking darunter.','fc.sec.funnel':'Funnel & ausgewählten Step bearbeiten','fn.step.isgoal':'Dieser Step ist das Goal / Ende dieses Funnel-Pfads','fn.step.convpick':'Conversion aus dem Katalog (misst dieses Goal)','fn.step.convhint':'Wähle eine Conversion — Prabas Tracking-Felder erscheinen dann unten im Katalog-Block.',
   'fn.emptylist':'Noch keine Funnels — „+ Neuer Funnel".',
   'cv.title':'Conversions · Event-Katalog','cv.name':'Name','cv.notes':'Notizen','cv.new':'Neue Conversion','cv.edit':'Conversion bearbeiten',
@@ -953,7 +975,7 @@ const T={
   'fn.step.title':'Title','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC tag (opt.)','fn.step.note':'Note (opt.)','fn.step.none':'— none —',
   'fn.stepn':'Step {n}','fn.step.empty':'(empty)','fn.step.type':'Type','fn.expandall':'Expand all','fn.collapseall':'Collapse all',
   'fn.step.interaction':'What happens here? (opt.)','fn.step.edit':'Edit step','fn.stepshint':'Click a card → edit below',
-  'reg.title':'All funnels & tracking · wide view','reg.toggle':'Collapse/expand','reg.sub':'One row per funnel — all steps + Praba tracking side by side (like the original Excel). Follows the tabs above. Scroll horizontally.','reg.step':'Step','reg.notes':'Notes (TradeNeon)','reg.qa':'QA / MeasureSchool',
+  'reg.title':'All funnels & tracking · wide view','reg.toggle':'Collapse/expand','reg.sub':'One row per funnel — all steps + Praba tracking side by side (like the original Excel). Follows the tabs above. Scroll horizontally.','reg.step':'Step','reg.notes':'Notes (TradeNeon)','reg.qa':'QA / MeasureSchool','reg.f.label':'Praba tracking:','reg.f.all':'All','reg.f.open':'open','reg.f.done':'complete','reg.f.empty':'No funnels in this filter.',
   'fc.search':'Search…','fc.worksub':'Build website/app conversion paths: step chain → set the goal (conversion) → Praba tracking expands below → check the Excel registry at the bottom.','fc.lg.step':'Interaction Step','fc.lg.goal':'Conversion Goal / End','fc.lg.sel':'Selected','fc.hint.step.h':'Step logic','fc.hint.step.p':'Each card answers: where is the user? Which URL / place? Which interaction happens?','fc.hint.track.h':'Tracking logic','fc.hint.track.p':'Tracking hangs on the goal step. As soon as a step carries a conversion as its goal, Praba tracking opens below.','fc.sec.funnel':'Edit funnel & selected step','fn.step.isgoal':'This step is the goal / end of this funnel path','fn.step.convpick':'Conversion from the catalog (measures this goal)','fn.step.convhint':'Pick a conversion — Praba tracking fields then appear in the catalog block below.',
   'fn.emptylist':'No funnels yet — “+ New funnel”.',
   'cv.title':'Conversions · Event catalog','cv.name':'Name','cv.notes':'Notes','cv.new':'New conversion','cv.edit':'Edit conversion',
@@ -1064,7 +1086,7 @@ function fillMed(id){$(id).innerHTML=MEDIUM_OPTS.map(m=>`<option>${m}</option>`)
 
 let nameMode='paid';
 let currentNamingId=null; // im UTM-Builder gewählter Naming-Eintrag
-const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null,fcTab:'all',stepSel:0};
+const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null,fcTab:'all',stepSel:0,regFilter:'all'};
 // Ist ein Naming-Eintrag schon mit einer UTM-Zeile verknüpft? (= „Übertragen"-Häkchen)
 function namingLinked(id){return state.rows.some(r=>r.naming_id===id)}
 function whoami(){return ($('who').value||'').trim()}
@@ -1610,32 +1632,43 @@ function onConvPick(){syncFunnelInputs();renderFunnelDetail();}
 function selectStep(i){if(!state.editF)return;syncFunnelInputs();state.stepSel=i;renderFunnelDetail()}
 function toggleRegistry(){const el=$('fnRegistry');if(el)el.classList.toggle('collapsed')}
 // Excel-Breitsicht: eine Zeile pro Funnel, alle Steps + verknüpftes Tracking (aus dem Katalog) nebeneinander.
+function setRegFilter(v){state.regFilter=v;document.querySelectorAll('#regFilter button').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick')===`setRegFilter('${v}')`));renderFunnelRegistry();}
 function renderFunnelRegistry(){
   const tbl=$('regTable');if(!tbl)return;
   const showArch=$('showArch')?.checked;
   const grp=state.fcTab;
-  const list=state.funnels.filter(f=>(showArch||f.status!=='archived') && (grp==='all'||grp==='conv'||f.product===grp));
+  const goalConv=f=>{const ks=(f.steps||[]).filter(s=>s.conversion_key);const s=ks[ks.length-1];return s?state.convs.find(c=>c.key===s.conversion_key):null};
+  const trackState=f=>{const cv=goalConv(f);if(!cv)return 'none';return (cv.ga4_status==='done'&&cv.ads_status==='done'&&cv.meta_status==='done')?'done':'open';};
+  let list=state.funnels.filter(f=>(showArch||f.status!=='archived') && (grp==='all'||grp==='conv'||f.product===grp));
   const order=FUNNEL_GROUPS.map(x=>x[0]).filter(Boolean).concat('—');
   list.sort((a,b)=>{const ia=order.indexOf(a.product||'—'),ib=order.indexOf(b.product||'—');return ia!==ib?ia-ib:(a.name||'').localeCompare(b.name||'')});
+  const fltr=state.regFilter||'all';
+  const flist=fltr==='open'?list.filter(f=>trackState(f)==='open'):fltr==='done'?list.filter(f=>trackState(f)==='done'):list;
   const glabel=k=>{const m=FUNNEL_GROUPS.find(x=>x[0]===k);return m?m[1].split(' · ')[0]:(k||'—')};
   const maxSteps=Math.max(4,...list.map(f=>(f.steps||[]).length),0);
-  const goalConv=f=>{const ks=(f.steps||[]).filter(s=>s.conversion_key);const s=ks[ks.length-1];return s?state.convs.find(c=>c.key===s.conversion_key):null};
   const yn=st=>st==='done'?'<span class="st done">✓</span>':'<span class="st open">offen</span>';
-  let head='<tr><th>'+esc(t('fn.product'))+'</th><th>Funnel</th><th>'+esc(t('fn.purpose'))+'</th>';
-  for(let i=0;i<maxSteps;i++)head+=`<th>${t('reg.step')} ${String(i+1).padStart(2,'0')}</th>`;
-  head+=`<th>${t('reg.notes')}</th><th>GA4 Event</th><th>GA4</th><th>Trigger</th><th>Ads ID</th><th>Ads Label</th><th>Value</th><th>Meta Event</th><th>Meta</th><th>${t('reg.qa')}</th></tr>`;
-  const rows=list.map(f=>{
-    const cv=goalConv(f);
+  // Kopf: „meine" Spalten (lila) links, Prabas Spalten (blau) ab GA4; Bearbeiten-Stift ganz rechts.
+  let head='<tr><th class="col-mine">'+esc(t('fn.product'))+'</th><th class="col-mine">Funnel</th><th class="col-mine">'+esc(t('fn.purpose'))+'</th>';
+  for(let i=0;i<maxSteps;i++)head+=`<th class="col-mine">${t('reg.step')} ${String(i+1).padStart(2,'0')}</th>`;
+  head+=`<th class="col-mine">${t('reg.notes')}</th>`
+    +`<th class="col-praba pcol-first">GA4 Event</th><th class="col-praba">GA4</th><th class="col-praba">Trigger</th>`
+    +`<th class="col-praba">Ads ID</th><th class="col-praba">Ads Label</th><th class="col-praba">Value</th><th class="col-praba">Ads</th>`
+    +`<th class="col-praba">Meta Event</th><th class="col-praba">Meta</th><th class="col-praba">${t('reg.qa')}</th>`
+    +`<th class="col-edit"></th></tr>`;
+  const rows=flist.map(f=>{
+    const cv=goalConv(f);const ts=trackState(f);
+    const dot=`<span class="rdot ${ts==='done'?'ok':ts==='open'?'wait':'na'}" title="${ts==='done'?'Tracking komplett':ts==='open'?'Tracking offen':'keine Conversion verknüpft'}"></span>`;
     let cells='';
-    for(let i=0;i<maxSteps;i++){const s=(f.steps||[])[i];cells+=`<td class="rstep">${s?`<b>${esc(s.title)||'—'}</b>${(s.url||s.interaction)?`<small>${esc(s.url||s.interaction)}</small>`:''}`:''}</td>`}
+    for(let i=0;i<maxSteps;i++){const s=(f.steps||[])[i];cells+=`<td class="col-mine rstep">${s?`<b>${esc(s.title)||'—'}</b>${(s.url||s.interaction)?`<small>${esc(s.url||s.interaction)}</small>`:''}`:''}</td>`}
     const notes=(f.steps||[]).map(s=>s.note).filter(Boolean).join(' · ');
-    return `<tr><td>${esc(glabel(f.product))}</td><td class="rfunnel"><button class="reg-edit" title="${t('fc.open')}" onclick="selectFunnel(${f.id})">✎</button><span class="fname" onclick="selectFunnel(${f.id})">${f.id!=null?`#${f.id} · `:''}${esc(f.name)}</span></td><td>${esc(f.purpose||'')}</td>${cells}<td>${esc(notes)}</td>`
-      +`<td class="rmono">${cv?(esc(cv.ga4_event)||'—'):'—'}</td><td>${cv?yn(cv.ga4_status):'—'}</td><td class="rmono">${cv?esc(cv.ga4_trigger||''):''}</td>`
-      +`<td class="rmono">${cv?esc(cv.ads_conversion_id||''):''}</td><td class="rmono">${cv?esc(cv.ads_label||''):''}</td><td>${cv?esc(cv.ads_value||''):''}</td>`
-      +`<td class="rmono">${cv?(esc(cv.meta_event)||'—'):'—'}</td><td>${cv?yn(cv.meta_status):'—'}</td><td>${cv?esc(cv.notes||''):''}</td></tr>`;
-  }).join('')||`<tr><td colspan="${maxSteps+13}" style="color:#5b6090;padding:20px">${t('fn.emptylist')}</td></tr>`;
+    return `<tr><td class="col-mine">${esc(glabel(f.product))}</td><td class="col-mine rfunnel">${dot}<span class="fname" onclick="selectFunnel(${f.id})">${f.id!=null?`#${f.id} · `:''}${esc(f.name)}</span></td><td class="col-mine">${esc(f.purpose||'')}</td>${cells}<td class="col-mine">${esc(notes)}</td>`
+      +`<td class="col-praba pcol-first rmono">${cv?(esc(cv.ga4_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.ga4_status):'—'}</td><td class="col-praba rmono">${cv?esc(cv.ga4_trigger||''):''}</td>`
+      +`<td class="col-praba rmono">${cv?esc(cv.ads_conversion_id||''):''}</td><td class="col-praba rmono">${cv?esc(cv.ads_label||''):''}</td><td class="col-praba">${cv?esc(cv.ads_value||''):''}</td><td class="col-praba">${cv?yn(cv.ads_status):'—'}</td>`
+      +`<td class="col-praba rmono">${cv?(esc(cv.meta_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.meta_status):'—'}</td><td class="col-praba">${cv?esc(cv.notes||''):''}</td>`
+      +`<td class="col-edit"><button class="reg-edit" title="${t('fc.open')}" onclick="selectFunnel(${f.id})">✎</button></td></tr>`;
+  }).join('')||`<tr><td colspan="99" style="color:#5b6090;padding:20px">${fltr==='all'?t('fn.emptylist'):t('reg.f.empty')}</td></tr>`;
   tbl.innerHTML=head+rows;
-  if($('regCount'))$('regCount').textContent=list.length;
+  if($('regCount'))$('regCount').textContent=fltr==='all'?flist.length:flist.length+' / '+list.length;
 }
 // Prabas Tracking-Felder für die im Funnel verwendeten Conversions (editierbar; schreibt in den EINEN Katalog).
 function renderFunnelPraba(f){
