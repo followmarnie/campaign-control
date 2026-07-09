@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TradeNeon Marketing Cockpit</title>
+<title>TradeNeon Campaign Control</title>
 <style>
   :root{
     --tn-bg:#07071a; --tn-ink:#f3f6ff; --tn-strong:#ffffff;
@@ -232,6 +232,36 @@
   .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
         border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px;margin-right:6px}
   @keyframes sp{to{transform:rotate(360deg)}}
+  /* ═══ App-Shell (Campaign Control) ═══ */
+  body{padding:0}
+  .app-shell{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+  .sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid var(--tn-border);background:var(--tn-surf-1);padding:18px 14px;display:flex;flex-direction:column;gap:16px}
+  .sidebar .brand{padding:4px 8px 14px;border-bottom:1px solid var(--tn-border)}
+  .sidebar .brand .logo{width:34px;height:34px;border-radius:10px;background:var(--tn-grad);box-shadow:var(--tn-glow);margin-bottom:10px}
+  .sidebar .brand h1{font-size:17px;margin:0}
+  .sidebar .brand .sub{font-size:11px;color:#9aa0cc;margin:2px 0 0}
+  .nav{display:flex;flex-direction:column;gap:4px}
+  .nav button{width:100%;text-align:left;background:transparent;border:1px solid transparent;color:#b9bee6;padding:9px 11px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;display:flex;align-items:center;gap:9px;transition:all .18s var(--tn-ease)}
+  .nav button:hover{background:var(--tn-surf-2)}
+  .nav button.on{background:var(--tn-grad);color:#fff;box-shadow:var(--tn-glow)}
+  .nav .ic{width:22px;height:22px;border-radius:7px;background:var(--tn-surf-3);display:grid;place-items:center;font-size:11px;flex:none;font-weight:700}
+  .nav button.on .ic{background:rgba(255,255,255,.2)}
+  .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--tn-border);padding-top:14px}
+  .side-foot .who input{width:100%}
+  .main{min-width:0;padding:30px 26px 80px}
+  .main .wrap{max-width:1060px;margin:0}
+  .dashgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .dashcard{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-l);padding:20px}
+  .dashcard h3{margin:0 0 6px;font-size:15px;color:#fff}
+  .dashcard p{margin:0 0 14px;color:#aab0d6;font-size:13px}
+  .assetfirst{background:linear-gradient(135deg,rgba(255,60,141,.08),rgba(150,57,243,.06));border:1px solid rgba(255,60,141,.22);border-radius:var(--tn-r-m);padding:12px 14px;margin-bottom:14px}
+  .assetfirst #nAssetPaste{font-size:12px}
+  .af-status{font-size:11.5px;color:#aab0d6;margin-top:8px;line-height:1.5;min-height:14px}
+  .af-status .ok{color:var(--tn-teal);font-weight:700}
+  .dashstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+  .dstat{background:var(--tn-surf-2);border:1px solid var(--tn-border);border-radius:999px;padding:6px 14px;font-size:12px;color:#aab0d6}
+  .dstat b{color:#fff;font-family:"SF Mono",Menlo,Consolas,monospace;margin-right:3px}
+  @media(max-width:900px){.app-shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:grid;grid-template-columns:repeat(2,1fr)}.dashgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -322,34 +352,59 @@
   </div>
 </div>
 
-<div class="wrap" id="app" style="filter:blur(3px);opacity:.4;pointer-events:none">
-  <div class="topbar">
-    <div>
-      <h1>TradeNeon Marketing Cockpit</h1>
-      <p class="sub"><span data-i18n="app.sub">Naming · UTM · Funnels &amp; Conversions</span> <span class="pill">v3 · Supabase</span></p>
+<div class="app-shell" id="app" style="filter:blur(3px);opacity:.4;pointer-events:none">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"></div>
+      <h1>TradeNeon</h1>
+      <p class="sub">Campaign Control</p>
     </div>
-    <div class="right">
+    <nav class="nav" id="nav">
+      <button data-v="dashboard" class="on"><span class="ic">▚</span><span data-i18n="nav.dashboard">Dashboard</span></button>
+      <button data-v="naming"><span class="ic">N</span><span data-i18n="nav.naming">Naming Studio</span></button>
+      <button data-v="utm"><span class="ic">U</span><span data-i18n="nav.utm">UTM-Builder</span></button>
+      <button data-v="fc"><span class="ic">F</span><span data-i18n="nav.fc">Funnel &amp; Tracking</span></button>
+      <button data-v="campaigns"><span class="ic">C</span><span data-i18n="nav.campaigns">Kampagnen-Übersicht</span></button>
+      <button data-v="settings"><span class="ic">S</span><span data-i18n="nav.settings">SOP / Settings</span></button>
+    </nav>
+    <div class="side-foot">
       <div class="langsw"><button data-l="de" class="on">DE</button><button data-l="en">EN</button></div>
       <button class="linkbtn" onclick="toggleHowto(true)" data-i18n="app.howto">So funktioniert's</button>
-      <span class="dot" id="connDot"></span><span class="conn" id="connLabel"></span>
+      <div><span class="dot" id="connDot"></span> <span class="conn" id="connLabel"></span></div>
       <span class="who"><input id="who" data-i18n-ph="app.who"></span>
       <span class="userchip"><span id="userEmail"></span> · <button class="linkbtn" id="logoutBtn" data-i18n="app.logout">Abmelden</button></span>
     </div>
-  </div>
+  </aside>
+  <main class="main">
+    <div class="wrap">
 
-  <div class="tabs" id="tabs">
-    <button data-v="naming" class="on" data-i18n="tab.naming">1 · Naming</button>
-    <button data-v="utm" data-i18n="tab.utm">2 · UTM-Builder</button>
-    <button data-v="fc" data-i18n="tab.fc">3 · Funnels &amp; Conversions</button>
-    <button data-v="campaigns" data-i18n="tab.campaigns">4 · Kampagnen-Übersicht</button>
+  <!-- ═══════════ VIEW · DASHBOARD ═══════════ -->
+  <div class="view on" id="view-dashboard">
+    <div style="margin-bottom:20px">
+      <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700" data-i18n="dash.title">Ein Cockpit. Fünf Module.</h2>
+      <p class="sub" data-i18n="dash.lead">Springe direkt in das Modul, das gerade gebraucht wird.</p>
+    </div>
+    <div class="dashstats" id="dashStats"></div>
+    <div class="dashgrid">
+      <div class="dashcard"><h3>Naming Studio</h3><p>Asset → Delivery Group → Campaign. SOP-konforme Namen.</p><button class="btn sm" onclick="switchView('naming')" data-i18n="dash.open">Öffnen</button></div>
+      <div class="dashcard"><h3>UTM-Builder</h3><p>Tracking-URLs bauen, suchen, kopieren.</p><button class="btn sm" onclick="switchView('utm')" data-i18n="dash.open">Öffnen</button></div>
+      <div class="dashcard"><h3>Funnel &amp; Tracking</h3><p>Funnel-Wege + Conversion-Messpunkte (GA4 / Ads / Meta).</p><button class="btn sm" onclick="switchView('fc')" data-i18n="dash.open">Öffnen</button></div>
+      <div class="dashcard"><h3>Kampagnen-Übersicht</h3><p>Wie Naming, UTM, Funnel &amp; Conversions zusammenhängen.</p><button class="btn sm" onclick="switchView('campaigns')" data-i18n="dash.open">Öffnen</button></div>
+      <div class="dashcard"><h3>SOP / Settings</h3><p>Regelquellen: Plattform-Labels, Source/Medium, Rezepte.</p><button class="btn sm" onclick="switchView('settings')" data-i18n="dash.open">Öffnen</button></div>
+    </div>
   </div>
 
   <!-- ═══════════ VIEW · NAMING ═══════════ -->
-  <div class="view on" id="view-naming">
+  <div class="view" id="view-naming">
   <div class="note" data-i18n="nm.note"></div>
   <div class="grid">
     <div class="card">
       <h2 data-i18n="nm.inputtitle">Eingabe — SOP-Bausteine</h2>
+      <div class="assetfirst">
+        <label style="margin-top:0" data-i18n="af.label">Asset-first: fertigen Asset-Namen einfügen</label>
+        <input id="nAssetPaste" class="out" data-i18n-ph="af.ph" placeholder="ADS_2026_009_LOI_LM_CB01_KI-im-Trading_DE_H1_CTA1_16x9_260505_V3">
+        <div class="af-status" id="nParseStatus"></div>
+      </div>
       <label data-i18n="f.ptype">Plattform-Typ</label>
       <div class="seg" id="nptype">
         <button data-t="paid" class="on" data-i18n="seg.paid">Werbe (Paid)</button>
@@ -638,6 +693,29 @@
     </div>
     <div id="cmList"></div>
   </div>
+
+  <!-- ═══════════ VIEW · SOP / SETTINGS ═══════════ -->
+  <div class="view" id="view-settings">
+    <div style="margin-bottom:16px">
+      <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700" data-i18n="set.title">SOP / Settings</h2>
+      <p class="sub" data-i18n="set.lead">Regelquellen. Die SOP bleibt maßgeblich — das Tool bildet sie nur ab.</p>
+    </div>
+    <div class="card">
+      <h2>Plattform-Hierarchie (SOP_Platform_Naming)</h2>
+      <div class="tblwrap"><table>
+        <thead><tr><th>Plattform</th><th>Ebene 1</th><th>Ebene 2</th><th>Ebene 3</th></tr></thead>
+        <tbody>
+          <tr><td>Meta</td><td>Campaign</td><td>Ad Set</td><td>Ad</td></tr>
+          <tr><td>Google Search</td><td>Campaign</td><td>Ad Group</td><td>Ad / Keyword / Asset</td></tr>
+          <tr><td>Google PMax</td><td>Campaign</td><td>Asset Group</td><td>Asset / Creative Theme</td></tr>
+          <tr><td>ActiveCampaign</td><td>Campaign / Automation</td><td>Sequence</td><td>Email</td></tr>
+        </tbody>
+      </table></div>
+      <p class="hint" style="margin-top:12px">Source/Medium-Defaults und bestätigte Naming-Rezepte folgen (Stage 5).</p>
+    </div>
+  </div>
+    </div>
+  </main>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -655,6 +733,9 @@ const T={
   'app.sub':'Naming · UTM · Funnels & Conversions','app.howto':"So funktioniert's",'app.logout':'Abmelden','app.who':'Dein Name (created_by)',
   'howto.close':'Schließen',
   'tab.naming':'1 · Naming','tab.utm':'2 · UTM-Builder','tab.fc':'3 · Funnels & Conversions','tab.campaigns':'4 · Kampagnen-Übersicht',
+  'nav.dashboard':'Dashboard','nav.naming':'Naming Studio','nav.utm':'UTM-Builder','nav.fc':'Funnel & Tracking','nav.campaigns':'Kampagnen-Übersicht','nav.settings':'SOP / Settings',
+  'dash.title':'Ein Cockpit. Fünf Module.','dash.lead':'Springe direkt in das Modul, das gerade gebraucht wird — Namen bauen, UTM kopieren, Funnel & Tracking prüfen oder Kampagnen im Zusammenhang sehen.','dash.open':'Öffnen',
+  'set.title':'SOP / Settings','set.lead':'Regelquellen. Die SOP bleibt maßgeblich — das Tool bildet sie nur ab.',
   'ub.onlyopen':'Nur noch nicht verknüpfte zeigen','nm.linkcol':'UTM?','fn.producthint':'(oder neue tippen)',
   'cm.note':'<b>Kampagnen-Übersicht.</b> Vogelperspektive je Kampagne (utm_campaign): welche Naming-Einträge, UTM-Links, Funnels und Conversions hängen zusammen — und was ist noch <b>offen</b> (Naming ohne UTM-Verknüpfung).',
   'cm.filter':'Kampagne filtern','cm.empty':'Noch keine Kampagnen — im Naming- oder UTM-Tab anlegen.',
@@ -675,6 +756,7 @@ const T={
   'nm.savehint':'Speichert eine Zeile in der Namensliste (kein UTM/URL — das kommt im UTM-Builder).',
   'nm.listtitle':'Gespeicherte Namen','nm.empty':'Noch keine Namen — links bauen und „Namen speichern".',
   'row.campaign':'Campaign Name','row.adset':'AdSet (kein UTM)','row.automation':'Automation','row.adid':'Ad-Identifier','row.emailid':'Email-Identifier',
+  'af.label':'Asset-first: fertigen Asset-Namen einfügen <span class="hint">(aus dem Name-Wizard)</span>','af.ph':'ADS_2026_009_LOI_LM_CB01_KI-im-Trading_DE_H1_CTA1_16x9_260505_V3','af.recognized':'Erkannt','af.stillpick':'Noch wählen: Funnel-Typ + Monat (stecken nicht im Asset-Namen).',
   // UTM
   'ub.note':'<b>UTM-Builder = Tracking-URL bauen.</b> Naming-Eintrag wählen (übernimmt Campaign + Content) → Source/Medium/Funnel/URL ergänzen → die <code>utm_id</code> vergibt die Datenbank kollisionsfrei. In die URL fließt nur der Campaign-Name, nicht der AdSet-Name.',
   'ub.inputtitle':'Tracking-URL bauen','ub.outtitle':'Output','ub.naming':'Naming-Eintrag <span class="hint">(oder manuell)</span>',
@@ -716,6 +798,9 @@ const T={
   'app.sub':'Naming · UTM · Funnels & Conversions','app.howto':'How it works','app.logout':'Log out','app.who':'Your name (created_by)',
   'howto.close':'Close',
   'tab.naming':'1 · Naming','tab.utm':'2 · UTM builder','tab.fc':'3 · Funnels & Conversions','tab.campaigns':'4 · Campaign overview',
+  'nav.dashboard':'Dashboard','nav.naming':'Naming Studio','nav.utm':'UTM builder','nav.fc':'Funnel & Tracking','nav.campaigns':'Campaign overview','nav.settings':'SOP / Settings',
+  'dash.title':'One cockpit. Five modules.','dash.lead':'Jump straight into the module you need — build names, copy UTMs, check funnel & tracking, or see campaigns in context.','dash.open':'Open',
+  'set.title':'SOP / Settings','set.lead':'The rule sources live here. The SOP stays authoritative — the tool only reflects it.',
   'ub.onlyopen':'Show only not-yet-linked','nm.linkcol':'UTM?','fn.producthint':'(or type a new one)',
   'cm.note':'<b>Campaign overview.</b> Bird-eye view per campaign (utm_campaign): which naming entries, UTM links, funnels and conversions belong together — and what is still <b>open</b> (naming without a UTM link).',
   'cm.filter':'Filter campaign','cm.empty':'No campaigns yet — create them in the Naming or UTM tab.',
@@ -735,6 +820,7 @@ const T={
   'nm.savehint':'Saves a row to the name list (no UTM/URL — that comes in the UTM builder).',
   'nm.listtitle':'Saved names','nm.empty':'No names yet — build on the left and “Save name”.',
   'row.campaign':'Campaign name','row.adset':'Ad set (no UTM)','row.automation':'Automation','row.adid':'Ad identifier','row.emailid':'Email identifier',
+  'af.label':'Asset-first: paste a finished asset name <span class="hint">(from the Name Wizard)</span>','af.ph':'ADS_2026_009_LOI_LM_CB01_KI-im-Trading_DE_H1_CTA1_16x9_260505_V3','af.recognized':'Recognized','af.stillpick':'Still to pick: funnel type + month (not contained in the asset name).',
   'ub.note':'<b>UTM builder = build the tracking URL.</b> Pick a naming entry (carries campaign + content) → add source/medium/funnel/URL → the <code>utm_id</code> is assigned collision-free. Only the campaign name flows into the URL, not the ad-set name.',
   'ub.inputtitle':'Build tracking URL','ub.outtitle':'Output','ub.naming':'Naming entry <span class="hint">(or manual)</span>',
   'ub.source':'utm_source','ub.medium':'utm_medium <span class="hint">(auto, editable)</span>','ub.term':'utm_term <span class="hint">(Google Search, opt.)</span>',
@@ -780,7 +866,7 @@ function applyLang(){
   $('howtoDE').style.display=LANG==='de'?'':'none';
   $('howtoEN').style.display=LANG==='en'?'':'none';
   setConn(connState);
-  if(authed){renderNamingOut();renderUtmOut();refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderCampaigns();}
+  if(authed){renderNamingOut();renderUtmOut();refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderCampaigns();renderDashboard();}
 }
 function setLang(l){LANG=l;localStorage.setItem('tn_cockpit_lang',l);applyLang();}
 
@@ -929,7 +1015,7 @@ async function loadAll(){
     ]);
     state.rows=rows||[];state.naming=naming||[];state.funnels=funnels||[];state.convs=convs||[];
     setConn('ok');
-    refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderCampaigns();
+    refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderCampaigns();renderDashboard();
   }catch(e){setConn('err');toast(t('ct.loadfail')+': '+e.message,true)}
 }
 // Dropdowns, die von geladenen Daten abhängen (Naming-Picker, Funnel-Referenzen)
@@ -949,6 +1035,44 @@ function refreshDynamic(){
 }
 
 /* ═══════════════ TAB 1 · NAMING ═══════════════ */
+// Asset-first: fertigen Wizard-/Asset-Namen rückwärts in die Felder parsen (Muster-basiert, Funktions-Tag optional).
+const NM_TAGS=new Set(['LM','EVT','BOF','RET','AW']);
+const NM_CH=new Set(OPT.channel.map(x=>x[0]));
+const NM_CODES=new Set(OPT.fmt.map(x=>x[0]));
+function parseWizardName(raw){
+  const t=(raw||'').trim().replace(/\.[a-z0-9]+$/i,'').split('_').filter(Boolean);
+  let i=0; const prefix=(t[i]||'').toUpperCase();
+  if(/^(ADS|LF|RAW|AUD|TR|PPT|ME|EMAIL)$/.test(prefix))i++;
+  if(/^\d{4}$/.test(t[i]||''))i++;               // Jahr
+  if(/^\d{2,}$/.test(t[i]||''))i++;              // laufende Produktions-Nr (überspringen)
+  const channel=NM_CH.has((t[i]||'').toUpperCase())?(t[i++]).toUpperCase():'';
+  const tag=NM_TAGS.has((t[i]||'').toUpperCase())?(t[i++]).toUpperCase():'';  // optional!
+  let fmt='',nn=''; const cm=(t[i]||'').match(/^([A-Za-z]+)(\d+)$/);
+  if(cm&&NM_CODES.has(cm[1].toUpperCase())){fmt=cm[1].toUpperCase();nn=cm[2];i++;}
+  const topic=t[i++]||'';
+  const lang=/^(DE|EN)$/i.test(t[i]||'')?(t[i++]).toUpperCase():'';
+  let hook='',cta=''; t.slice(i).forEach(tok=>{let m; if(m=tok.match(/^H(\d+)$/i))hook=m[1]; else if(m=tok.match(/^CTA(\d+)$/i))cta=m[1];});
+  return {prefix,channel,tag,fmt,nn,topic,lang,hook,cta};
+}
+function nmSetField(id,v){const el=$(id);if(!el)return;if(el.tagName==='SELECT'){if([...el.options].some(o=>o.value===v))el.value=v;}else if(v!=null&&v!=='')el.value=v;}
+function applyWizardName(){
+  const raw=$('nAssetPaste').value;
+  if(!raw.trim()){$('nParseStatus').innerHTML='';return}
+  const p=parseWizardName(raw);
+  if(/^ADS$/.test(p.prefix)&&nameMode!=='paid')setNameMode('paid');
+  nmSetField('nChannel',p.channel);
+  nmSetField('nTag',p.tag||'');
+  nmSetField('nFmt',p.fmt);
+  if(p.nn)nmSetField('nFmtnn',String(parseInt(p.nn,10)));
+  nmSetField('nThema',p.topic);
+  nmSetField('nLang',p.lang);
+  if(p.hook)nmSetField('nHook',String(parseInt(p.hook,10)));
+  if(p.cta)nmSetField('nCta',String(parseInt(p.cta,10)));
+  renderNamingOut();
+  $('nParseStatus').innerHTML=`<span class="ok">${t('af.recognized')}:</span> `+
+    [p.channel,p.tag,(p.fmt||'')+(p.nn||''),p.topic,p.lang,p.hook?'H'+p.hook:'',p.cta?'CTA'+p.cta:''].filter(Boolean).map(esc).join(' · ')+
+    ` — <b>${t('af.stillpick')}</b>`;
+}
 function deriveNaming(){
   const channel=$('nChannel').value, tag=$('nTag').value, funnel=$('nFunnel').value,
         thema=$('nThema').value.trim(), datum=$('nDatum').value.trim();
@@ -1498,20 +1622,27 @@ function toast(m,err){const el=$('toast');el.textContent=m;el.classList.toggle('
 function setConn(s){connState=s;const d=$('connDot'),l=$('connLabel');if(!d)return;
   d.className='dot'+(s==='ok'?' ok':s==='err'?' err':'');l.textContent=t('conn.'+s);}
 function toggleHowto(show){$('howtoOverlay').classList.toggle('hidden',!show)}
+function renderDashboard(){
+  const s=$('dashStats'); if(!s)return;
+  const items=[[state.funnels.length,'Funnels'],[state.convs.length,'Conversions'],[state.rows.length,'UTM-Links'],[state.naming.length,LANG==='de'?'Namen':'Names']];
+  s.innerHTML=items.map(([n,l])=>`<span class="dstat"><b>${n}</b> ${esc(l)}</span>`).join('');
+}
 function switchView(v){
-  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='view-'+v));
   if(v==='campaigns')renderCampaigns();
   if(v==='fc')renderFcTabs();
+  if(v==='dashboard')renderDashboard();
 }
 
 /* ─────────────── Init ─────────────── */
 fillSrc('uSrc');fillMed('uMed');
 document.querySelectorAll('.langsw').forEach(sw=>sw.querySelectorAll('button').forEach(b=>b.onclick=()=>setLang(b.dataset.l)));
-document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 document.querySelectorAll('#nptype button').forEach(b=>b.onclick=()=>setNameMode(b.dataset.t));
 // Naming-Formular live
 document.querySelectorAll('#view-naming .card input,#view-naming .card select').forEach(el=>el.addEventListener('input',renderNamingOut));
+$('nAssetPaste').addEventListener('input',applyWizardName);
 // UTM-Formular live
 $('uNaming').addEventListener('change',onNamingPick);
 $('uSrc').addEventListener('change',onSrcChange);
