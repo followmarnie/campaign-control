@@ -423,6 +423,13 @@
   .dashstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
   .dstat{background:var(--tn-surf-2);border:1px solid var(--tn-border);border-radius:999px;padding:6px 14px;font-size:12px;color:#aab0d6}
   .dstat b{color:#fff;font-family:"SF Mono",Menlo,Consolas,monospace;margin-right:3px}
+  /* Sortierbare Tabellenköpfe */
+  th.sortable{cursor:pointer;user-select:none;white-space:nowrap;transition:color .12s}
+  th.sortable:hover{color:#cfd4f0}
+  th.sortable.on{color:#fff}
+  th .sarr{margin-left:6px;font-size:9px;opacity:.3}
+  th.sortable.on .sarr{opacity:1;color:#aab0ff}
+  td.rid{font-family:"SF Mono",Menlo,Consolas,monospace;color:#7d84b4;width:56px;white-space:nowrap}
   .dstat.attn{border-color:rgba(255,132,106,.42);background:rgba(255,132,106,.08);color:#ffb39f}
   .dstat.attn b{color:#ffb39f}
   .dstat.clear{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08);color:#8ff0b0}
@@ -725,8 +732,15 @@
       <div class="tblwrap">
         <table id="namingTbl">
           <thead><tr>
-            <th data-i18n="r.type">Typ</th><th>Campaign Name</th><th>AdSet / Automation</th><th data-i18n="nm.ident">Ad-/E-Mail-Identifier</th>
-            <th>utm_campaign</th><th>utm_content</th><th data-i18n="nm.linkcol">UTM?</th><th style="width:70px"></th>
+            <th class="sortable" data-sk="id" onclick="setSort('naming','id')">#<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="platform_type" onclick="setSort('naming','platform_type')"><span data-i18n="r.type">Typ</span><span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="campaign_name" onclick="setSort('naming','campaign_name')">Campaign Name<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="adset_or_automation" onclick="setSort('naming','adset_or_automation')">AdSet / Automation<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="asset_identifier" onclick="setSort('naming','asset_identifier')"><span data-i18n="nm.ident">Ad-/E-Mail-Identifier</span><span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_campaign" onclick="setSort('naming','utm_campaign')">utm_campaign<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_content" onclick="setSort('naming','utm_content')">utm_content<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="linked" onclick="setSort('naming','linked')"><span data-i18n="nm.linkcol">UTM?</span><span class="sarr">⇅</span></th>
+            <th style="width:70px"></th>
           </tr></thead>
           <tbody></tbody>
         </table>
@@ -820,8 +834,14 @@
       <div class="tblwrap">
         <table id="tbl">
           <thead><tr>
-            <th>utm_id</th><th data-i18n="r.type">Typ</th><th>utm_campaign</th><th data-i18n="nm.ident">Identifier</th>
-            <th>source</th><th>medium</th><th>content</th><th data-i18n="r.fullurl">Volle URL</th><th style="width:110px"></th>
+            <th class="sortable" data-sk="utm_id" onclick="setSort('utm','utm_id')">utm_id<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="platform_type" onclick="setSort('utm','platform_type')"><span data-i18n="r.type">Typ</span><span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_campaign" onclick="setSort('utm','utm_campaign')">utm_campaign<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="asset_identifier" onclick="setSort('utm','asset_identifier')"><span data-i18n="nm.ident">Identifier</span><span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_source" onclick="setSort('utm','utm_source')">source<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_medium" onclick="setSort('utm','utm_medium')">medium<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_content" onclick="setSort('utm','utm_content')">content<span class="sarr">⇅</span></th>
+            <th data-i18n="r.fullurl">Volle URL</th><th style="width:110px"></th>
           </tr></thead>
           <tbody></tbody>
         </table>
@@ -930,7 +950,11 @@
       <div class="tblwrap">
         <table id="cvTbl">
           <thead><tr>
-            <th>Key</th><th data-i18n="cv.name">Name</th><th>GA4</th><th>Google Ads</th><th>Meta</th>
+            <th class="sortable" data-sk="key" onclick="setSort('conv','key')">Key<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="name" onclick="setSort('conv','name')"><span data-i18n="cv.name">Name</span><span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="ga4_status" onclick="setSort('conv','ga4_status')">GA4<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="ads_status" onclick="setSort('conv','ads_status')">Google Ads<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="meta_status" onclick="setSort('conv','meta_status')">Meta<span class="sarr">⇅</span></th>
             <th data-i18n="cv.notes">Notizen</th><th style="width:70px"></th>
           </tr></thead>
           <tbody></tbody>
@@ -1609,9 +1633,36 @@ async function delNaming(id){
   try{await sb(`naming_registry?id=eq.${id}`,{method:'DELETE'});if(state.editN===id)resetNaming();await loadAll();toast(t('nm.deleted'))}
   catch(e){toast(t('ct.delfail')+': '+e.message,true)}
 }
+/* ─── Generische Tabellen-Sortierung (Naming · UTM · Conversions) ─── */
+const sortState={naming:{k:'id',d:1},utm:{k:'utm_id',d:1},conv:{k:'key',d:1}};
+const SORT_ACC={naming:{id:n=>Number(n.id)||0,linked:n=>namingLinked(n.id)?1:0},utm:{},conv:{}};
+function sortList(arr,tbl){
+  const s=sortState[tbl];
+  const acc=(SORT_ACC[tbl]||{})[s.k]||(r=>r[s.k]);
+  return arr.slice().sort((a,b)=>{
+    const x=acc(a),y=acc(b);
+    if(typeof x==='number'&&typeof y==='number')return (x-y)*s.d;
+    return String(x==null?'':x).localeCompare(String(y==null?'':y),undefined,{numeric:true,sensitivity:'base'})*s.d;
+  });
+}
+function setSort(tbl,k){
+  const s=sortState[tbl];
+  if(s.k===k)s.d=-s.d; else {s.k=k;s.d=1;}
+  if(tbl==='naming')renderNamingList(); else if(tbl==='utm')renderRegistry(); else renderConversions();
+}
+function updateSortArrows(tblId,tbl){
+  const tb=$(tblId); if(!tb)return;
+  const s=sortState[tbl];
+  tb.querySelectorAll('thead th.sortable').forEach(el=>{
+    const on=el.dataset.sk===s.k;
+    el.classList.toggle('on',on);
+    const a=el.querySelector('.sarr'); if(a)a.textContent=on?(s.d>0?'\u25B2':'\u25BC'):'\u21C5';
+  });
+}
 function renderNamingList(){
   if(!$('namingTbl'))return;
-  $('namingTbl').querySelector('tbody').innerHTML=state.naming.map(n=>`<tr>
+  $('namingTbl').querySelector('tbody').innerHTML=sortList(state.naming,'naming').map(n=>`<tr>
+    <td class="mono rid">#${esc(n.id)}</td>
     <td><span class="tag ${esc(n.platform_type||'paid')}">${esc(n.platform_type||'—')}</span></td>
     <td class="mono">${esc(n.campaign_name)||'—'}</td>
     <td class="mono ident">${esc(n.adset_or_automation)||'—'}</td>
@@ -1620,8 +1671,9 @@ function renderNamingList(){
     <td class="mono">${esc(n.utm_content)||'—'}</td>
     <td>${namingLinked(n.id)?`<span class="cmlink on">✓ ${LANG==='de'?'verknüpft':'linked'}</span>`:`<span class="cmlink off">${LANG==='de'?'offen':'open'}</span>`}</td>
     <td><span class="act edit" onclick="editNaming(${n.id})">✎</span> <span class="act del" onclick="delNaming(${n.id})">✕</span></td>
-  </tr>`).join('')||`<tr><td colspan="8" style="color:#5b6090;padding:20px">${t('nm.empty')}</td></tr>`;
+  </tr>`).join('')||`<tr><td colspan="9" style="color:#5b6090;padding:20px">${t('nm.empty')}</td></tr>`;
   $('nCount').textContent=state.naming.length;
+  updateSortArrows('namingTbl','naming');
 }
 
 /* ═══════════════ TAB 2 · UTM-BUILDER ═══════════════ */
@@ -1729,7 +1781,7 @@ function renderRegistry(){
   const fy=$('fYear').value.trim(), fc=$('fCampaign').value.trim().toLowerCase(), fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
   const flt=state.rows.filter(r=>(!fy||(r.period||'').includes(fy)||(r.utm_campaign||'').includes(fy))&&(!fc||(r.utm_campaign||'').toLowerCase().includes(fc))
     &&(!fs||r.utm_source===fs)&&(!ff||(r.funnel_ref||r.funnel_type)===ff)&&(!fch||r.channel===fch));
-  $('tbl').querySelector('tbody').innerHTML=flt.map(r=>`<tr data-id="${esc(r.utm_id)}">
+  $('tbl').querySelector('tbody').innerHTML=sortList(flt,'utm').map(r=>`<tr data-id="${esc(r.utm_id)}">
     <td class="mono counter">${esc(r.utm_id)}</td>
     <td><span class="tag ${esc(r.platform_type)}">${esc(r.platform_type)}</span></td>
     <td class="mono" data-col="utm_campaign">${esc(r.utm_campaign)||'—'}</td>
@@ -1745,6 +1797,7 @@ function renderRegistry(){
       <span class="act del" title="Delete" onclick="delRow('${esc(r.utm_id)}')">✕</span>
     </td></tr>`).join('')||`<tr><td colspan="9" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
   $('rowCount').textContent=state.rows.length+' '+(state.rows.length===1?(LANG==='de'?'Zeile':'row'):(LANG==='de'?'Zeilen':'rows'));
+  updateSortArrows('tbl','utm');
 }
 async function delRow(id){
   if(!confirm(t('cf.del',{id})))return;
@@ -2029,7 +2082,7 @@ async function deleteFunnel(){
 function stChip(s){return `<span class="st ${s==='done'?'done':s==='open'?'open':'none'}">${s==='done'?'✓':s==='open'?(LANG==='de'?'offen':'open'):'—'}</span>`}
 function renderConversions(){
   if(!$('cvTbl'))return;
-  $('cvTbl').querySelector('tbody').innerHTML=state.convs.map(c=>`<tr>
+  $('cvTbl').querySelector('tbody').innerHTML=sortList(state.convs,'conv').map(c=>`<tr>
     <td class="mono">${esc(c.key)}</td>
     <td>${esc(c.name)}<div class="hint">${esc(c.path||'')}</div></td>
     <td><span class="mono">${esc(c.ga4_event)||'—'}</span> ${stChip(c.ga4_status)}${c.ga4_trigger?`<div class="hint">${esc(c.ga4_trigger)}</div>`:''}</td>
@@ -2041,6 +2094,7 @@ function renderConversions(){
       <span class="act del" onclick="delConv(${c.id})">✕</span>
     </td></tr>`).join('')||`<tr><td colspan="7" style="color:#5b6090;padding:20px">${t('cv.empty')}</td></tr>`;
   $('cvCount').textContent=state.convs.length;
+  updateSortArrows('cvTbl','conv');
 }
 function editConv(id){
   const c=state.convs.find(x=>x.id===id);if(!c)return;
