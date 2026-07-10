@@ -619,11 +619,6 @@
       <p class="sub" data-i18n="dash.lead">Springe direkt in das Modul, das gerade gebraucht wird.</p>
     </div>
     <div class="dashstats" id="dashStats"></div>
-    <div class="card" style="margin-bottom:20px">
-      <h2 style="margin:0 0 4px"><span data-i18n="ot.title">Offene Aufgaben</span></h2>
-      <p class="hint" style="margin:0 0 14px" data-i18n="ot.sub">Was noch nicht abgeschlossen ist — nach Zuständigkeit getrennt. Klick springt an die Stelle.</p>
-      <div id="otBox"></div>
-    </div>
     <div class="dashgrid">
       <div class="dashcard"><h3 data-i18n="nav.naming">Naming Studio</h3><p data-i18n="dash.c.naming">Asset → AdSet → Campaign. SOP-konforme Namen.</p><button class="btn sm" onclick="switchView('naming')" data-i18n="dash.open">Öffnen</button></div>
       <div class="dashcard"><h3 data-i18n="nav.structure">Campaign Structure Map</h3><p data-i18n="dash.c.structure">Campaign → AdSet/Automation → Ads, als Baum und Graph.</p><button class="btn sm" onclick="switchView('structure')" data-i18n="dash.open">Öffnen</button></div>
@@ -631,6 +626,11 @@
       <div class="dashcard"><h3 data-i18n="nav.fc">Funnel &amp; Tracking</h3><p data-i18n="dash.c.fc">Funnel-Wege + Conversion-Messpunkte (GA4 / Ads / Meta).</p><button class="btn sm" onclick="switchView('fc')" data-i18n="dash.open">Öffnen</button></div>
       <div class="dashcard"><h3 data-i18n="nav.campaigns">Kampagnen-Übersicht</h3><p data-i18n="dash.c.campaigns">Wie Naming, UTM, Funnel &amp; Conversions zusammenhängen.</p><button class="btn sm" onclick="switchView('campaigns')" data-i18n="dash.open">Öffnen</button></div>
       <div class="dashcard"><h3 data-i18n="nav.settings">SOP / Settings</h3><p data-i18n="dash.c.settings">Regelquellen: Plattform-Labels, Source/Medium, Rezepte.</p><button class="btn sm" onclick="switchView('settings')" data-i18n="dash.open">Öffnen</button></div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h2 style="margin:0 0 4px"><span data-i18n="ot.title">Offene Aufgaben</span></h2>
+      <p class="hint" style="margin:0 0 14px" data-i18n="ot.sub">Was noch nicht abgeschlossen ist — nach Zuständigkeit getrennt. Klick springt an die Stelle.</p>
+      <div id="otBox"></div>
     </div>
   </div>
 
