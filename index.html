@@ -98,7 +98,7 @@
   #tbl td.ident{max-width:260px;overflow:hidden;text-overflow:ellipsis}
   #namingTbl{min-width:900px}
   #namingTbl td{white-space:nowrap}
-  #namingTbl td.ident{max-width:300px;overflow:hidden;text-overflow:ellipsis}
+  #namingTbl td.ident{min-width:360px}
   .tag{display:inline-block;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:600}
   .tag.paid{background:rgba(102,102,255,.18);color:#aab0ff}
   .tag.email{background:rgba(23,248,224,.15);color:#7df3e6}
@@ -314,6 +314,34 @@
   .sm-soon{text-align:center;padding:48px 24px;border:1px dashed var(--tn-border);border-radius:16px;background:var(--tn-surf-1)}
   .sm-soon b{font-size:15px;color:#cfd4f0}
   .sm-soon p{color:#8e94c0;max-width:520px;margin:8px auto 0;font-size:13px;line-height:1.5}
+  /* Struktur-Graph (Org-Chart, CSS-Connectors, datengetrieben) */
+  .smg-scroll{overflow-x:auto;padding:6px 2px 14px;margin-bottom:8px}
+  .smg-tree{white-space:nowrap;text-align:center;list-style:none;padding:0;margin:0}
+  .smg-tree ul{padding-top:22px;position:relative;list-style:none;margin:0}
+  .smg-tree li{display:inline-block;vertical-align:top;text-align:center;position:relative;padding:22px 12px 0}
+  .smg-tree li::before,.smg-tree li::after{content:'';position:absolute;top:0;right:50%;border-top:2px solid var(--tn-border);width:50%;height:22px}
+  .smg-tree li::after{right:auto;left:50%;border-left:2px solid var(--tn-border)}
+  .smg-tree li:only-child::after,.smg-tree li:only-child::before{display:none}
+  .smg-tree li:only-child{padding-top:22px}
+  .smg-tree li:first-child::before,.smg-tree li:last-child::after{border:0 none}
+  .smg-tree li:last-child::before{border-right:2px solid var(--tn-border);border-radius:0 6px 0 0}
+  .smg-tree li:first-child::after{border-radius:6px 0 0 0}
+  .smg-tree ul ul::before{content:'';position:absolute;top:0;left:50%;border-left:2px solid var(--tn-border);width:0;height:22px}
+  .smg-tree>li{padding-top:0}
+  .smg-tree>li::before,.smg-tree>li::after{display:none}
+  .smg-node{display:inline-block;border:1px solid var(--tn-border);border-radius:12px;padding:9px 12px;background:rgba(9,12,35,.7);white-space:normal;text-align:left;min-width:140px;max-width:230px}
+  .smg-node .sm-badge{margin-bottom:5px}
+  .smg-node b{display:block;font-size:13px;color:#fff;line-height:1.2}
+  .smg-node .smg-sub{display:block;font-size:10.5px;color:#8e94c0;margin-top:3px}
+  .smg-node.camp{border-color:rgba(23,248,224,.3);background:linear-gradient(135deg,rgba(23,248,224,.07),rgba(9,12,35,.7))}
+  .smg-node.camp b{font-size:14px}
+  .smg-node.adset{border-color:rgba(102,102,255,.32)}
+  .smg-node.email{border-color:rgba(237,251,140,.28)}
+  .smg-node.ad{cursor:pointer;transition:.12s;min-width:150px}
+  .smg-node.ad:hover{border-color:rgba(150,57,243,.55);background:rgba(150,57,243,.08)}
+  .smg-node.ad .mono{font-size:10px}
+  .smg-note{display:block;margin-top:4px;font-size:10.5px;color:#c9b3ff;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+  .sm-note{color:#c9b3ff;font-size:11px;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px;flex:none}
   .fn-id{display:inline-block;font-size:10px;font-weight:800;color:#cfa6ff;background:rgba(150,57,243,.16);border:1px solid rgba(150,57,243,.3);border-radius:6px;padding:1px 5px;vertical-align:middle;letter-spacing:.02em}
   .fn-id.new{color:#7df3e6;background:rgba(23,248,224,.12);border-color:rgba(23,248,224,.3)}
   table.reg .rfunnel{white-space:nowrap;min-width:250px}
@@ -697,12 +725,7 @@
       </div>
       <p class="hint" data-i18n="sm.sub" style="margin:-4px 0 14px">Zweite Sicht auf dieselben gespeicherten Namen — Campaign → AdSet/Automation → Ads. Kurz-Labels für die Orientierung; voller SOP-Name bei Hover; Klick öffnet den Eintrag im Naming Studio.</p>
       <div id="smTree"></div>
-      <div id="smMap" style="display:none">
-        <div class="sm-soon">
-          <b data-i18n="sm.mapsoon.h">Visueller Struktur-Graph — folgt</b>
-          <p data-i18n="sm.mapsoon.p">Das Auto-Layout-Diagramm (Campaign → AdSet → Ads als Netz) kommt als nächster Ausbau. Die Baum-Liste links deckt heute schon dieselbe Struktur ab und wächst automatisch mit den Daten.</p>
-        </div>
-      </div>
+      <div id="smMap" style="display:none"></div>
     </div>
   </div>
 
@@ -1490,9 +1513,25 @@ function monthShort(p){if(!p)return '';const seg=String(p).split('-');const nm={
 function campaignShort(n){const parts=[];if(n.funnel_type)parts.push(n.funnel_type);if(n.topic_slug)parts.push(n.topic_slug.replace(/-/g,' '));let s=parts.join(' · ')||n.campaign_name||'—';const mo=monthShort(n.period);if(mo)s+=' · '+mo;if(n.variant)s+=' · '+n.variant;return s;}
 function adsetShort(n){const s=n.adset_or_automation||'';if(!s)return '—';if((n.platform_type||'paid')!=='email'){const p=s.split('_');return p[0]+(p.length>=3?' · '+p[p.length-1]:(p[1]?' · '+p[1]:''));}let rem=s;if(n.campaign_name&&s.startsWith(n.campaign_name+'_'))rem=s.slice(n.campaign_name.length+1);return rem.replace(/_/g,' · ');}
 function assetShort(n){const c=n.utm_content||'';if(c)return c.replace(/_/g,' · ');const a=n.asset_identifier||'';if(!a)return '—';return a.split('_').slice(-3).join(' · ');}
+function noteShort(s){return String(s||'').split(' | ')[0].trim();}
 function openNaming(id){switchView('naming');editNaming(id);}
 function setSmView(v){state.smView=v;document.querySelectorAll('#smView button').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick')===`setSmView('${v}')`));$('smTree').style.display=v==='tree'?'':'none';$('smMap').style.display=v==='map'?'':'none';}
 // Baum-Ansicht: Campaign → AdSet/Automation → Ads. Reine Zweitsicht auf naming_registry.
+function smMapHTML(camps){
+  let out='';
+  for(const [ck,sets] of camps){
+    const anyN=[...sets.values()][0][0];const total=[...sets.values()].reduce((a,x)=>a+x.length,0);
+    let setsLi='';
+    for(const [sk,ads] of sets){
+      const a0=ads[0];const isEmail=(a0.platform_type||'paid')==='email';
+      let adsLi='';
+      ads.forEach(n=>{adsLi+=`<li><div class="smg-node ad" onclick="openNaming(${n.id})" title="${esc(n.asset_identifier||n.campaign_name)}"><span class="sm-badge ${esc(n.platform_type||'paid')}">${esc(n.platform_type||'paid')}</span><b>${esc(assetShort(n))}</b>${n.utm_content?`<span class="mono smg-sub">${esc(n.utm_content)}</span>`:''}${n.notes?`<span class="smg-note" title="${esc(n.notes)}">✎ ${esc(noteShort(n.notes))}</span>`:''}</div></li>`;});
+      setsLi+=`<li><div class="smg-node ${isEmail?'email':'adset'}" title="${esc(sk)}"><span class="sm-badge ${isEmail?'email':'adset'}">${isEmail?'Automation':'AdSet'}</span><b>${esc(adsetShort(a0))}</b><span class="smg-sub">${ads.length} ${isEmail?'E-Mails':'Ads'}</span></div><ul>${adsLi}</ul></li>`;
+    }
+    out+=`<div class="smg-scroll"><ul class="smg-tree"><li><div class="smg-node camp" title="${esc(ck)}"><span class="sm-badge camp">Campaign</span><b>${esc(campaignShort(anyN))}</b><span class="smg-sub">${sets.size} AdSets · ${total} Ads</span></div><ul>${setsLi}</ul></li></ul></div>`;
+  }
+  return out;
+}
 function renderStructure(){
   const box=$('smTree');if(!box)return;
   const q=($('smSearch')?.value||'').toLowerCase();
@@ -1500,7 +1539,8 @@ function renderStructure(){
   if($('smCount'))$('smCount').textContent=list.length;
   const camps=new Map();
   list.forEach(n=>{const ck=n.campaign_name||'—';if(!camps.has(ck))camps.set(ck,new Map());const sets=camps.get(ck);const sk=n.adset_or_automation||'—';if(!sets.has(sk))sets.set(sk,[]);sets.get(sk).push(n);});
-  if(!camps.size){box.innerHTML=`<div class="hint" style="padding:16px">${t('sm.empty')}</div>`;return;}
+  if(!camps.size){const empty=`<div class="hint" style="padding:16px">${t('sm.empty')}</div>`;box.innerHTML=empty;if($('smMap'))$('smMap').innerHTML=empty;return;}
+  if($('smMap'))$('smMap').innerHTML=smMapHTML(camps);
   let h='';
   for(const [ck,sets] of camps){
     const total=[...sets.values()].reduce((a,x)=>a+x.length,0);const anyN=[...sets.values()][0][0];
@@ -1518,6 +1558,7 @@ function renderStructure(){
       ads.forEach(n=>{h+=`<div class="sm-ad" onclick="openNaming(${n.id})" title="${esc(n.asset_identifier||n.campaign_name)}">
         <span class="sm-badge ${esc(n.platform_type||'paid')}">${esc(n.platform_type||'paid')}</span>
         <b>${esc(assetShort(n))}</b><span class="mono sm-utm">${esc(n.utm_content||'')}</span>
+        ${n.notes?`<span class="sm-note" title="${esc(n.notes)}">✎ ${esc(noteShort(n.notes))}</span>`:''}
         <span class="sm-open">${t('sm.edit')} ↗</span></div>`;});
       h+=`</div></div>`;
     }
