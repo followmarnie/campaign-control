@@ -1644,8 +1644,12 @@ async function delNaming(id){
   catch(e){toast(t('ct.delfail')+': '+e.message,true)}
 }
 /* ─── Generische Tabellen-Sortierung (Naming · UTM · Conversions) ─── */
-const sortState={naming:{k:'id',d:1},utm:{k:'utm_id',d:1},conv:{k:'key',d:1}};
-const SORT_ACC={naming:{id:n=>Number(n.id)||0,linked:n=>namingLinked(n.id)?1:0},utm:{},conv:{}};
+const sortState={naming:{k:'id',d:1},utm:{k:'utm_id',d:1},conv:{k:'key',d:1},reg:{k:'product',d:1}};
+const SORT_ACC={naming:{id:n=>Number(n.id)||0,linked:n=>namingLinked(n.id)?1:0},utm:{},conv:{},
+  reg:{id:f=>Number(f.id)||0,
+       product:f=>{const i=FUNNEL_GROUPS.map(x=>x[0]).indexOf(f.product);return i<0?999:i;},
+       funnel:f=>f.name||'',
+       purpose:f=>f.purpose||''}};
 function sortList(arr,tbl){
   const s=sortState[tbl];
   const acc=(SORT_ACC[tbl]||{})[s.k]||(r=>r[s.k]);
@@ -1658,7 +1662,7 @@ function sortList(arr,tbl){
 function setSort(tbl,k){
   const s=sortState[tbl];
   if(s.k===k)s.d=-s.d; else {s.k=k;s.d=1;}
-  if(tbl==='naming')renderNamingList(); else if(tbl==='utm')renderRegistry(); else renderConversions();
+  if(tbl==='naming')renderNamingList(); else if(tbl==='utm')renderRegistry(); else if(tbl==='reg')renderFunnelRegistry(); else renderConversions();
 }
 function updateSortArrows(tblId,tbl){
   const tb=$(tblId); if(!tb)return;
@@ -2008,15 +2012,16 @@ function renderFunnelRegistry(){
   const goalConv=f=>{const ks=(f.steps||[]).filter(s=>s.conversion_key);const s=ks[ks.length-1];return s?state.convs.find(c=>c.key===s.conversion_key):null};
   const trackState=f=>{const cv=goalConv(f);if(!cv)return 'none';return (cv.ga4_status==='done'&&cv.ads_status==='done'&&cv.meta_status==='done')?'done':'open';};
   let list=state.funnels.filter(f=>(showArch||f.status!=='archived') && (grp==='all'||grp==='conv'||f.product===grp));
-  const order=FUNNEL_GROUPS.map(x=>x[0]).filter(Boolean).concat('—');
-  list.sort((a,b)=>{const ia=order.indexOf(a.product||'—'),ib=order.indexOf(b.product||'—');return ia!==ib?ia-ib:(a.name||'').localeCompare(b.name||'')});
   const fltr=state.regFilter||'all';
-  const flist=fltr==='open'?list.filter(f=>trackState(f)==='open'):fltr==='done'?list.filter(f=>trackState(f)==='done'):list;
+  let flist=fltr==='open'?list.filter(f=>trackState(f)==='open'):fltr==='done'?list.filter(f=>trackState(f)==='done'):list;
+  // Sekundär nach Name vorsortieren (stabiler Tiebreak), dann nach der aktiven Spalte.
+  flist=sortList(flist.slice().sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),undefined,{numeric:true})),'reg');
   const glabel=k=>{const m=FUNNEL_GROUPS.find(x=>x[0]===k);return m?m[1].split(' · ')[0]:(k||'—')};
   const maxSteps=Math.max(4,...list.map(f=>(f.steps||[]).length),0);
   const yn=st=>st==='done'?'<span class="st done">✓</span>':`<span class="st open">${t('reg.open')}</span>`;
+  const sth=(sk,label,extra='')=>`<th class="col-mine sortable${extra}" data-sk="${sk}" onclick="setSort('reg','${sk}')">${label}<span class="sarr">⇅</span></th>`;
   // Kopf: „meine" Spalten (lila) links, Prabas Spalten (blau) ab GA4; Bearbeiten-Stift ganz rechts.
-  let head='<tr><th class="col-mine">'+esc(t('fn.product'))+'</th><th class="col-mine">Funnel</th><th class="col-mine">'+esc(t('fn.purpose'))+'</th>';
+  let head='<tr>'+sth('id','#')+sth('product',esc(t('fn.product')))+sth('funnel','Funnel')+sth('purpose',esc(t('fn.purpose')));
   for(let i=0;i<maxSteps;i++)head+=`<th class="col-mine">${t('reg.step')} ${String(i+1).padStart(2,'0')}</th>`;
   head+=`<th class="col-mine">${t('reg.notes')}</th>`
     +`<th class="col-praba pcol-first">GA4 Event</th><th class="col-praba">GA4</th><th class="col-praba">Trigger</th>`
@@ -2029,13 +2034,14 @@ function renderFunnelRegistry(){
     let cells='';
     for(let i=0;i<maxSteps;i++){const s=(f.steps||[])[i];cells+=`<td class="col-mine rstep">${s?`<b>${esc(s.title)||'—'}</b>${(s.url||s.interaction)?`<small>${esc(s.url||s.interaction)}</small>`:''}`:''}</td>`}
     const notes=(f.steps||[]).map(s=>s.note).filter(Boolean).join(' · ');
-    return `<tr><td class="col-mine">${esc(glabel(f.product))}</td><td class="col-mine rfunnel">${dot}<span class="fname" onclick="selectFunnel(${f.id})">${f.id!=null?`#${f.id} · `:''}${esc(f.name)}</span></td><td class="col-mine">${esc(f.purpose||'')}</td>${cells}<td class="col-mine">${esc(notes)}</td>`
+    return `<tr><td class="col-mine rid">${f.id!=null?`#${esc(f.id)}`:'—'}</td><td class="col-mine">${esc(glabel(f.product))}</td><td class="col-mine rfunnel">${dot}<span class="fname" onclick="selectFunnel(${f.id})">${esc(f.name)}</span></td><td class="col-mine">${esc(f.purpose||'')}</td>${cells}<td class="col-mine">${esc(notes)}</td>`
       +`<td class="col-praba pcol-first rmono">${cv?(esc(cv.ga4_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.ga4_status):'—'}</td><td class="col-praba rmono">${cv?esc(cv.ga4_trigger||''):''}</td>`
       +`<td class="col-praba rmono">${cv?esc(cv.ads_conversion_id||''):''}</td><td class="col-praba rmono">${cv?esc(cv.ads_label||''):''}</td><td class="col-praba">${cv?esc(cv.ads_value||''):''}</td><td class="col-praba">${cv?yn(cv.ads_status):'—'}</td>`
       +`<td class="col-praba rmono">${cv?(esc(cv.meta_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.meta_status):'—'}</td><td class="col-praba">${cv?esc(cv.notes||''):''}</td>`
       +`<td class="col-edit"><button class="reg-edit" title="${t('fc.open')}" onclick="selectFunnel(${f.id})">✎</button></td></tr>`;
   }).join('')||`<tr><td colspan="99" style="color:#5b6090;padding:20px">${fltr==='all'?t('fn.emptylist'):t('reg.f.empty')}</td></tr>`;
-  tbl.innerHTML=head+rows;
+  tbl.innerHTML='<thead>'+head+'</thead><tbody>'+rows+'</tbody>';
+  updateSortArrows('regTable','reg');
   if($('regCount'))$('regCount').textContent=fltr==='all'?flist.length:flist.length+' / '+list.length;
 }
 // Prabas Tracking-Felder für die im Funnel verwendeten Conversions (editierbar; schreibt in den EINEN Katalog).
