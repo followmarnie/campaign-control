@@ -275,6 +275,7 @@
   .editor-sec .sec-h{display:flex;align-items:center;gap:9px;margin-bottom:12px;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#aeb5df;font-weight:700}
   .editor-sec .sec-n{width:24px;height:24px;border-radius:8px;background:rgba(150,57,243,.16);border:1px solid rgba(150,57,243,.32);color:#cfa6ff;display:inline-flex;align-items:center;justify-content:center;font-weight:900;flex:none}
   .goalchk{margin:14px 0 0;font-size:12.5px;color:#cbd0ff}
+  .nourlchk{margin:7px 0 0;font-size:11.5px;color:#8a90c0}
   .goal-panel{margin-top:10px;background:rgba(23,248,224,.05);border:1px solid rgba(23,248,224,.22);border-radius:12px;padding:12px}
   .derivefrom{margin:10px 0 2px;padding:10px 12px;background:rgba(102,102,255,.06);border:1px solid rgba(102,102,255,.18);border-radius:12px}
   .derivefrom label{margin-top:0}
@@ -1137,7 +1138,7 @@ const T={
   'fn.steps':'Schritte (der Weg)','fn.addstep':'+ Schritt','fn.delete':'Funnel löschen','fn.save':'Funnel speichern',
   'fn.new':'+ Neuer Funnel','fn.saved':'Funnel gespeichert','fn.deleted':'Funnel gelöscht','fn.archived':'Funnel archiviert','fn.reactivated':'Funnel reaktiviert',
   'fn.confirmdel':'Funnel „{name}" wirklich löschen?','fn.needname':'Bitte Namen eingeben','fn.nosteps':'Noch keine Schritte — „+ Schritt" klicken.',
-  'fn.step.title':'Titel','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC-Tag (opt.)','fn.step.note':'Notiz (opt.)','fn.step.none':'— keine —',
+  'fn.step.title':'Titel','fn.step.url':'URL (opt.)','fn.step.nourl':'Braucht keine URL (reiner Interaktions-Step)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC-Tag (opt.)','fn.step.note':'Notiz (opt.)','fn.step.none':'— keine —',
   'fn.stepn':'Step {n}','fn.step.empty':'(leer)','fn.step.type':'Typ','fn.expandall':'Alle ausklappen','fn.collapseall':'Alle einklappen',
   'fn.step.interaction':'Was passiert hier? (opt.)','fn.step.edit':'Schritt bearbeiten','fn.stepshint':'Karte anklicken → unten bearbeiten',
   'reg.title':'Alle Funnel & Tracking · Breitsicht','reg.toggle':'Ein-/ausklappen','reg.sub':'Eine Zeile pro Funnel — alle Steps + Prabas Tracking nebeneinander (wie die Ursprungs-Excel). Folgt den Tabs oben. Horizontal scrollen.','reg.step':'Step','reg.notes':'Notizen (TradeNeon)','reg.qa':'QA / MeasureSchool','reg.f.label':'Prabas Tracking:','reg.f.all':'Alle','reg.f.open':'offen','reg.f.done':'komplett','reg.f.empty':'Keine Funnels in diesem Filter.',
@@ -1223,7 +1224,7 @@ const T={
   'fn.steps':'Steps (the path)','fn.addstep':'+ Step','fn.delete':'Delete funnel','fn.save':'Save funnel',
   'fn.new':'+ New funnel','fn.saved':'Funnel saved','fn.deleted':'Funnel deleted','fn.archived':'Funnel archived','fn.reactivated':'Funnel reactivated',
   'fn.confirmdel':'Really delete funnel “{name}”?','fn.needname':'Please enter a name','fn.nosteps':'No steps yet — click “+ Step”.',
-  'fn.step.title':'Title','fn.step.url':'URL (opt.)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC tag (opt.)','fn.step.note':'Note (opt.)','fn.step.none':'— none —',
+  'fn.step.title':'Title','fn.step.url':'URL (opt.)','fn.step.nourl':'No URL needed (interaction-only step)','fn.step.conv':'Conversion (opt.)','fn.step.actag':'AC tag (opt.)','fn.step.note':'Note (opt.)','fn.step.none':'— none —',
   'fn.stepn':'Step {n}','fn.step.empty':'(empty)','fn.step.type':'Type','fn.expandall':'Expand all','fn.collapseall':'Collapse all',
   'fn.step.interaction':'What happens here? (opt.)','fn.step.edit':'Edit step','fn.stepshint':'Click a card → edit below',
   'reg.title':'All funnels & tracking · wide view','reg.toggle':'Collapse/expand','reg.sub':'One row per funnel — all steps + Praba tracking side by side (like the original Excel). Follows the tabs above. Scroll horizontally.','reg.step':'Step','reg.notes':'Notes (TradeNeon)','reg.qa':'QA / MeasureSchool','reg.f.label':'Praba tracking:','reg.f.all':'All','reg.f.open':'open','reg.f.done':'complete','reg.f.empty':'No funnels in this filter.',
@@ -1956,7 +1957,8 @@ function renderStepEditor(f){
       <div><label>${t('fn.step.type')}</label><select data-f="type">${STEP_TYPES.map(x=>`<option${x===(s.type||'page')?' selected':''}>${x}</option>`).join('')}</select></div>
       <div><label>${t('fn.step.actag')}</label><input data-f="ac_tag" value="${esc(s.ac_tag)}"></div>
       <div class="full"><label>${t('fn.step.title')}</label><input data-f="title" value="${esc(s.title)}"></div>
-      <div class="full"><label>${t('fn.step.url')}</label><input data-f="url" value="${esc(s.url)}"></div>
+      <div class="full"><label>${t('fn.step.url')}</label><input data-f="url" value="${esc(s.url)}"${s.no_url?' disabled':''}>
+        <label class="chk nourlchk"><input type="checkbox" data-f="no_url"${s.no_url?' checked':''} onchange="onNoUrlToggle()"> ${t('fn.step.nourl')}</label></div>
       <div class="full"><label>${t('fn.step.interaction')}</label><input data-f="interaction" value="${esc(s.interaction)}"></div>
       <div class="full"><label>${t('fn.step.note')}</label><input data-f="note" value="${esc(s.note)}"></div>
     </div>
@@ -1975,6 +1977,7 @@ function renderStepEditor(f){
 }
 function onGoalToggle(){const cb=$('seGoal'),panel=$('seGoalPanel');if(!cb||!panel)return;panel.style.display=cb.checked?'block':'none';if(!cb.checked){const sel=panel.querySelector('[data-f="conversion_key"]');if(sel)sel.value='';syncFunnelInputs();renderFunnelDetail();}}
 function onConvPick(){syncFunnelInputs();renderFunnelDetail();}
+function onNoUrlToggle(){syncFunnelInputs();renderFunnelDetail();}
 function selectStep(i){if(!state.editF)return;syncFunnelInputs();state.stepSel=i;renderFunnelDetail()}
 function toggleRegistry(){const el=$('fnRegistry');if(el)el.classList.toggle('collapsed')}
 // Excel-Breitsicht: eine Zeile pro Funnel, alle Steps + verknüpftes Tracking (aus dem Katalog) nebeneinander.
@@ -2050,7 +2053,7 @@ function syncFunnelInputs(){
   const f=state.editF;if(!f)return;
   f.name=$('fnName').value;f.status=$('fnStatus').value;f.description=$('fnDesc').value;f.product=$('fnProduct').value;f.purpose=$('fnPurpose').value;f.traffic=$('fnTraffic').value;
   const ed=document.querySelector('#fnStepEditor .step-editor');
-  if(ed){const i=parseInt(ed.dataset.eidx,10);if(f.steps[i])ed.querySelectorAll('[data-f]').forEach(el=>{f.steps[i][el.dataset.f]=el.value});}
+  if(ed){const i=parseInt(ed.dataset.eidx,10);if(f.steps[i])ed.querySelectorAll('[data-f]').forEach(el=>{f.steps[i][el.dataset.f]=el.type==='checkbox'?el.checked:el.value});}
 }
 async function saveFunnel(){
   syncFunnelInputs();
@@ -2274,7 +2277,7 @@ function openTasks(){
   state.funnels.filter(f=>f.status!=='archived').forEach(f=>{
     const steps=f.steps||[];
     if(!steps.some(s=>s.conversion_key))mine.push({label:f.name,detail:de?'kein Goal verknüpft':'no goal linked',view:'fc'});
-    const noUrl=steps.filter(s=>/(lp|land|page|seite)/i.test(s.type||'')&&!String(s.url||'').trim()).length;
+    const noUrl=steps.filter(s=>/(lp|land|page|seite)/i.test(s.type||'')&&!s.no_url&&!String(s.url||'').trim()).length;
     if(noUrl)mine.push({label:f.name,detail:noUrl+(de?' Step(s) ohne URL':' step(s) without URL'),view:'fc'});
     if(f.status==='draft')mine.push({label:f.name,detail:de?'noch Entwurf':'still draft',view:'fc'});
   });
