@@ -414,6 +414,38 @@
   .nav .ic{width:24px;height:24px;border-radius:7px;background:var(--tn-surf-3);display:grid;place-items:center;font-size:11px;flex:none;font-weight:700}
   .nav .ic svg{width:15px;height:15px;display:block}
   .nav button.on .ic{background:rgba(255,255,255,.2)}
+  .nav .navgroup{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#6b7099;font-weight:700;padding:12px 11px 3px}
+  .nav .navgroup .pn{color:#8a90c8}
+  .nav .navgroup.p1{color:#8f8cff}.nav .navgroup.p2{color:#b07cf0}.nav .navgroup.p3{color:#c9d17e}
+  .pm-frame{width:100%;height:calc(100vh - 130px);min-height:560px;border:1px solid var(--tn-border);border-radius:var(--tn-r-l);background:#07071a;display:block}
+  .lc-card{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-l);padding:22px;max-width:860px}
+  .lc-card h2{margin:0 0 8px;color:#fff}
+  .lc-zone{border-left:3px solid #d9e08c;background:rgba(217,224,140,.06);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0}
+  .lc-zone b{color:#e7edc0}
+  .lc-steps{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .lc-step{display:flex;gap:10px;align-items:center;padding:9px 12px;border:1px solid var(--tn-border);border-radius:10px;background:rgba(255,255,255,.02);font-size:13px}
+  .lc-step .lc-tag{margin-left:auto;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:11px;color:#d9e08c}
+  .lc-empty{color:#8a90c0;font-style:italic;font-size:13px}
+  .temp-chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--tn-border);white-space:nowrap}
+  .temp-chip.cold{color:#7cc4ff;border-color:rgba(124,196,255,.4);background:rgba(124,196,255,.08)}
+  .temp-chip.warm{color:#ffce7a;border-color:rgba(255,206,122,.4);background:rgba(255,206,122,.08)}
+  .temp-chip.hot{color:#ff7aa8;border-color:rgba(255,122,168,.4);background:rgba(255,122,168,.08)}
+  .temp-chip.none{color:#5b6090;border-style:dashed}
+  .nm-listhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .nm-listhead h2{margin:0}
+  .reg tbody tr.reg-row{cursor:pointer}
+  .reg tbody tr.reg-row:hover>td{background:rgba(150,57,243,.07)}
+  .lp-vars{border:1px dashed var(--tn-border);border-radius:10px;padding:10px 12px;background:rgba(111,107,255,.05);margin-top:2px}
+  .lp-vars>label{margin-top:0}
+  .lpv-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin:7px 0}
+  .lpv-row input{margin:0}
+  .lpv-del{all:unset;cursor:pointer;color:var(--tn-pink);padding:0 8px;display:flex;align-items:center;border-radius:6px}
+  .lpv-del:hover{background:rgba(255,60,141,.1)}
+  .fc-vars{margin-top:6px;font-size:11px;color:#8f8cff;font-weight:600}
+  .ov-sublbl{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:2px 0 6px;padding-left:2px}
+  .ov-sublbl.lc{color:#d9e08c}
+  .ov-sublbl.rt{color:var(--tn-pink);margin-top:12px}
+  .ov-ph{display:block;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:#6b7099;font-weight:700;margin-bottom:3px;font-style:normal}
   .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--tn-border);padding-top:14px}
   .side-foot .who input{width:100%}
   .main{min-width:0;padding:30px 26px 80px}
@@ -607,11 +639,17 @@
     </div>
     <nav class="nav" id="nav">
       <button data-v="dashboard" class="on"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span><span data-i18n="nav.dashboard">Dashboard</span></button>
+      <div class="navgroup p1">Phase 1 · Ankunft</div>
       <button data-v="naming"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span data-i18n="nav.naming">Naming Studio</span></button>
       <button data-v="structure"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="17" width="6" height="5" rx="1"/><rect x="16" y="17" width="6" height="5" rx="1"/><path d="M12 7v5M5 17v-2h14v2"/></svg></span><span data-i18n="nav.structure">Campaign Structure Map</span></button>
       <button data-v="utm"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span><span data-i18n="nav.utm">UTM-Builder</span></button>
+      <div class="navgroup p2">Phase 2 · On-Site</div>
       <button data-v="fc"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></span><span data-i18n="nav.fc">Funnel &amp; Tracking</span></button>
+      <div class="navgroup p3">Phase 3 · Lifecycle</div>
+      <button data-v="lifecycle"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg></span><span>Lifecycle</span></button>
+      <div class="navgroup">Überblick</div>
       <button data-v="campaigns"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg></span><span data-i18n="nav.campaigns">Kampagnen-Übersicht</span></button>
+      <button data-v="verstehen"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span><span>Verstehen</span></button>
       <button data-v="settings"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span data-i18n="nav.settings">SOP / Settings</span></button>
     </nav>
     <div class="side-foot">
@@ -717,7 +755,9 @@
         <label data-i18n="f.orgcontent">Content-Slug</label>
         <input id="nOrgcontent" data-i18n-ph="f.orgcontentph">
       </div>
-      <div class="row2">
+      <div class="row3">
+        <div><label>Temperatur <span class="hint">(Kalt / Warm / Heiß)</span></label>
+          <select id="nTemp"><option value="">— offen —</option><option value="cold">🧊 Kalt</option><option value="warm">🌤 Warm</option><option value="hot">🔥 Heiß</option></select></div>
         <div><label data-i18n="nm.funnelref">Funnel-Referenz <span class="hint">(opt.)</span></label><select id="nFunnelRef"></select></div>
         <div><label data-i18n="f.notes">Notiz <span class="hint">(opt.)</span></label><input id="nNotes" data-i18n-ph="f.notesph"></div>
       </div>
@@ -734,12 +774,23 @@
     </div>
 
     <div class="card full">
-      <h2><span data-i18n="nm.listtitle">Gespeicherte Namen</span> <span class="pill" id="nCount">…</span></h2>
+      <div class="nm-listhead">
+        <h2><span data-i18n="nm.listtitle">Gespeicherte Namen</span> <span class="pill" id="nCount">…</span></h2>
+        <span style="flex:1"></span>
+        <span class="hint">Temperatur:</span>
+        <div class="segfilter" id="nmTempF">
+          <button class="on" onclick="setNamingTemp('all')">Alle</button>
+          <button onclick="setNamingTemp('cold')">🧊 Kalt</button>
+          <button onclick="setNamingTemp('warm')">🌤 Warm</button>
+          <button onclick="setNamingTemp('hot')">🔥 Heiß</button>
+        </div>
+      </div>
       <div class="tblwrap">
         <table id="namingTbl">
           <thead><tr>
             <th class="sortable" data-sk="id" onclick="setSort('naming','id')">#<span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="platform_type" onclick="setSort('naming','platform_type')"><span data-i18n="r.type">Typ</span><span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="temperature" onclick="setSort('naming','temperature')">Temp<span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="campaign_name" onclick="setSort('naming','campaign_name')">Campaign Name<span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="adset_or_automation" onclick="setSort('naming','adset_or_automation')">AdSet / Automation<span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="asset_identifier" onclick="setSort('naming','asset_identifier')"><span data-i18n="nm.ident">Ad-/E-Mail-Identifier</span><span class="sarr">⇅</span></th>
@@ -864,18 +915,26 @@
     <div class="fctabs" id="fcTabs"></div>
 
     <div id="fcFunnels">
-    <div class="fc-grid">
-      <aside class="fc-list card">
-        <div class="fc-list-top">
-          <h3><span data-i18n="fc.funnels">Funnels</span> <span class="pill" id="fnCount">…</span></h3>
-          <button class="btn sm" onclick="newFunnel()" data-i18n="fn.new">+ Neu</button>
+      <div class="card" id="fnRegistry">
+        <div class="toolbar">
+          <h2 style="margin:0"><span data-i18n="reg.title">Alle Funnel &amp; Tracking · Breitsicht</span> <span class="pill" id="regCount">…</span></h2>
+          <span style="flex:1"></span>
+          <button class="btn sm" onclick="newFunnel()">+ Neuer Funnel</button>
+          <input id="fnSearch" class="fc-search" style="width:180px;margin:0" data-i18n-ph="fc.search" placeholder="Suchen…" oninput="renderFunnelRegistry()">
+          <label class="chk" style="margin:0"><input type="checkbox" id="showArch"> <span data-i18n="fc.showarch">Archivierte</span></label>
+          <span class="reg-flabel" data-i18n="reg.f.label">Prabas Tracking:</span>
+          <div class="segfilter" id="regFilter">
+            <button class="on" onclick="setRegFilter('all')" data-i18n="reg.f.all">Alle</button>
+            <button onclick="setRegFilter('open')" data-i18n="reg.f.open">offen</button>
+            <button onclick="setRegFilter('done')" data-i18n="reg.f.done">komplett</button>
+          </div>
+          <button class="btn sm ghost" onclick="toggleRegistry()" data-i18n="reg.toggle">Ein-/ausklappen</button>
         </div>
-        <input id="fnSearch" class="fc-search" data-i18n-ph="fc.search" placeholder="Suchen…" oninput="renderFunnelList()">
-        <label class="chk" style="margin:4px 2px 10px"><input type="checkbox" id="showArch"> <span data-i18n="fc.showarch">Archivierte zeigen</span></label>
-        <div id="funnelListPane" class="fn-list"></div>
-      </aside>
+        <p class="hint" data-i18n="reg.sub" style="margin:-4px 0 12px">Eine Zeile pro Funnel — Klick auf die Zeile öffnet den Editor darunter. Folgt den Tabs oben. Horizontal scrollen.</p>
+        <div class="tblwrap" id="regWrap"><table id="regTable" class="reg"></table></div>
+      </div>
 
-      <main class="fc-work card" id="fnDetail" style="display:none">
+      <main class="fc-work card" id="fnDetail" style="display:none;margin-top:20px">
         <div class="fc-work-head">
           <div class="crumb">TradeNeon / Funnel Architecture</div>
           <div class="fc-work-title"><span id="fnTitleView">…</span> <span class="pill" id="fnStatusPill"></span></div>
@@ -932,23 +991,6 @@
         </div>
         <div id="fnPraba"></div>
       </main>
-    </div>
-
-    <div class="card" id="fnRegistry" style="margin-top:20px">
-      <div class="toolbar">
-        <h2 style="margin:0"><span data-i18n="reg.title">Alle Funnel &amp; Tracking · Breitsicht</span> <span class="pill" id="regCount">…</span></h2>
-        <span style="flex:1"></span>
-        <span class="reg-flabel" data-i18n="reg.f.label">Prabas Tracking:</span>
-        <div class="segfilter" id="regFilter">
-          <button class="on" onclick="setRegFilter('all')" data-i18n="reg.f.all">Alle</button>
-          <button onclick="setRegFilter('open')" data-i18n="reg.f.open">offen</button>
-          <button onclick="setRegFilter('done')" data-i18n="reg.f.done">komplett</button>
-        </div>
-        <button class="btn sm ghost" onclick="toggleRegistry()" data-i18n="reg.toggle">Ein-/ausklappen</button>
-      </div>
-      <p class="hint" data-i18n="reg.sub" style="margin:-4px 0 12px">Eine Zeile pro Funnel — alle Steps + Prabas Tracking nebeneinander (wie die Ursprungs-Excel). Folgt den Tabs oben. Horizontal scrollen.</p>
-      <div class="tblwrap" id="regWrap"><table id="regTable" class="reg"></table></div>
-    </div>
     </div><!-- /fcFunnels -->
 
     <div id="fcConversions">
@@ -1041,6 +1083,31 @@
   </div>
 
   <!-- ═══════════ VIEW · SOP / SETTINGS ═══════════ -->
+  <!-- ═══════════ VIEW · VERSTEHEN (Phasenmodell) ═══════════ -->
+  <div class="view" id="view-verstehen">
+    <div style="margin-bottom:14px">
+      <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700">Verstehen · Die Reise in 3 Phasen</h2>
+      <p class="sub">Ankunft · On-Site · Lifecycle — mit Retargeting-Loop. Die ⓘ-Punkte antippen für Erklärungen.</p>
+    </div>
+    <iframe class="pm-frame" id="pmFrame" title="Phasenmodell"></iframe>
+  </div>
+
+  <!-- ═══════════ VIEW · LIFECYCLE (Phase 3) ═══════════ -->
+  <div class="view" id="view-lifecycle">
+    <div style="margin-bottom:16px">
+      <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700">Phase 3 · Lifecycle</h2>
+      <p class="sub">Nach der Conversion. Der Mensch hat uns seine Daten gegeben — jetzt betreuen wir ihn über ActiveCampaign.</p>
+    </div>
+    <div class="lc-card">
+      <h2>Die Naht ist überschritten 🧵</h2>
+      <p style="color:#aab0d6;font-size:13.5px;line-height:1.6;margin:0 0 6px">Phase 1 + 2 (Akquise) enden an der Conversion. Ab hier läuft die Betreuung — E-Mail-Strecken, Handouts, Angebote — <b style="color:#fff">über ActiveCampaign</b>, gesteuert durch das Signup-Tag. Praba trackt hier nicht mehr.</p>
+      <div class="lc-zone"><b>Merksatz:</b> Haben wir schon seine E-Mail? <b>Nein</b> → Retargeting (Akquise). <b>Ja</b> → Lifecycle (hier).</div>
+      <h3 style="color:#fff;font-size:14px;margin:18px 0 4px">Lifecycle-Steps aus Deinen Funnels</h3>
+      <p class="hint" style="margin:0 0 8px">Schritte, die <b>nach</b> dem Goal liegen (mit AC-Tag) — automatisch aus den Funnels gelesen.</p>
+      <div id="lcSteps" class="lc-steps"></div>
+    </div>
+  </div>
+
   <div class="view" id="view-settings">
     <div style="margin-bottom:16px">
       <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700" data-i18n="set.title">SOP / Settings</h2>
@@ -1096,10 +1163,10 @@ const T={
   'ov.seg.all':'Gesamt','ov.seg.web':'Website','ov.seg.track':'Tracking',
   'ov.lg.real':'realer Knoten','ov.lg.rt':'Retargeting','ov.lg.ok':'Tracking OK','ov.lg.open':'offen / fehlt',
   'ov.db.a.h':'Auto-Fluss','ov.db.a.p':'Gelesen aus <span class="mono">naming_registry</span>, <span class="mono">funnels</span>, <span class="mono">conversions</span> und <span class="mono">utm_registry</span>. Nichts erfunden — nur zweite Darstellung.',
-  'ov.db.b.h':'Flow-Links','ov.db.b.p':'Retargeting ist über das AdSet impliziert. Explizite Pfeile („RT retargetet X") kommen in Phase 2.',
+  'ov.db.b.h':'Flow-Links','ov.db.b.p':'Retargeting gehört zur <b>Akquise</b> (holt Nicht-Wandler zurück, loopt in Phase 1) — Lifecycle (AC) ist <b>Betreuung</b> ab der Conversion. In Lane 4 getrennt. Explizite Loop-Pfeile folgen.',
   'ov.db.c.h':'Planung','ov.db.c.p':'Geplante Knoten &amp; Notizen sind Phase 2 — sie dürfen keine zweite Wahrheit werden.',
   'ov.lane1':'Traffic &amp; Struktur','ov.lane1s':'Campaigns, AdSets, Ads','ov.lane2':'Entry / Landing','ov.lane2s':'Landingpages, UTM-Ziele',
-  'ov.lane3':'Conversion-Pfad','ov.lane3s':'Funnel-Steps bis Goal','ov.lane4':'Follow-up &amp; Retargeting','ov.lane4s':'Automationen, RT-AdSets',
+  'ov.lane3':'Conversion-Pfad','ov.lane3s':'Funnel-Steps bis Goal','ov.lane4':'Lifecycle &amp; Retargeting','ov.lane4s':'AC-Betreuung ↔ RT-Loop',
   'ov.lane5':'Conversion / QA','ov.lane5s':'Event-Katalog + Ampel',
   'ov.open.entry':'Landingpage offen','ov.open.entrys':'Noch kein Funnel-Step/UTM-Ziel verknüpft.',
   'ov.open.path':'Kein Funnel angelegt','ov.open.paths':'In „Funnel & Tracking" einen Funnel für diese Kampagne anlegen.',
@@ -1136,7 +1203,7 @@ const T={
   'tbl.empty':'Noch keine Zeilen — oben bauen und „In Registry speichern".',
   'warn.internal':'<b>Interner Link?</b> Interne Verlinkungen (Menü, Footer, Cross-Sell) <b>nie</b> mit UTM taggen — sonst überschreibt der interne Klick die echte Kampagnen-Quelle in GA4.',
   // Funnels & Conversions
-  'fc.note':'<b>Funnels &amp; Conversions.</b> Links die Funnel-Liste — Klick öffnet rechts den Step-Editor. Setzt Du an einem Step ein Goal (Conversion), klappt Prabas Tracking darunter auf. Ganz unten die Excel-Breitsicht. Reporting: Looker Studio.',
+  'fc.note':'<b>Funnels &amp; Conversions.</b> Die Breitsicht ist die Liste — Klick auf eine Zeile öffnet den Step-Editor darunter. Setzt Du an einem Step ein Goal (Conversion), klappt Prabas Tracking darunter auf. Reporting: Looker Studio.',
   'fc.funnels':'Funnels','fc.steps':'Schritte','fc.showarch':'Archivierte zeigen','fc.archive':'Archivieren','fc.unarchive':'Reaktivieren','fc.archived':'archiviert','fc.open':'öffnen',
   'fn.detail':'Funnel','fn.name':'Name','fn.product':'Gruppe/Produkt','fn.status':'Status','fn.desc':'Beschreibung',
   'fn.purpose':'Zweck / Ziel des Funnels','fn.tracking':'Tracking (Praba)',
@@ -1185,10 +1252,10 @@ const T={
   'ov.seg.all':'Overall','ov.seg.web':'Website','ov.seg.track':'Tracking',
   'ov.lg.real':'real node','ov.lg.rt':'Retargeting','ov.lg.ok':'Tracking OK','ov.lg.open':'open / missing',
   'ov.db.a.h':'Auto-flow','ov.db.a.p':'Read from <span class="mono">naming_registry</span>, <span class="mono">funnels</span>, <span class="mono">conversions</span> and <span class="mono">utm_registry</span>. Nothing invented — just a second view.',
-  'ov.db.b.h':'Flow links','ov.db.b.p':'Retargeting is implied by the AdSet. Explicit arrows ("RT retargets X") come in phase 2.',
+  'ov.db.b.h':'Flow links','ov.db.b.p':'Retargeting is <b>acquisition</b> (pulls non-converters back, loops to phase 1) — Lifecycle (AC) is <b>nurture</b> from the conversion on. Separated in lane 4. Explicit loop arrows to follow.',
   'ov.db.c.h':'Planning','ov.db.c.p':'Planned nodes &amp; notes are phase 2 — they must not become a second truth.',
   'ov.lane1':'Traffic &amp; Structure','ov.lane1s':'Campaigns, AdSets, Ads','ov.lane2':'Entry / Landing','ov.lane2s':'Landing pages, UTM targets',
-  'ov.lane3':'Conversion path','ov.lane3s':'Funnel steps to goal','ov.lane4':'Follow-up &amp; Retargeting','ov.lane4s':'Automations, RT AdSets',
+  'ov.lane3':'Conversion path','ov.lane3s':'Funnel steps to goal','ov.lane4':'Lifecycle &amp; Retargeting','ov.lane4s':'AC nurture ↔ RT loop',
   'ov.lane5':'Conversion / QA','ov.lane5s':'Event catalog + status',
   'ov.open.entry':'Landing page open','ov.open.entrys':'No funnel step / UTM target linked yet.',
   'ov.open.path':'No funnel created','ov.open.paths':'Create a funnel for this campaign in "Funnel & Tracking".',
@@ -1222,7 +1289,7 @@ const T={
   'r.override':'utm_id override','r.reload':'↻ Reload','r.type':'Type','r.fullurl':'Full URL','r.idpending':'assigned on save',
   'tbl.empty':'No rows yet — build above and “Save to registry”.',
   'warn.internal':'<b>Internal link?</b> Never tag internal links (menu, footer, cross-sell) with UTM — the internal click would overwrite the real campaign source in GA4.',
-  'fc.note':'<b>Funnels &amp; Conversions.</b> Funnel list on the left — click to open the step editor on the right. Set a goal (conversion) on a step and Praba tracking expands below. The Excel wide view is at the very bottom. Reporting: Looker Studio.',
+  'fc.note':'<b>Funnels &amp; Conversions.</b> The wide view IS the list — click a row to open the step editor below it. Set a goal (conversion) on a step and Praba tracking expands below. Reporting: Looker Studio.',
   'fc.funnels':'Funnels','fc.steps':'Steps','fc.showarch':'Show archived','fc.archive':'Archive','fc.unarchive':'Reactivate','fc.archived':'archived','fc.open':'open',
   'fn.detail':'Funnel','fn.name':'Name','fn.product':'Group/Product','fn.status':'Status','fn.desc':'Description',
   'fn.purpose':'Purpose / goal of the funnel','fn.tracking':'Tracking (Praba)',
@@ -1502,6 +1569,7 @@ function deriveNaming(){
   }else{
     o.utm_content=snake($('nOrgcontent').value); o.asset_identifier=''; o.adset_or_automation='';
   }
+  o.temperature=(document.getElementById('nTemp')||{}).value||'';
   return o;
 }
 function orow(k,v,copyable){
@@ -1548,7 +1616,7 @@ function editNaming(id){
   document.querySelectorAll('#nptype button').forEach(b=>b.classList.toggle('on',b.dataset.t===(n.platform_type||'paid')));
   $('nChannel').value=n.channel||'';$('nTag').value=n.function_tag||'';$('nFunnel').value=n.funnel_type||'';
   $('nThema').value=n.topic_slug||'';$('nDatum').value=n.period||'';$('nVariant').value=n.variant||'';
-  $('nFunnelRef').value=n.funnel_reference||'';$('nNotes').value=n.notes||'';
+  $('nFunnelRef').value=n.funnel_reference||'';$('nNotes').value=n.notes||'';if($('nTemp'))$('nTemp').value=n.temperature||'';
   $('nSave').textContent=t('cv.save');$('nCancel').style.display='';
   renderNamingOut();window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1561,7 +1629,7 @@ function deriveFrom(id){
   setNameMode(n.platform_type||'paid');
   $('nChannel').value=n.channel||'';$('nTag').value=n.function_tag||'';$('nFunnel').value=n.funnel_type||'';
   $('nThema').value=n.topic_slug||'';$('nDatum').value=n.period||'';$('nVariant').value=n.variant||'';
-  $('nFunnelRef').value=n.funnel_reference||'';
+  $('nFunnelRef').value=n.funnel_reference||'';if($('nTemp'))$('nTemp').value=n.temperature||'';
   // AdSet aus dem gespeicherten String zurückgewinnen (Paid): Audtyp_Targeting_Geo
   if((n.platform_type||'paid')==='paid' && n.adset_or_automation){
     const parts=n.adset_or_automation.split('_');
@@ -1646,7 +1714,9 @@ async function delNaming(id){
 }
 /* ─── Generische Tabellen-Sortierung (Naming · UTM · Conversions) ─── */
 const sortState={naming:{k:'id',d:1},utm:{k:'utm_id',d:1},conv:{k:'key',d:1},reg:{k:'product',d:1}};
-const SORT_ACC={naming:{id:n=>Number(n.id)||0,linked:n=>namingLinked(n.id)?1:0},utm:{},conv:{},
+const TEMP_LABEL={cold:'🧊 Kalt',warm:'🌤 Warm',hot:'🔥 Heiß'};
+const TEMP_ORD={cold:0,warm:1,hot:2};
+const SORT_ACC={naming:{id:n=>Number(n.id)||0,linked:n=>namingLinked(n.id)?1:0,temperature:n=>(n.temperature in TEMP_ORD)?TEMP_ORD[n.temperature]:9},utm:{},conv:{},
   reg:{id:f=>Number(f.id)||0,
        product:f=>{const i=FUNNEL_GROUPS.map(x=>x[0]).indexOf(f.product);return i<0?999:i;},
        funnel:f=>f.name||'',
@@ -1676,9 +1746,12 @@ function updateSortArrows(tblId,tbl){
 }
 function renderNamingList(){
   if(!$('namingTbl'))return;
-  $('namingTbl').querySelector('tbody').innerHTML=sortList(state.naming,'naming').map(n=>`<tr>
+  const tf=state.namingTempFilter||'all';
+  const list=(tf==='all'?state.naming:state.naming.filter(n=>(n.temperature||'')===tf));
+  $('namingTbl').querySelector('tbody').innerHTML=sortList(list,'naming').map(n=>`<tr>
     <td class="mono rid">#${esc(n.id)}</td>
     <td><span class="tag ${esc(n.platform_type||'paid')}">${esc(n.platform_type||'—')}</span></td>
+    <td>${n.temperature?`<span class="temp-chip ${esc(n.temperature)}">${TEMP_LABEL[n.temperature]||esc(n.temperature)}</span>`:'<span class="temp-chip none">—</span>'}</td>
     <td class="mono">${esc(n.campaign_name)||'—'}</td>
     <td class="mono ident">${esc(n.adset_or_automation)||'—'}</td>
     <td class="mono ident">${esc(n.asset_identifier)||'—'}</td>
@@ -1686,10 +1759,11 @@ function renderNamingList(){
     <td class="mono">${esc(n.utm_content)||'—'}</td>
     <td>${namingLinked(n.id)?`<span class="cmlink on">✓ ${LANG==='de'?'verknüpft':'linked'}</span>`:`<span class="cmlink off">${LANG==='de'?'offen':'open'}</span>`}</td>
     <td><span class="act edit" onclick="editNaming(${n.id})">✎</span> <span class="act del" onclick="delNaming(${n.id})">✕</span></td>
-  </tr>`).join('')||`<tr><td colspan="9" style="color:#5b6090;padding:20px">${t('nm.empty')}</td></tr>`;
-  $('nCount').textContent=state.naming.length;
+  </tr>`).join('')||`<tr><td colspan="10" style="color:#5b6090;padding:20px">${t('nm.empty')}</td></tr>`;
+  $('nCount').textContent=list.length;
   updateSortArrows('namingTbl','naming');
 }
+function setNamingTemp(f){state.namingTempFilter=f;document.querySelectorAll('#nmTempF button').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick')===`setNamingTemp('${f}')`));renderNamingList();}
 
 /* ═══════════════ TAB 2 · UTM-BUILDER ═══════════════ */
 function onNamingPick(){
@@ -1948,6 +2022,7 @@ function renderFunnelDetail(){
       <div class="fc-no"><span>${t('fn.stepn',{n:i+1})}</span>${cv?`<span class="fc-goal">GOAL</span>`:`<span class="ttype ${esc(s.type||'page')}">${esc(s.type||'page')}</span>`}</div>
       <div class="fc-title">${title}</div>
       ${s.url?`<div class="fc-url">${esc(s.url)}</div>`:''}
+      ${(s.variants&&s.variants.length)?`<div class="fc-vars">+${s.variants.length} LP-Variante${s.variants.length>1?'n':''}</div>`:''}
       ${s.interaction?`<div class="fc-int">${esc(s.interaction)}</div>`:''}
       ${s.ac_tag&&life?`<div class="fc-actag">AC · ${esc(s.ac_tag)}</div>`:''}
       ${cv?`<div class="fc-track"><div class="fc-no"><span>Tracking</span><span class="fc-goal">${p}%</span></div><div class="prog"><i style="width:${p}%"></i></div></div>`:''}
@@ -1983,6 +2058,15 @@ function renderStepEditor(f){
       ${stepHasUrl(s.type)
         ? `<div class="full"><label>${t('fn.step.url')}</label><input data-f="url" value="${esc(s.url)}"></div>`
         : `<div class="full"><label>${t('fn.step.url')}</label><p class="hint nourlhint">${t('fn.step.nourltype')}</p></div>`}
+      ${s.type==='lp'?`<div class="full lp-vars">
+        <label>LP-Varianten <span class="hint">(weitere Eingänge → dieselbe Form/Danke, Praba trackt 1×)</span></label>
+        ${(s.variants||[]).map((v,vi)=>`<div class="lpv-row">
+          <input class="lpv-url" placeholder="https://… (weitere LP)" value="${esc(v.url||'')}" oninput="updVariant(${i},${vi},'url',this.value)">
+          <input class="lpv-q" placeholder="Quelle (z.B. Retargeting)" value="${esc(v.quelle||'')}" oninput="updVariant(${i},${vi},'quelle',this.value)">
+          <button class="lpv-del" onclick="delVariant(${i},${vi})" title="entfernen">✕</button>
+        </div>`).join('')}
+        <button class="btn sm ghost" onclick="addVariant(${i})">+ LP-Variante</button>
+      </div>`:''}
       <div class="full"><label>${t('fn.step.interaction')}</label><input data-f="interaction" value="${esc(s.interaction)}"></div>
       <div class="full"><label>${t('fn.step.note')}</label><input data-f="note" value="${esc(s.note)}"></div>
     </div>
@@ -2012,7 +2096,8 @@ function renderFunnelRegistry(){
   const grp=state.fcTab;
   const goalConv=f=>{const ks=(f.steps||[]).filter(s=>s.conversion_key);const s=ks[ks.length-1];return s?state.convs.find(c=>c.key===s.conversion_key):null};
   const trackState=f=>{const cv=goalConv(f);if(!cv)return 'none';return (cv.ga4_status==='done'&&cv.ads_status==='done'&&cv.meta_status==='done')?'done':'open';};
-  let list=state.funnels.filter(f=>(showArch||f.status!=='archived') && (grp==='all'||grp==='conv'||f.product===grp));
+  const q=($('fnSearch')?.value||'').toLowerCase();
+  let list=state.funnels.filter(f=>(showArch||f.status!=='archived') && (grp==='all'||grp==='conv'||f.product===grp) && (!q||[f.name,f.product,f.purpose].filter(Boolean).join(' ').toLowerCase().includes(q)));
   const fltr=state.regFilter||'all';
   let flist=fltr==='open'?list.filter(f=>trackState(f)==='open'):fltr==='done'?list.filter(f=>trackState(f)==='done'):list;
   // Sekundär nach Name vorsortieren (stabiler Tiebreak), dann nach der aktiven Spalte.
@@ -2035,7 +2120,7 @@ function renderFunnelRegistry(){
     let cells='';
     for(let i=0;i<maxSteps;i++){const s=(f.steps||[])[i];cells+=`<td class="col-mine rstep">${s?`<b>${esc(s.title)||'—'}</b>${(s.url||s.interaction)?`<small>${esc(s.url||s.interaction)}</small>`:''}`:''}</td>`}
     const notes=(f.steps||[]).map(s=>s.note).filter(Boolean).join(' · ');
-    return `<tr><td class="col-mine rid">${f.id!=null?`#${esc(f.id)}`:'—'}</td><td class="col-mine">${esc(glabel(f.product))}</td><td class="col-mine rfunnel">${dot}<span class="fname" onclick="selectFunnel(${f.id})">${esc(f.name)}</span></td><td class="col-mine">${esc(f.purpose||'')}</td>${cells}<td class="col-mine">${esc(notes)}</td>`
+    return `<tr class="reg-row" onclick="selectFunnel(${f.id})"><td class="col-mine rid">${f.id!=null?`#${esc(f.id)}`:'—'}</td><td class="col-mine">${esc(glabel(f.product))}</td><td class="col-mine rfunnel">${dot}<span class="fname" onclick="selectFunnel(${f.id})">${esc(f.name)}</span></td><td class="col-mine">${esc(f.purpose||'')}</td>${cells}<td class="col-mine">${esc(notes)}</td>`
       +`<td class="col-praba pcol-first rmono">${cv?(esc(cv.ga4_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.ga4_status):'—'}</td><td class="col-praba rmono">${cv?esc(cv.ga4_trigger||''):''}</td>`
       +`<td class="col-praba rmono">${cv?esc(cv.ads_conversion_id||''):''}</td><td class="col-praba rmono">${cv?esc(cv.ads_label||''):''}</td><td class="col-praba">${cv?esc(cv.ads_value||''):''}</td><td class="col-praba">${cv?yn(cv.ads_status):'—'}</td>`
       +`<td class="col-praba rmono">${cv?(esc(cv.meta_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.meta_status):'—'}</td><td class="col-praba">${cv?esc(cv.notes||''):''}</td>`
@@ -2075,6 +2160,9 @@ async function savePrabaConv(key){
 function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:'',url:'',conversion_key:'',ac_tag:'',note:'',interaction:''});state.stepSel=state.editF.steps.length-1;renderFunnelDetail()}
 function delStep(i){if(!state.editF)return;syncFunnelInputs();state.editF.steps.splice(i,1);if(state.stepSel>=state.editF.steps.length)state.stepSel=state.editF.steps.length-1;if(state.stepSel<0)state.stepSel=0;renderFunnelDetail()}
 function moveStep(i,d){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps;const j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];if(state.stepSel===i)state.stepSel=j;else if(state.stepSel===j)state.stepSel=i;renderFunnelDetail()}
+function addVariant(i){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps[i];if(!s)return;s.variants=(s.variants||[]).concat([{url:'',quelle:''}]);renderFunnelDetail();}
+function delVariant(i,vi){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps[i];if(!s||!s.variants)return;s.variants.splice(vi,1);if(!s.variants.length)delete s.variants;renderFunnelDetail();}
+function updVariant(i,vi,field,val){if(!state.editF)return;const s=state.editF.steps[i];if(!s||!s.variants||!s.variants[vi])return;s.variants[vi][field]=val;}
 function syncFunnelInputs(){
   const f=state.editF;if(!f)return;
   f.name=$('fnName').value;f.status=$('fnStatus').value;f.description=$('fnDesc').value;f.product=$('fnProduct').value;f.purpose=$('fnPurpose').value;f.traffic=$('fnTraffic').value;
@@ -2232,16 +2320,22 @@ function ovBoard(fr,rows,seg){
     const steps=funnel.steps||[];const gk=steps.map((s,i)=>s.conversion_key?i:-1).filter(i=>i>=0);const goalIdx=gk.length?gk[gk.length-1]:-1;
     lane3=steps.map((st,i)=>ovNode({cls:'path',type:i===goalIdx?'Goal-Step':'Step',label:st.title||('Step '+(i+1)),full:st.interaction||st.url||'',meta:st.conversion_key?[{txt:'→ '+st.conversion_key}]:[]})).join('');
   }else lane3=ovOpen('path');
-  // Lane 4 · Follow-up & Retargeting
+  // Lane 4 · Phase 3 Lifecycle (Betreuung) getrennt vom Retargeting (Akquise-Loop)
   let lane4='';
   const autos=new Map();
   rows.filter(n=>(n.platform_type||'')==='email').forEach(n=>{const a=n.adset_or_automation||'—';if(!autos.has(a))autos.set(a,[]);autos.get(a).push(n);});
-  for(const [a,list] of autos)
-    lane4+=ovNode({cls:'email',type:'Automation',label:adsetShort(list[0]),full:a,meta:[{txt:list.length+' '+t('ov.emails')},{txt:'email_campaign'}],ads:list.map(x=>({id:x.id,short:assetShort(x),utm:x.utm_content,title:x.asset_identifier}))});
+  if(autos.size){
+    lane4+=`<div class="ov-sublbl lc">Lifecycle · ActiveCampaign</div>`;
+    for(const [a,list] of autos)
+      lane4+=ovNode({cls:'email',type:'Automation',label:adsetShort(list[0]),full:a,meta:[{txt:list.length+' '+t('ov.emails')},{txt:'email_campaign'}],ads:list.map(x=>({id:x.id,short:assetShort(x),utm:x.utm_content,title:x.asset_identifier}))});
+  }
   const rtSets=new Map();
   paid.filter(ovIsRT).forEach(n=>{const s=n.adset_or_automation||'—';if(!rtSets.has(s))rtSets.set(s,[]);rtSets.get(s).push(n);});
-  for(const [s,ads] of rtSets)
-    lane4+=ovNode({cls:'rt',type:'AdSet · Retargeting',label:adsetShort(ads[0]),full:s,meta:[{txt:ads.length+' '+t('ov.ads')},{txt:t('ov.retargets'),cls:'wait'}],ads:ads.map(a=>({id:a.id,short:assetShort(a),utm:a.utm_content,title:a.asset_identifier}))});
+  if(rtSets.size){
+    lane4+=`<div class="ov-sublbl rt">Retargeting ↩ Akquise-Loop (zurück in Phase 1)</div>`;
+    for(const [s,ads] of rtSets)
+      lane4+=ovNode({cls:'rt',type:'AdSet · Retargeting',label:adsetShort(ads[0]),full:s,meta:[{txt:ads.length+' '+t('ov.ads')},{txt:t('ov.retargets'),cls:'wait'}],ads:ads.map(a=>({id:a.id,short:assetShort(a),utm:a.utm_content,title:a.asset_identifier}))});
+  }
   if(!lane4)lane4=dash;
   // Lane 5 · Conversion / QA
   let lane5;const convKeys=new Set();
@@ -2252,7 +2346,8 @@ function ovBoard(fr,rows,seg){
       return ovNode({cls:'conv',type:'Conversion',label:c?(c.name||k):k,full:k,meta});}).join('');
   }else lane5=ovOpen('conv');
   const dims=seg==='website'?[0,0,0,0,1]:seg==='tracking'?[1,1,1,1,0]:[0,0,0,0,0];
-  const lh=(k)=>`<div class="ov-lt"><b>${t('ov.'+k)}</b><span>${t('ov.'+k+'s')}</span></div>`;
+  const OVPH={lane1:'Phase 1 · Ankunft',lane2:'Phase 2 · On-Site',lane3:'Phase 2 · On-Site',lane4:'Phase 3 · Lifecycle',lane5:'Naht · QA'};
+  const lh=(k)=>`<div class="ov-lt"><em class="ov-ph">${OVPH[k]||''}</em><b>${t('ov.'+k)}</b><span>${t('ov.'+k+'s')}</span></div>`;
   const lanes=[lane1,lane2,lane3,lane4,lane5];
   return `<div class="ov-board">
     <div class="ov-bhead"><b>${esc(campaignShort(rows[0])||fr)}</b><span class="mono">${esc(fr)}</span></div>
@@ -2303,7 +2398,7 @@ function openTasks(){
   state.funnels.filter(f=>f.status!=='archived').forEach(f=>{
     const steps=f.steps||[];
     if(!steps.some(s=>s.conversion_key))mine.push({label:f.name,detail:de?'kein Goal verknüpft':'no goal linked',view:'fc'});
-    const noUrl=steps.filter(s=>stepHasUrl(s.type)&&!String(s.url||'').trim()).length;
+    const noUrl=steps.filter(s=>stepHasUrl(s.type)&&!String(s.url||'').trim()&&!((s.variants||[]).some(v=>String(v.url||'').trim()))).length;
     if(noUrl)mine.push({label:f.name,detail:noUrl+(de?' Step(s) ohne URL':' step(s) without URL'),view:'fc'});
     if(f.status==='draft')mine.push({label:f.name,detail:de?'noch Entwurf':'still draft',view:'fc'});
   });
@@ -2332,6 +2427,22 @@ function renderDashboard(){
   s.innerHTML=items.map(([n,l])=>`<span class="dstat"><b>${n}</b> ${esc(l)}</span>`).join('')
     +`<span class="dstat ${openCount?'attn':'clear'}"><b>${openCount}</b> ${LANG==='de'?'offen':'open'}</span>`;
 }
+const PHASEN_HTML="<title>Campaign Control \u00b7 Die Reise in 3 Phasen</title>\n<style>\n  :root{\n    --bg:#07071a; --panel:#0e1030; --panel2:#15173a; --line:#272c5c;\n    --ink:#eceefc; --muted:#9aa0d0; --faint:#6b70a0;\n    --p1:#6f6bff; --p2:#9639f3; --goal:#17f8e0; --p3:#d9e08c; --rt:#ff3c8d; --ok:#4ade80;\n    --mono:ui-monospace,\"SF Mono\",Menlo,Consolas,monospace;\n    --sans:system-ui,-apple-system,\"Segoe UI\",Roboto,sans-serif;\n  }\n  *{box-sizing:border-box}\n  body{margin:0;background:\n      radial-gradient(1200px 600px at 15% -10%,rgba(111,107,255,.12),transparent 60%),\n      radial-gradient(1000px 500px at 100% 0%,rgba(150,57,243,.10),transparent 55%),\n      var(--bg);\n    color:var(--ink);font-family:var(--sans);line-height:1.5;\n    -webkit-font-smoothing:antialiased;padding:clamp(18px,4vw,44px)}\n  .wrap{max-width:1140px;margin:0 auto}\n\n  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint)}\n  h1{font-size:clamp(24px,4.2vw,40px);line-height:1.1;margin:.35em 0 .2em;text-wrap:balance;font-weight:800;letter-spacing:-.01em}\n  .lede{color:var(--muted);max-width:64ch;font-size:clamp(15px,1.6vw,17px)}\n  .accentword{color:var(--goal)}\n\n  .legrow{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 2px;font-size:12px;color:var(--muted)}\n  .legrow span{display:inline-flex;align-items:center;gap:6px}\n  .sw{width:11px;height:11px;border-radius:3px}\n\n  .worlds{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin:26px 0 8px}\n  .world{border:1px dashed var(--line);border-bottom:none;border-radius:12px 12px 0 0;padding:9px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n  .world b{font-size:13px;letter-spacing:.04em}\n  .world span{font-family:var(--mono);font-size:11px;color:var(--faint)}\n  .world.akq{border-color:rgba(111,107,255,.4)} .world.betr{border-color:rgba(217,224,140,.4)}\n  .dot{width:9px;height:9px;border-radius:50%;flex:none}\n\n  .band{display:grid;grid-template-columns:1.15fr 1.5fr auto 1fr;gap:14px;align-items:stretch}\n  @media(max-width:860px){.worlds{grid-template-columns:1fr}.band{grid-template-columns:1fr}}\n  .phase{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:16px 15px 18px;position:relative;overflow:hidden}\n  .phase::before{content:\"\";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}\n  .p-eye{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:600}\n  .p-title{font-size:18px;font-weight:750;margin:2px 0 3px;display:flex;align-items:center;gap:8px}\n  .p-sub{font-size:12.5px;color:var(--muted);margin-bottom:13px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}\n  .phase.p1{--c:var(--p1)} .phase.p2{--c:var(--p2)} .phase.p3{--c:var(--p3)}\n\n  .chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13.5px;margin-bottom:7px}\n  .chip .k{width:7px;height:7px;border-radius:2px;flex:none;background:var(--c)}\n  .chip small{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--faint)}\n  .converge{border-left:2px dashed var(--line);margin:2px 0 8px 3px;padding-left:12px}\n  .goalchip{border-color:rgba(23,248,224,.5);background:rgba(23,248,224,.06)}\n  .goalchip .k{background:var(--goal)}\n  .flowto{font-family:var(--mono);font-size:11px;color:var(--faint);margin:1px 0 5px 6px}\n\n  .naht{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-width:64px}\n  .naht .rail{width:2px;flex:1;background:linear-gradient(var(--goal),transparent 85%);border-radius:2px;min-height:20px}\n  .naht .rail.top{background:linear-gradient(transparent,var(--goal))}\n  .nlabel{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--goal);white-space:nowrap;display:flex;align-items:center;gap:8px}\n  @media(max-width:860px){\n    .naht{flex-direction:row;min-height:46px}\n    .naht .rail{height:2px;width:auto;flex:1;background:linear-gradient(90deg,var(--goal),transparent)}\n    .nlabel{writing-mode:horizontal-tb;transform:none}\n  }\n\n  .loop{margin-top:14px;border:1px solid rgba(255,60,141,.35);background:rgba(255,60,141,.05);border-radius:12px;padding:12px 15px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}\n  .loop .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--rt);font-weight:700}\n  .loop .step{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}\n  .loop .arw{color:var(--rt);font-weight:700}\n\n  /* info button \u2192 opens central modal */\n  .info{all:unset;cursor:pointer;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--c,var(--goal));\n     color:var(--c,var(--goal));font-family:var(--mono);font-size:12px;line-height:1;display:inline-flex;\n     align-items:center;justify-content:center;font-weight:700;flex:none;font-style:italic}\n  .info:hover{background:color-mix(in srgb,var(--c,var(--goal)) 16%,transparent)}\n  .info:focus-visible{outline:2px solid var(--goal);outline-offset:2px}\n  .store{display:none}\n\n  .merksatz{margin-top:16px;border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,var(--panel2),var(--panel));display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center}\n  .merksatz h3{margin:0;font-size:14px;letter-spacing:.02em}\n  .rule{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted)}\n  .tag{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--line)}\n  .tag.rt{color:var(--rt);border-color:rgba(255,60,141,.4)} .tag.lc{color:var(--p3);border-color:rgba(217,224,140,.4)}\n\n  .foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;font-family:var(--mono);letter-spacing:.03em}\n  .foot b{color:var(--muted);font-weight:600}\n\n  /* modal */\n  .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,4,16,.74)}\n  @supports(backdrop-filter:blur(2px)){.modal{backdrop-filter:blur(3px)}}\n  .modal.open{display:flex}\n  .sheet{position:relative;width:min(460px,100%);max-height:82vh;overflow:auto;background:linear-gradient(180deg,#13153c,#0b0c26);border:1px solid var(--line);border-radius:16px;padding:24px 22px 22px;box-shadow:0 30px 80px rgba(0,0,0,.62)}\n  .sheet::before{content:\"\";position:absolute;inset:0 0 auto 0;height:3px;background:var(--mc,var(--goal));border-radius:16px 16px 0 0}\n  .sheet .x{position:absolute;top:11px;right:11px;all:unset;cursor:pointer;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:19px;border:1px solid var(--line)}\n  .sheet .x:hover{color:var(--ink);background:rgba(255,255,255,.04)}\n  .sheet .mlabel{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mc,var(--goal));font-weight:600;margin-bottom:9px}\n  .mbody{font-size:14.5px;line-height:1.62;color:var(--ink)}\n  .mbody b{color:var(--goal)} .mbody i{color:var(--muted)}\n  .mbody .mono{font-family:var(--mono);font-size:12px;color:var(--muted);word-break:break-all;display:inline-block;margin-top:4px}\n  @media(prefers-reduced-motion:no-preference){.sheet{animation:pop .16s ease-out}}\n  @keyframes pop{from{transform:translateY(8px);opacity:.4}to{transform:none;opacity:1}}\n<\/style>\n\n<div class=\"wrap\">\n  <div class=\"eyebrow\">Campaign Control \u00b7 Modell</div>\n  <h1>Die Reise in <span class=\"accentword\">3&nbsp;Phasen</span></h1>\n  <p class=\"lede\">Wie ein Mensch vom ersten Klick bis zur laufenden Betreuung durch unsere Welt l\u00e4uft \u2014 und wo welches Werkzeug greift. Die farbigen <b style=\"color:var(--goal)\">\u24d8</b> antippen: die Erkl\u00e4rung \u00f6ffnet sich mittig.</p>\n\n  <div class=\"legrow\">\n    <span><i class=\"sw\" style=\"background:var(--p1)\"></i>Ankunft</span>\n    <span><i class=\"sw\" style=\"background:var(--p2)\"></i>On-Site</span>\n    <span><i class=\"sw\" style=\"background:var(--goal)\"></i>Conversion (Naht)</span>\n    <span><i class=\"sw\" style=\"background:var(--p3)\"></i>Lifecycle</span>\n    <span><i class=\"sw\" style=\"background:var(--rt)\"></i>Retargeting</span>\n  </div>\n\n  <div class=\"worlds\">\n    <div class=\"world akq\"><i class=\"dot\" style=\"background:var(--p1)\"></i><b>Welt A \u00b7 Akquise</b><span>Prabas Pixel-Welt \u00b7 bis zur Conversion</span></div>\n    <div class=\"world betr\"><i class=\"dot\" style=\"background:var(--p3)\"></i><b>Welt B \u00b7 Betreuung</b><span>ActiveCampaign</span></div>\n  </div>\n\n  <div class=\"band\">\n\n    <section class=\"phase p1\">\n      <div class=\"p-eye\">Phase 1</div>\n      <div class=\"p-title\">Ankunft\n        <button class=\"info\" data-label=\"Phase 1 \u00b7 UTM-Builder\" aria-label=\"Info: UTM-Builder\">i</button>\n        <span class=\"store\"><b>Hier lebt der UTM-Builder.</b> Jeder Link, der Leute reinbringt \u2014 Meta-/Google-Ad, E-Mail <i>und</i> die Retargeting-Ad \u2014 tr\u00e4gt eine UTM. Zwei Jobs: <b>1)</b> Attribution in GA4 (welche Quelle brachte den Klick?), <b>2)</b> via Formular-Hidden-Fields an ActiveCampaign \u2014 die Quelle klebt am Kontakt.<span class=\"mono\">?utm_source=\u2026&utm_medium=\u2026&utm_campaign=\u2026</span></span>\n      </div>\n      <div class=\"p-sub\">Wie kommt der Mensch zu uns?</div>\n      <div class=\"chip\"><i class=\"k\"></i>organisch<small>SEO \u00b7 Social</small></div>\n      <div class=\"chip\"><i class=\"k\"></i>Ad \u00b7 Meta<small>utm</small></div>\n      <div class=\"chip\"><i class=\"k\"></i>Ad \u00b7 Google<small>utm</small></div>\n      <div class=\"chip\"><i class=\"k\"></i>E-Mail-Kampagne<small>utm</small></div>\n      <div class=\"chip\"><i class=\"k\" style=\"background:var(--rt)\"></i>Retargeting-Ad<small>neue utm</small></div>\n    </section>\n\n    <section class=\"phase p2\">\n      <div class=\"p-eye\">Phase 2</div>\n      <div class=\"p-title\">On-Site\n        <button class=\"info\" data-label=\"Phase 2 \u00b7 On-Site\" aria-label=\"Info: On-Site\">i</button>\n        <span class=\"store\"><b>Prabas getrackte Welt.</b> Alles, was auf der Website passiert, bis der Mensch uns seine Daten gibt. Der <b>Pixel</b> beobachtet jeden Schritt.</span>\n      </div>\n      <div class=\"p-sub\">Viele Eing\u00e4nge \u2014 <b style=\"color:var(--ink)\">ein</b> Trichterhals\n        <button class=\"info\" data-label=\"LP-Varianten\" aria-label=\"Info: LP-Varianten\">i</button>\n        <span class=\"store\"><b>LP-Varianten sind f\u00fcrs Tracking egal.</b> Ob Ad A auf LP&nbsp;A schickt und die Retargeting-Ad auf LP&nbsp;B \u2014 wichtig ist nur die <b>eine Form \u2192 eine Danke-Seite</b>. Darum: <b>ein</b> Funnel mit mehreren LP-Varianten, nicht drei Funnels. Praba setzt sein Tracking einmal, nicht dreimal.</span>\n      </div>\n      <div class=\"converge\">\n        <div class=\"chip\"><i class=\"k\"></i>LP-Variante A</div>\n        <div class=\"chip\"><i class=\"k\"></i>LP-Variante B</div>\n        <div class=\"chip\"><i class=\"k\"></i>LP-Variante C</div>\n      </div>\n      <div class=\"flowto\">\u2193 alle laufen zusammen auf</div>\n      <div class=\"chip\"><i class=\"k\"></i>Formular<small>1\u00d7</small></div>\n      <div class=\"flowto\">\u2193</div>\n      <div class=\"chip goalchip\"><i class=\"k\"></i>Danke-Seite<small>Conversion</small></div>\n    </section>\n\n    <div class=\"naht\">\n      <div class=\"rail top\"></div>\n      <div class=\"nlabel\">Conversion \u00b7 Naht\n        <button class=\"info\" data-label=\"Conversion \u00b7 Die Naht\" aria-label=\"Info: Naht\">i</button>\n        <span class=\"store\"><b>Die Naht.</b> Der Moment, in dem der Mensch uns seine Daten gibt (Signup / Buchung). <b>Davor:</b> Akquise (Pixel-Welt, Praba). <b>Danach:</b> Betreuung (ActiveCampaign). Ab hier trackt Praba nicht mehr.</span>\n      </div>\n      <div class=\"rail\"></div>\n    </div>\n\n    <section class=\"phase p3\">\n      <div class=\"p-eye\">Phase 3</div>\n      <div class=\"p-title\">Lifecycle\n        <button class=\"info\" data-label=\"Phase 3 \u00b7 Lifecycle\" aria-label=\"Info: Lifecycle\">i</button>\n        <span class=\"store\"><b>Betreuung \u00fcber ActiveCampaign.</b> Der Mensch hat uns seine Daten gegeben \u2014 jetzt liefern wir aus: E-Mail-Strecken, PDFs, Angebote. Welche Strecke? Das steuert das <b>Signup-Tag</b>.</span>\n      </div>\n      <div class=\"p-sub\">Nach der Conversion</div>\n      <div class=\"chip\"><i class=\"k\"></i>E-Mail-Reihe je Tag</div>\n      <div class=\"chip\"><i class=\"k\"></i>Handout / PDF / Angebot</div>\n      <div class=\"chip\"><i class=\"k\"></i>Tags &amp; Segmente</div>\n      <div class=\"flowto\">alles via ActiveCampaign</div>\n    </section>\n  </div>\n\n  <div class=\"loop\">\n    <span class=\"lbl\">Der Umweg \u00b7 Retargeting-Loop</span>\n    <span class=\"step\"><b style=\"color:var(--ink)\">Nicht-Wandler</b>\n      <button class=\"info\" data-label=\"Nicht-Wandler\" aria-label=\"Info: Nicht-Wandler\" style=\"--c:var(--rt)\">i</button>\n      <span class=\"store\"><b>Nicht-Wandler</b> = jemand, der auf der LP war, aber das Ziel <b>nicht</b> erreicht hat (Form nicht abgeschickt, nicht angemeldet). Er hat \u201enicht konvertiert\". Genau diese Leute holt das Retargeting zur\u00fcck.</span>\n    </span>\n    <span class=\"arw\">\u2192</span>\n    <span class=\"step\">Pixel/Cookie f\u00e4ngt ihn\n      <button class=\"info\" data-label=\"Retargeting-Audience\" aria-label=\"Info: Retargeting-Audience\" style=\"--c:var(--rt)\">i</button>\n      <span class=\"store\"><b>Retargeting-Audience</b> = eine Liste, die Du in <b>Meta/Google</b> selbst baust \u2014 aus <b>Pixel-Daten</b> (\u201ewar auf /boersenampel/, aber nicht auf /danke/\"). Gebaut aus <b>Seitenbesuchen</b> (URL &amp; Verhalten), <b>nicht</b> aus der UTM. Die UTM steckt erst wieder in der Retargeting-<b>Anzeige</b>, die diese Liste anspricht \u2014 ein neuer Phase-1-Eingang.<br><br><i>(Optional kann man eine Audience zus\u00e4tzlich per \u201eURL enth\u00e4lt utm_campaign=\u2026\" verfeinern \u2014 aber der Motor ist der Pixel.)</i></span>\n    </span>\n    <span class=\"arw\">\u2192</span>\n    <span class=\"step\">Retargeting-Ad <span class=\"tag rt\">neue UTM</span> \u2192 ggf. <b style=\"color:var(--ink)\">andere</b> LP</span>\n    <span class=\"arw\" style=\"color:var(--p1)\">\u21a9\ufe0e zur\u00fcck in Phase 1</span>\n  </div>\n\n  <div class=\"merksatz\">\n    <h3>Retargeting oder Lifecycle? Eine Frage entscheidet:</h3>\n    <div class=\"rule\"><b style=\"color:var(--ink)\">Haben wir schon seine E-Mail?</b></div>\n    <div class=\"rule\"><span class=\"tag rt\">Nein</span> \u2192 Retargeting (Ads holen ihn zur\u00fcck) \u00b7 <b style=\"color:var(--muted)\">Akquise</b></div>\n    <div class=\"rule\"><span class=\"tag lc\">Ja</span> \u2192 Lifecycle (AC-Mail) \u00b7 <b style=\"color:var(--muted)\">Betreuung</b></div>\n  </div>\n\n  <div class=\"foot\">\n    <b>Blaupause f\u00fcr Campaign Control.</b>\n    <span>Offen: Phase-1-Zweige (viele LPs \u2192 1 Form)</span>\n    <span>Retargeting-Loop im Tool</span>\n    <span>Lane 4 = Retargeting \u2260 Lifecycle trennen</span>\n  </div>\n</div>\n\n<div class=\"modal\" id=\"modal\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"mlabel\">\n  <div class=\"sheet\">\n    <button class=\"x\" aria-label=\"Schlie\u00dfen\">\u00d7</button>\n    <div class=\"mlabel\" id=\"mlabel\"></div>\n    <div class=\"mbody\"></div>\n  </div>\n</div>\n\n<script>\n  (function(){\n    var modal=document.getElementById('modal');\n    var sheet=modal.querySelector('.sheet');\n    var body=modal.querySelector('.mbody');\n    var label=modal.querySelector('.mlabel');\n    var last=null;\n    function open(btn){\n      last=btn;\n      var store=btn.parentNode.querySelector('.store');\n      body.innerHTML=store?store.innerHTML:'';\n      label.textContent=btn.getAttribute('data-label')||'Info';\n      var c=getComputedStyle(btn).getPropertyValue('--c')||getComputedStyle(btn).color;\n      sheet.style.setProperty('--mc',c.trim()||'var(--goal)');\n      modal.classList.add('open');\n      modal.querySelector('.x').focus();\n    }\n    function close(){modal.classList.remove('open');if(last){last.focus();}}\n    [].forEach.call(document.querySelectorAll('.info'),function(btn){\n      btn.addEventListener('click',function(e){e.stopPropagation();open(btn);});\n    });\n    modal.querySelector('.x').addEventListener('click',close);\n    modal.addEventListener('click',function(e){if(e.target===modal)close();});\n    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))close();});\n  })();\n<\/script>\n";
+function loadPhasenmodell(){var f=document.getElementById('pmFrame');if(f&&!f.dataset.loaded){f.srcdoc=PHASEN_HTML;f.dataset.loaded='1';}}
+function renderLifecycle(){
+  var host=document.getElementById('lcSteps');if(!host)return;
+  var out=[];
+  (state.funnels||[]).forEach(function(f){
+    var steps=f.steps||[];
+    var gk=steps.map(function(s,i){return s.conversion_key?i:-1;}).filter(function(i){return i>=0;});
+    var goalIdx=gk.length?gk[gk.length-1]:-1;
+    if(goalIdx<0)return;
+    steps.forEach(function(s,i){
+      if(i>goalIdx){out.push('<div class="lc-step"><span>'+esc(f.name||f.slug||'—')+' · '+esc(s.title||s.type||'Step')+'</span>'+(s.ac_tag?'<span class="lc-tag">AC · '+esc(s.ac_tag)+'</span>':'')+'</div>');}
+    });
+  });
+  host.innerHTML=out.length?out.join(''):'<div class="lc-empty">Noch keine Lifecycle-Steps — sie entstehen, sobald ein Funnel Schritte NACH dem Goal hat (z.B. eine AC-Automation).</div>';
+}
 function switchView(v){
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='view-'+v));
@@ -2339,6 +2450,8 @@ function switchView(v){
   if(v==='fc')renderFcTabs();
   if(v==='dashboard')renderDashboard();
   if(v==='structure')renderStructure();
+  if(v==='verstehen')loadPhasenmodell();
+  if(v==='lifecycle')renderLifecycle();
 }
 
 /* ─────────────── Init ─────────────── */
