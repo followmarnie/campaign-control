@@ -553,6 +553,52 @@
   .ovc-st.ovcs-bad{color:#ff8f8f;border-color:rgba(255,143,143,.35);background:rgba(255,143,143,.07)}
   .ovc-arrow{display:flex;align-items:center;justify-content:center;color:#4a4f7a;font-size:18px;padding:0 2px}
   @media(max-width:820px){.ovc-phases{grid-template-columns:1fr}.ovc-arrow{display:none}.ovc-ph{border-top:2px solid var(--tn-border)}.ovc-full{max-width:100%;margin-left:0}}
+  /* Kampagnen-Assistent (Wizard) */
+  .nav-accent{position:relative}
+  .nav-accent .ic{color:#c9a6ff}
+  .wiz{max-width:900px}
+  .wiz-steps{display:flex;align-items:center;gap:0;margin-bottom:16px;flex-wrap:wrap}
+  .wiz-stp{display:flex;align-items:center;gap:8px;color:#6b7099;font-size:12.5px}
+  .wiz-stp .n{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--tn-border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none;background:rgba(9,12,35,.6)}
+  .wiz-stp.on{color:#fff}.wiz-stp.on .n{border-color:#9639f3;background:rgba(150,57,243,.2);color:#fff}
+  .wiz-stp.done{color:#9aa0d0;cursor:pointer}.wiz-stp.done .n{border-color:rgba(126,230,166,.5);color:#7ee6a6;background:rgba(126,230,166,.08)}
+  .wiz-conn{width:26px;height:2px;background:var(--tn-border);margin:0 4px;flex:none}
+  .wiz-conn.pass{background:rgba(126,230,166,.5)}
+  .wiz-body{border:1px solid var(--tn-border);border-radius:16px;background:linear-gradient(180deg,rgba(21,23,58,.5),rgba(9,12,35,.6));padding:22px 22px 24px;min-height:280px}
+  .wiz-h{font-size:17px;color:#fff;font-weight:700;margin:0 0 3px}
+  .wiz-lead{color:#aab0d6;font-size:13px;margin:0 0 18px}
+  .wiz-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .wiz-grid .full{grid-column:1/-1}
+  .wiz-body label{display:block;font-size:12px;color:#b9bee6;margin:0 0 5px}
+  .wiz-body label .hint{color:#7b81ad;font-weight:400}
+  .wiz-preview{margin-top:18px;border-top:1px dashed var(--tn-border);padding-top:12px}
+  .wiz-preview .pl{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:#dfe2fb;background:rgba(150,57,243,.08);border:1px solid rgba(150,57,243,.22);border-radius:8px;padding:6px 10px;display:inline-block;margin:3px 6px 3px 0;word-break:break-all}
+  .wiz-preview .pk{font-size:11px;color:#8a90c0;display:block;margin:8px 0 2px}
+  .wiz-chips{display:flex;flex-wrap:wrap;gap:8px}
+  .wiz-chip{cursor:pointer;user-select:none;border:1px solid var(--tn-border);border-radius:10px;padding:9px 13px;font-size:13px;color:#cfd3f5;background:rgba(255,255,255,.02);display:flex;align-items:center;gap:8px}
+  .wiz-chip:hover{border-color:rgba(150,57,243,.45)}
+  .wiz-chip.sel{border-color:#9639f3;background:rgba(150,57,243,.14);color:#fff}
+  .wiz-chip .ph{font-size:10px;font-family:"SF Mono",Menlo,Consolas,monospace;color:#8a90c0}
+  .wiz-src{border:1px solid var(--tn-border);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:rgba(255,255,255,.015)}
+  .wiz-src-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .wiz-src-h b{font-size:13.5px;color:#fff}
+  .wiz-src-h .pt{font-size:11px;color:#8a90c0;font-family:"SF Mono",Menlo,Consolas,monospace}
+  .wiz-src-row{display:grid;grid-template-columns:1fr 90px 1fr;gap:10px;align-items:end}
+  .wiz-lprow{display:flex;gap:8px;margin-bottom:7px}
+  .wiz-lprow input{flex:1}
+  .wiz-lprow .del{all:unset;cursor:pointer;color:#ff8f8f;padding:0 8px;align-self:center}
+  .wiz-warn{margin-top:8px;font-size:12px;color:#ffce7a;background:rgba(255,206,122,.07);border:1px solid rgba(255,206,122,.3);border-radius:8px;padding:7px 10px}
+  .wiz-ok{color:#7ee6a6}
+  .wiz-sum{display:flex;flex-direction:column;gap:12px}
+  .wiz-sumcard{border:1px solid var(--tn-border);border-radius:12px;padding:13px 15px;background:rgba(255,255,255,.02)}
+  .wiz-sumcard h4{margin:0 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#9aa0d0}
+  .wiz-sumcard .cnt{float:right;font-size:11px;color:#7ee6a6}
+  .wiz-foot{display:flex;align-items:center;gap:10px;margin-top:16px}
+  .wiz-hint{font-size:12px;color:#8a90c0}
+  .wiz-progress{font-size:12.5px;color:#aab0d6;margin-top:10px;white-space:pre-line}
+  .wiz-draftnote{font-size:11.5px;color:#7b81ad;margin:-6px 0 14px}
+  #wizNewBtn{color:#8a90c0}
+  @media(max-width:720px){.wiz-grid{grid-template-columns:1fr}.wiz-src-row{grid-template-columns:1fr}}
   .ov-lane{min-height:120px;border:1px dashed rgba(255,255,255,.09);border-radius:var(--tn-r-m);padding:11px;background:rgba(255,255,255,.015);display:flex;flex-direction:column;gap:10px}
   .ov-node{border:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:11px;background:rgba(9,12,35,.72)}
   .ov-node .ntype{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#8590c6;font-weight:800}
@@ -693,6 +739,7 @@
       <div class="navgroup p3" data-i18n="navg.p3">Phase 3 · Lifecycle</div>
       <button data-v="lifecycle"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg></span><span data-i18n="nav.lifecycle">Lifecycle</span></button>
       <div class="navgroup" data-i18n="navg.over">Überblick</div>
+      <button data-v="assistant" class="nav-accent"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2m0 20v-2M8.5 8.5L7 7m10 10l-1.5-1.5M4 15H2m20 0h-2M9 12a3 3 0 1 0 6 0 3 3 0 0 0-6 0z"/><path d="M12 15l-1.5 4.5L9 22"/></svg></span><span data-i18n="nav.assistant">Kampagnen-Assistent</span></button>
       <button data-v="campaigns"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg></span><span data-i18n="nav.campaigns">Kampagnen-Übersicht</span></button>
       <button data-v="verstehen"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span><span data-i18n="nav.verstehen">Verstehen</span></button>
       <button data-v="settings"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span data-i18n="nav.settings">SOP / Settings</span></button>
@@ -1140,6 +1187,27 @@
   </div>
 
   <!-- ═══════════ VIEW · SOP / SETTINGS ═══════════ -->
+  <!-- ═══════════ VIEW · KAMPAGNEN-ASSISTENT (Wizard) ═══════════ -->
+  <div class="view" id="view-assistant">
+    <div style="margin-bottom:14px">
+      <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700" data-i18n="wz.title">Kampagnen-Assistent</h2>
+      <p class="sub" data-i18n="wz.sub">Ich führe Dich Schritt für Schritt — Du beantwortest, ich lege Funnel, Conversion, Naming und UTM in einem Rutsch an.</p>
+    </div>
+    <div class="wiz">
+      <div class="wiz-steps" id="wizSteps"></div>
+      <div class="wiz-draftnote" data-i18n="wz.draft">✎ Dein Stand wird automatisch gemerkt — Du kannst jederzeit weggehen und später weitermachen. Lücken darfst Du offen lassen.</div>
+      <div class="wiz-body" id="wizBody"></div>
+      <div class="wiz-foot">
+        <button class="btn sm ghost" id="wizNewBtn" onclick="wizNew()" data-i18n="wz.new">↺ Neu</button>
+        <button class="btn sm ghost" id="wizBack" onclick="wizGo(-1)" data-i18n="wz.back">← Zurück</button>
+        <span style="flex:1"></span>
+        <span class="wiz-hint" id="wizFootHint"></span>
+        <button class="btn sm" id="wizNext" onclick="wizGo(1)" data-i18n="wz.next">Weiter →</button>
+        <button class="btn sm" id="wizCreate" onclick="wizCreate()" style="display:none" data-i18n="wz.create">✦ Alles anlegen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══════════ VIEW · VERSTEHEN (Phasenmodell) ═══════════ -->
   <div class="view" id="view-verstehen">
     <div style="margin-bottom:14px">
@@ -1218,6 +1286,24 @@ const T={
   'ovc.utm.ok':'✓ UTM gesetzt','ovc.utm.part':'⚠ {n} ohne UTM','ovc.utm.none':'✗ keine UTM','ovc.funnel.ok':'✓ Funnel','ovc.funnel.none':'⚠ kein Funnel','ovc.conv.none':'⚠ kein Conversion-Ziel',
   'ovc.ac.ok':'✓ Lifecycle aktiv','ovc.ac.none':'⚠ kein AC-Tag / keine Strecke','ovc.autos':'Automation(en)','ovc.empty':'Keine Kampagnen in diesem Filter.',
   'ovc.lg.p1':'① Ankunft','ovc.lg.p2':'② On-Site','ovc.lg.p3':'③ Lifecycle','ovc.lg.ok':'gesetzt','ovc.lg.warn':'offen','ovc.lg.bad':'fehlt',
+  'nav.assistant':'Kampagnen-Assistent',
+  'wz.title':'Kampagnen-Assistent','wz.sub':'Ich führe Dich Schritt für Schritt — Du beantwortest, ich lege Funnel, Conversion, Naming und UTM in einem Rutsch an.',
+  'wz.back':'← Zurück','wz.next':'Weiter →','wz.create':'✦ Alles anlegen','wz.done':'Kampagne angelegt ✓',
+  'wz.s1.tab':'Grundzüge','wz.s2.tab':'① Ankunft','wz.s3.tab':'② On-Site','wz.s4.tab':'③ Lifecycle','wz.s5.tab':'Überblick',
+  'wz.s1.h':'Worum geht es?','wz.s1.lead':'Art, Produkt, Thema und Temperatur — daraus baue ich schon den Kampagnen-Namen.',
+  'wz.s2.h':'① Ankunft — woher kommt der Traffic?','wz.s2.lead':'Wähle die Quellen. Pro Quelle lege ich Naming + UTM an.','wz.s2.pick':'Mindestens eine Quelle wählen.',
+  'wz.s3.h':'② On-Site — Landingpage bis Conversion','wz.s3.lead':'Landingpage(s) → Formular → Danke-Seite. Und welche Conversion den Abschluss misst.',
+  'wz.s4.h':'③ Lifecycle — nach der Conversion','wz.s4.lead':'Welcher AC-Tag startet die Betreuung? (optional, aber empfohlen)','wz.s4.note':'Ohne AC-Tag bleibt Phase 3 offen — Du kannst später einen Lifecycle-Schritt ergänzen.',
+  'wz.s5.h':'Überblick — das lege ich an','wz.s5.lead':'Prüfe kurz. Mit „Alles anlegen" schreibe ich es in einem Rutsch in die Datenbank.',
+  'wz.f.type':'Art der Kampagne','wz.f.product':'Produkt','wz.f.thema':'Thema','wz.f.datum':'Zeitraum','wz.f.count':'Anzahl','wz.f.aud':'Audience','wz.f.lps':'Landingpage(s)','wz.f.addlp':'+ weitere LP','wz.f.danke':'Danke-Seite (URL)','wz.f.conv':'Conversion (misst den Abschluss)','wz.f.convkey':'Key','wz.f.convname':'Name','wz.f.convval':'Wert','wz.f.actag':'AC-Tag nach der Conversion','wz.f.seq':'Strecke / Sequenz-Name',
+  'wz.src.meta':'Meta-Ad','wz.src.google':'Google-Ad','wz.src.email':'E-Mail','wz.src.organic':'Organisch','wz.src.rt':'Retargeting-Ad',
+  'wz.conv.new':'Neue Conversion','wz.conv.exist':'Aus Katalog','wz.conv.later':'Später festlegen','wz.conv.laterhint':'Kein Conversion-Ziel jetzt — der Funnel bleibt offen (⚠ in der Übersicht). Du kannst es später in „Funnel & Tracking" ergänzen.','wz.pv.camp':'Kampagnen-Name (SOP)',
+  'wz.ac.format':'⚠ Format: „Kategorie: Wert" (z. B. „Lead: Börsenampel").','wz.ac.prefix':'⚠ Ungewohntes Präfix — üblich sind: {p} …','wz.ac.ok':'✓ passt zur Konvention',
+  'wz.rev.camp':'Kampagne','wz.rev.funnel':'Funnel','wz.rev.convh':'Conversion','wz.rev.convnew':'neu','wz.rev.convdup':'(existiert schon — wird verknüpft)','wz.rev.convex':'aus Katalog','wz.rev.convnone':'⚠ keine Conversion gewählt','wz.rev.naming':'Naming-Einträge','wz.rev.nonaming':'⚠ Keine — mindestens eine Quelle in ① wählen.','wz.rev.utm':'UTM-Links','wz.rev.utmnote':'je Naming-Eintrag ein UTM-Link; die utm_id vergibt die Datenbank.',
+  'wz.funpurpose':'Kampagne {c} (via Assistent)',
+  'wz.v.src':'Wähle mindestens eine Quelle — sonst erscheint die Kampagne noch nicht in der Übersicht. Alles Weitere darfst Du offen lassen.',
+  'wz.new':'↺ Neu','wz.newconfirm':'Aktuellen Entwurf verwerfen und neu beginnen?','wz.draft':'✎ Dein Stand wird automatisch gemerkt — Du kannst jederzeit weggehen und später weitermachen. Lücken darfst Du offen lassen.',
+  'wz.log.conv':'Conversion anlegen…','wz.log.funnel':'Funnel anlegen…','wz.log.naming':'Naming {i}/{n}…','wz.log.done':'Fertig ✓',
   'sm.note':'<b>Campaign Structure Map.</b> Zweitsicht auf die gespeicherten Namen — Campaign → AdSet/Automation → Ads. Bearbeitet wird weiter im <b>Naming Studio</b>; hier klickst Du einen Eintrag an, um ihn dort zu öffnen.','sm.title':'Campaign Structure Map','sm.search':'Suchen: cb01, Cold, Podcast…','sm.sub':'Zweite Sicht auf dieselben gespeicherten Namen — Campaign → AdSet/Automation → Ads. Kurz-Labels für die Orientierung; voller SOP-Name bei Hover; Klick öffnet den Eintrag im Naming Studio.','sm.empty':'Noch keine gespeicherten Namen — im Naming Studio anlegen.','sm.edit':'im Naming Studio öffnen','sm.v.tree':'Liste','sm.v.map':'Struktur-Map','sm.mapsoon.h':'Visueller Struktur-Graph — folgt','sm.mapsoon.p':'Das Auto-Layout-Diagramm (Campaign → AdSet → Ads als Netz) kommt als nächster Ausbau. Die Baum-Liste deckt heute schon dieselbe Struktur ab und wächst automatisch mit den Daten.','sm.derivectx':'Du leitest ab von:','sm.siblings':'{n} bestehende Schwester-Ads:','sm.openmap':'In Structure Map öffnen','sm.zoomout':'Auszoomen','sm.zoomin':'Reinzoomen','sm.zoomfit':'Zurücksetzen (100 %)','sm.zoomhint':'Scrollen = zoomen · ziehen = verschieben · +/− oder ⤢ zum Zurücksetzen',
   'dash.title':'Campaign Control. Sechs Module.','dash.lead':'Springe direkt in das Modul, das gerade gebraucht wird — Namen bauen, UTM kopieren, Funnel & Tracking prüfen oder Kampagnen im Zusammenhang sehen.','dash.open':'Öffnen',
   'dash.c.naming':'Asset → AdSet → Campaign. SOP-konforme Namen.','dash.c.structure':'Campaign → AdSet/Automation → Ads, als Baum und Graph.',
@@ -1321,6 +1407,24 @@ const T={
   'ovc.utm.ok':'✓ UTM set','ovc.utm.part':'⚠ {n} without UTM','ovc.utm.none':'✗ no UTM','ovc.funnel.ok':'✓ Funnel','ovc.funnel.none':'⚠ no funnel','ovc.conv.none':'⚠ no conversion goal',
   'ovc.ac.ok':'✓ Lifecycle active','ovc.ac.none':'⚠ no AC tag / no sequence','ovc.autos':'automation(s)','ovc.empty':'No campaigns in this filter.',
   'ovc.lg.p1':'① Arrival','ovc.lg.p2':'② On-Site','ovc.lg.p3':'③ Lifecycle','ovc.lg.ok':'set','ovc.lg.warn':'open','ovc.lg.bad':'missing',
+  'nav.assistant':'Campaign assistant',
+  'wz.title':'Campaign assistant','wz.sub':'I guide you step by step — you answer, I create funnel, conversion, naming and UTM in one go.',
+  'wz.back':'← Back','wz.next':'Next →','wz.create':'✦ Create everything','wz.done':'Campaign created ✓',
+  'wz.s1.tab':'Basics','wz.s2.tab':'① Arrival','wz.s3.tab':'② On-Site','wz.s4.tab':'③ Lifecycle','wz.s5.tab':'Review',
+  'wz.s1.h':'What is it about?','wz.s1.lead':'Type, product, topic and temperature — I build the campaign name from that.',
+  'wz.s2.h':'① Arrival — where does the traffic come from?','wz.s2.lead':'Pick the sources. For each source I create naming + UTM.','wz.s2.pick':'Pick at least one source.',
+  'wz.s3.h':'② On-Site — landing page to conversion','wz.s3.lead':'Landing page(s) → form → thank-you page. And which conversion measures the finish.',
+  'wz.s4.h':'③ Lifecycle — after the conversion','wz.s4.lead':'Which AC tag starts the nurturing? (optional, but recommended)','wz.s4.note':'Without an AC tag, phase 3 stays open — you can add a lifecycle step later.',
+  'wz.s5.h':'Review — this is what I create','wz.s5.lead':'Take a quick look. “Create everything” writes it to the database in one go.',
+  'wz.f.type':'Campaign type','wz.f.product':'Product','wz.f.thema':'Topic','wz.f.datum':'Period','wz.f.count':'Count','wz.f.aud':'Audience','wz.f.lps':'Landing page(s)','wz.f.addlp':'+ another LP','wz.f.danke':'Thank-you page (URL)','wz.f.conv':'Conversion (measures the finish)','wz.f.convkey':'Key','wz.f.convname':'Name','wz.f.convval':'Value','wz.f.actag':'AC tag after the conversion','wz.f.seq':'Sequence name',
+  'wz.src.meta':'Meta ad','wz.src.google':'Google ad','wz.src.email':'Email','wz.src.organic':'Organic','wz.src.rt':'Retargeting ad',
+  'wz.conv.new':'New conversion','wz.conv.exist':'From catalog','wz.conv.later':'Decide later','wz.conv.laterhint':'No conversion goal now — the funnel stays open (⚠ in the overview). You can add it later in “Funnel & Tracking”.','wz.pv.camp':'Campaign name (SOP)',
+  'wz.ac.format':'⚠ Format: “Category: Value” (e.g. “Lead: Börsenampel”).','wz.ac.prefix':'⚠ Unusual prefix — common ones: {p} …','wz.ac.ok':'✓ matches the convention',
+  'wz.rev.camp':'Campaign','wz.rev.funnel':'Funnel','wz.rev.convh':'Conversion','wz.rev.convnew':'new','wz.rev.convdup':'(already exists — will be linked)','wz.rev.convex':'from catalog','wz.rev.convnone':'⚠ no conversion selected','wz.rev.naming':'Naming entries','wz.rev.nonaming':'⚠ None — pick at least one source in ①.','wz.rev.utm':'UTM links','wz.rev.utmnote':'one UTM link per naming entry; the utm_id is assigned by the database.',
+  'wz.funpurpose':'Campaign {c} (via assistant)',
+  'wz.v.src':'Pick at least one source — otherwise the campaign won’t show in the overview yet. Everything else can stay open.',
+  'wz.new':'↺ New','wz.newconfirm':'Discard the current draft and start over?','wz.draft':'✎ Your progress is saved automatically — you can leave any time and continue later. Gaps are fine to leave open.',
+  'wz.log.conv':'Creating conversion…','wz.log.funnel':'Creating funnel…','wz.log.naming':'Naming {i}/{n}…','wz.log.done':'Done ✓',
   'sm.note':'<b>Campaign Structure Map.</b> A second view of the saved names — Campaign → AdSet/Automation → Ads. Editing stays in the <b>Naming Studio</b>; click an entry here to open it there.','sm.title':'Campaign Structure Map','sm.search':'Search: cb01, Cold, Podcast…','sm.sub':'A second view of the same saved names — Campaign → AdSet/Automation → Ads. Short labels for orientation; full SOP name on hover; click opens the entry in the Naming Studio.','sm.empty':'No saved names yet — create them in the Naming Studio.','sm.edit':'open in Naming Studio','sm.v.tree':'List','sm.v.map':'Structure map','sm.mapsoon.h':'Visual structure graph — coming','sm.mapsoon.p':'The auto-layout diagram (Campaign → AdSet → Ads as a network) is the next step. The tree list already covers the same structure today and grows automatically with the data.','sm.derivectx':'You are deriving from:','sm.siblings':'{n} existing sibling ads:','sm.openmap':'Open in Structure Map','sm.zoomout':'Zoom out','sm.zoomin':'Zoom in','sm.zoomfit':'Reset (100%)','sm.zoomhint':'Scroll = zoom · drag = pan · +/− or ⤢ to reset',
   'dash.title':'Campaign Control. Six modules.','dash.lead':'Jump straight into the module you need — build names, copy UTMs, check funnel & tracking, or see campaigns in context.','dash.open':'Open',
   'dash.c.naming':'Asset → AdSet → Campaign. SOP-compliant names.','dash.c.structure':'Campaign → AdSet/Automation → Ads, as tree and graph.',
@@ -1414,6 +1518,7 @@ function applyLang(){
   $('howtoEN').style.display=LANG==='en'?'':'none';
   setConn(connState);
   var pf=document.getElementById('pmFrame');if(pf&&pf.dataset.lang&&pf.dataset.lang!==LANG){pf.srcdoc=phasenSrc();pf.dataset.lang=LANG;}
+  var av=document.getElementById('view-assistant');if(wiz&&av&&av.classList.contains('on'))wizRender();
   if(authed){renderNamingOut();renderUtmOut();refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderFunnelRegistry();renderCampaigns();renderDashboard();renderStructure();renderLifecycle();}
 }
 function setLang(l){LANG=l;localStorage.setItem('tn_cockpit_lang',l);applyLang();}
@@ -2586,6 +2691,232 @@ function renderDashboard(){
     +`<span class="dstat ${openCount?'attn':'clear'}"><b>${openCount}</b> ${LANG==='de'?'offen':'open'}</span>`;
 }
 const PHASEN_HTML="<title>Campaign Control \u00b7 Die Reise in 3 Phasen</title>\n<style>\n  :root{\n    --bg:#07071a; --panel:#0e1030; --panel2:#15173a; --line:#272c5c;\n    --ink:#eceefc; --muted:#9aa0d0; --faint:#6b70a0;\n    --p1:#6f6bff; --p2:#9639f3; --goal:#17f8e0; --p3:#d9e08c; --rt:#ff3c8d; --ok:#4ade80;\n    --mono:ui-monospace,\"SF Mono\",Menlo,Consolas,monospace;\n    --sans:system-ui,-apple-system,\"Segoe UI\",Roboto,sans-serif;\n  }\n  *{box-sizing:border-box}\n  body{margin:0;background:\n      radial-gradient(1200px 600px at 15% -10%,rgba(111,107,255,.12),transparent 60%),\n      radial-gradient(1000px 500px at 100% 0%,rgba(150,57,243,.10),transparent 55%),\n      var(--bg);\n    color:var(--ink);font-family:var(--sans);line-height:1.5;\n    -webkit-font-smoothing:antialiased;padding:clamp(18px,4vw,44px)}\n  .wrap{max-width:1140px;margin:0 auto}\n\n  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint)}\n  h1{font-size:clamp(24px,4.2vw,40px);line-height:1.1;margin:.35em 0 .2em;text-wrap:balance;font-weight:800;letter-spacing:-.01em}\n  .lede{color:var(--muted);max-width:64ch;font-size:clamp(15px,1.6vw,17px)}\n  .accentword{color:var(--goal)}\n\n  .legrow{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 2px;font-size:12px;color:var(--muted)}\n  .legrow span{display:inline-flex;align-items:center;gap:6px}\n  .sw{width:11px;height:11px;border-radius:3px}\n\n  .worlds{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin:26px 0 8px}\n  .world{border:1px dashed var(--line);border-bottom:none;border-radius:12px 12px 0 0;padding:9px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n  .world b{font-size:13px;letter-spacing:.04em}\n  .world span{font-family:var(--mono);font-size:11px;color:var(--faint)}\n  .world.akq{border-color:rgba(111,107,255,.4)} .world.betr{border-color:rgba(217,224,140,.4)}\n  .dot{width:9px;height:9px;border-radius:50%;flex:none}\n\n  .band{display:grid;grid-template-columns:1.15fr 1.5fr auto 1fr;gap:14px;align-items:stretch}\n  @media(max-width:860px){.worlds{grid-template-columns:1fr}.band{grid-template-columns:1fr}}\n  .phase{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:16px 15px 18px;position:relative;overflow:hidden}\n  .phase::before{content:\"\";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}\n  .p-eye{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:600}\n  .p-title{font-size:18px;font-weight:750;margin:2px 0 3px;display:flex;align-items:center;gap:8px}\n  .p-sub{font-size:12.5px;color:var(--muted);margin-bottom:13px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}\n  .phase.p1{--c:var(--p1)} .phase.p2{--c:var(--p2)} .phase.p3{--c:var(--p3)}\n\n  .chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13.5px;margin-bottom:7px}\n  .chip .k{width:7px;height:7px;border-radius:2px;flex:none;background:var(--c)}\n  .chip small{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--faint)}\n  .converge{border-left:2px dashed var(--line);margin:2px 0 8px 3px;padding-left:12px}\n  .goalchip{border-color:rgba(23,248,224,.5);background:rgba(23,248,224,.06)}\n  .goalchip .k{background:var(--goal)}\n  .flowto{font-family:var(--mono);font-size:11px;color:var(--faint);margin:1px 0 5px 6px}\n\n  .naht{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-width:64px}\n  .naht .rail{width:2px;flex:1;background:linear-gradient(var(--goal),transparent 85%);border-radius:2px;min-height:20px}\n  .naht .rail.top{background:linear-gradient(transparent,var(--goal))}\n  .nlabel{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--goal);white-space:nowrap;display:flex;align-items:center;gap:8px}\n  @media(max-width:860px){\n    .naht{flex-direction:row;min-height:46px}\n    .naht .rail{height:2px;width:auto;flex:1;background:linear-gradient(90deg,var(--goal),transparent)}\n    .nlabel{writing-mode:horizontal-tb;transform:none}\n  }\n\n  .loop{margin-top:14px;border:1px solid rgba(255,60,141,.35);background:rgba(255,60,141,.05);border-radius:12px;padding:12px 15px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}\n  .loop .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--rt);font-weight:700}\n  .loop .step{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}\n  .loop .arw{color:var(--rt);font-weight:700}\n\n  /* info button \u2192 opens central modal */\n  .info{all:unset;cursor:pointer;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--c,var(--goal));\n     color:var(--c,var(--goal));font-family:var(--mono);font-size:12px;line-height:1;display:inline-flex;\n     align-items:center;justify-content:center;font-weight:700;flex:none;font-style:italic}\n  .info:hover{background:color-mix(in srgb,var(--c,var(--goal)) 16%,transparent)}\n  .info:focus-visible{outline:2px solid var(--goal);outline-offset:2px}\n  .store{display:none}\n\n  .merksatz{margin-top:16px;border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,var(--panel2),var(--panel));display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center}\n  .merksatz h3{margin:0;font-size:14px;letter-spacing:.02em}\n  .rule{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted)}\n  .tag{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--line)}\n  .tag.rt{color:var(--rt);border-color:rgba(255,60,141,.4)} .tag.lc{color:var(--p3);border-color:rgba(217,224,140,.4)}\n\n  .foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;font-family:var(--mono);letter-spacing:.03em}\n  .foot b{color:var(--muted);font-weight:600}\n\n  /* modal */\n  .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,4,16,.74)}\n  @supports(backdrop-filter:blur(2px)){.modal{backdrop-filter:blur(3px)}}\n  .modal.open{display:flex}\n  .sheet{position:relative;width:min(460px,100%);max-height:82vh;overflow:auto;background:linear-gradient(180deg,#13153c,#0b0c26);border:1px solid var(--line);border-radius:16px;padding:24px 22px 22px;box-shadow:0 30px 80px rgba(0,0,0,.62)}\n  .sheet::before{content:\"\";position:absolute;inset:0 0 auto 0;height:3px;background:var(--mc,var(--goal));border-radius:16px 16px 0 0}\n  .sheet .x{position:absolute;top:11px;right:11px;all:unset;cursor:pointer;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:19px;border:1px solid var(--line)}\n  .sheet .x:hover{color:var(--ink);background:rgba(255,255,255,.04)}\n  .sheet .mlabel{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mc,var(--goal));font-weight:600;margin-bottom:9px}\n  .mbody{font-size:14.5px;line-height:1.62;color:var(--ink)}\n  .mbody b{color:var(--goal)} .mbody i{color:var(--muted)}\n  .mbody .mono{font-family:var(--mono);font-size:12px;color:var(--muted);word-break:break-all;display:inline-block;margin-top:4px}\n  @media(prefers-reduced-motion:no-preference){.sheet{animation:pop .16s ease-out}}\n  @keyframes pop{from{transform:translateY(8px);opacity:.4}to{transform:none;opacity:1}}\n<\/style>\n\n<div class=\"wrap\">\n  <div class=\"eyebrow\">Campaign Control \u00b7 Modell</div>\n  <h1>Die Reise in <span class=\"accentword\">3&nbsp;Phasen</span></h1>\n  <p class=\"lede\">Wie ein Mensch vom ersten Klick bis zur laufenden Betreuung durch unsere Welt l\u00e4uft \u2014 und wo welches Werkzeug greift. Die farbigen <b style=\"color:var(--goal)\">\u24d8</b> antippen: die Erkl\u00e4rung \u00f6ffnet sich mittig.</p>\n\n  <div class=\"legrow\">\n    <span><i class=\"sw\" style=\"background:var(--p1)\"></i>Ankunft</span>\n    <span><i class=\"sw\" style=\"background:var(--p2)\"></i>On-Site</span>\n    <span><i class=\"sw\" style=\"background:var(--goal)\"></i>Conversion (Naht)</span>\n    <span><i class=\"sw\" style=\"background:var(--p3)\"></i>Lifecycle</span>\n    <span><i class=\"sw\" style=\"background:var(--rt)\"></i>Retargeting</span>\n  </div>\n\n  <div class=\"worlds\">\n    <div class=\"world akq\"><i class=\"dot\" style=\"background:var(--p1)\"></i><b>Welt A \u00b7 Akquise</b><span>Prabas Pixel-Welt \u00b7 bis zur Conversion</span></div>\n    <div class=\"world betr\"><i class=\"dot\" style=\"background:var(--p3)\"></i><b>Welt B \u00b7 Betreuung</b><span>ActiveCampaign</span></div>\n  </div>\n\n  <div class=\"band\">\n\n    <section class=\"phase p1\">\n      <div class=\"p-eye\">Phase 1</div>\n      <div class=\"p-title\">Ankunft\n        <button class=\"info\" data-label=\"Phase 1 \u00b7 UTM-Builder\" aria-label=\"Info: UTM-Builder\">i</button>\n        <span class=\"store\"><b>Hier lebt der UTM-Builder.</b> Jeder Link, der Leute reinbringt \u2014 Meta-/Google-Ad, E-Mail <i>und</i> die Retargeting-Ad \u2014 tr\u00e4gt eine UTM. Zwei Jobs: <b>1)</b> Attribution in GA4 (welche Quelle brachte den Klick?), <b>2)</b> via Formular-Hidden-Fields an ActiveCampaign \u2014 die Quelle klebt am Kontakt.<span class=\"mono\">?utm_source=\u2026&utm_medium=\u2026&utm_campaign=\u2026</span></span>\n      </div>\n      <div class=\"p-sub\">Wie kommt der Mensch zu uns?</div>\n      <div class=\"chip\"><i class=\"k\"></i>organisch<small>SEO \u00b7 Social</small></div>\n      <div class=\"chip\"><i class=\"k\"></i>Ad \u00b7 Meta<small>utm</small></div>\n      <div class=\"chip\"><i class=\"k\"></i>Ad \u00b7 Google<small>utm</small></div>\n      <div class=\"chip\"><i class=\"k\"></i>E-Mail-Kampagne<small>utm</small></div>\n      <div class=\"chip\"><i class=\"k\" style=\"background:var(--rt)\"></i>Retargeting-Ad<small>neue utm</small></div>\n    </section>\n\n    <section class=\"phase p2\">\n      <div class=\"p-eye\">Phase 2</div>\n      <div class=\"p-title\">On-Site\n        <button class=\"info\" data-label=\"Phase 2 \u00b7 On-Site\" aria-label=\"Info: On-Site\">i</button>\n        <span class=\"store\"><b>Prabas getrackte Welt.</b> Alles, was auf der Website passiert, bis der Mensch uns seine Daten gibt. Der <b>Pixel</b> beobachtet jeden Schritt.</span>\n      </div>\n      <div class=\"p-sub\">Viele Eing\u00e4nge \u2014 <b style=\"color:var(--ink)\">ein</b> Trichterhals\n        <button class=\"info\" data-label=\"LP-Varianten\" aria-label=\"Info: LP-Varianten\">i</button>\n        <span class=\"store\"><b>LP-Varianten sind f\u00fcrs Tracking egal.</b> Ob Ad A auf LP&nbsp;A schickt und die Retargeting-Ad auf LP&nbsp;B \u2014 wichtig ist nur die <b>eine Form \u2192 eine Danke-Seite</b>. Darum: <b>ein</b> Funnel mit mehreren LP-Varianten, nicht drei Funnels. Praba setzt sein Tracking einmal, nicht dreimal.</span>\n      </div>\n      <div class=\"converge\">\n        <div class=\"chip\"><i class=\"k\"></i>LP-Variante A</div>\n        <div class=\"chip\"><i class=\"k\"></i>LP-Variante B</div>\n        <div class=\"chip\"><i class=\"k\"></i>LP-Variante C</div>\n      </div>\n      <div class=\"flowto\">\u2193 alle laufen zusammen auf</div>\n      <div class=\"chip\"><i class=\"k\"></i>Formular<small>1\u00d7</small></div>\n      <div class=\"flowto\">\u2193</div>\n      <div class=\"chip goalchip\"><i class=\"k\"></i>Danke-Seite<small>Conversion</small></div>\n    </section>\n\n    <div class=\"naht\">\n      <div class=\"rail top\"></div>\n      <div class=\"nlabel\">Conversion \u00b7 Naht\n        <button class=\"info\" data-label=\"Conversion \u00b7 Die Naht\" aria-label=\"Info: Naht\">i</button>\n        <span class=\"store\"><b>Die Naht.</b> Der Moment, in dem der Mensch uns seine Daten gibt (Signup / Buchung). <b>Davor:</b> Akquise (Pixel-Welt, Praba). <b>Danach:</b> Betreuung (ActiveCampaign). Ab hier trackt Praba nicht mehr.</span>\n      </div>\n      <div class=\"rail\"></div>\n    </div>\n\n    <section class=\"phase p3\">\n      <div class=\"p-eye\">Phase 3</div>\n      <div class=\"p-title\">Lifecycle\n        <button class=\"info\" data-label=\"Phase 3 \u00b7 Lifecycle\" aria-label=\"Info: Lifecycle\">i</button>\n        <span class=\"store\"><b>Betreuung \u00fcber ActiveCampaign.</b> Der Mensch hat uns seine Daten gegeben \u2014 jetzt liefern wir aus: E-Mail-Strecken, PDFs, Angebote. Welche Strecke? Das steuert das <b>Signup-Tag</b>.</span>\n      </div>\n      <div class=\"p-sub\">Nach der Conversion</div>\n      <div class=\"chip\"><i class=\"k\"></i>E-Mail-Reihe je Tag</div>\n      <div class=\"chip\"><i class=\"k\"></i>Handout / PDF / Angebot</div>\n      <div class=\"chip\"><i class=\"k\"></i>Tags &amp; Segmente</div>\n      <div class=\"flowto\">alles via ActiveCampaign</div>\n    </section>\n  </div>\n\n  <div class=\"loop\">\n    <span class=\"lbl\">Der Umweg \u00b7 Retargeting-Loop</span>\n    <span class=\"step\"><b style=\"color:var(--ink)\">Nicht-Wandler</b>\n      <button class=\"info\" data-label=\"Nicht-Wandler\" aria-label=\"Info: Nicht-Wandler\" style=\"--c:var(--rt)\">i</button>\n      <span class=\"store\"><b>Nicht-Wandler</b> = jemand, der auf der LP war, aber das Ziel <b>nicht</b> erreicht hat (Form nicht abgeschickt, nicht angemeldet). Er hat \u201enicht konvertiert\". Genau diese Leute holt das Retargeting zur\u00fcck.</span>\n    </span>\n    <span class=\"arw\">\u2192</span>\n    <span class=\"step\">Pixel/Cookie f\u00e4ngt ihn\n      <button class=\"info\" data-label=\"Retargeting-Audience\" aria-label=\"Info: Retargeting-Audience\" style=\"--c:var(--rt)\">i</button>\n      <span class=\"store\"><b>Retargeting-Audience</b> = eine Liste, die Du in <b>Meta/Google</b> selbst baust \u2014 aus <b>Pixel-Daten</b> (\u201ewar auf /boersenampel/, aber nicht auf /danke/\"). Gebaut aus <b>Seitenbesuchen</b> (URL &amp; Verhalten), <b>nicht</b> aus der UTM. Die UTM steckt erst wieder in der Retargeting-<b>Anzeige</b>, die diese Liste anspricht \u2014 ein neuer Phase-1-Eingang.<br><br><i>(Optional kann man eine Audience zus\u00e4tzlich per \u201eURL enth\u00e4lt utm_campaign=\u2026\" verfeinern \u2014 aber der Motor ist der Pixel.)</i></span>\n    </span>\n    <span class=\"arw\">\u2192</span>\n    <span class=\"step\">Retargeting-Ad <span class=\"tag rt\">neue UTM</span> \u2192 ggf. <b style=\"color:var(--ink)\">andere</b> LP</span>\n    <span class=\"arw\" style=\"color:var(--p1)\">\u21a9\ufe0e zur\u00fcck in Phase 1</span>\n  </div>\n\n  <div class=\"merksatz\">\n    <h3>Retargeting oder Lifecycle? Eine Frage entscheidet:</h3>\n    <div class=\"rule\"><b style=\"color:var(--ink)\">Haben wir schon seine E-Mail?</b></div>\n    <div class=\"rule\"><span class=\"tag rt\">Nein</span> \u2192 Retargeting (Ads holen ihn zur\u00fcck) \u00b7 <b style=\"color:var(--muted)\">Akquise</b></div>\n    <div class=\"rule\"><span class=\"tag lc\">Ja</span> \u2192 Lifecycle (AC-Mail) \u00b7 <b style=\"color:var(--muted)\">Betreuung</b></div>\n  </div>\n\n  <div class=\"foot\">\n    <b>Blaupause f\u00fcr Campaign Control.</b>\n    <span>Offen: Phase-1-Zweige (viele LPs \u2192 1 Form)</span>\n    <span>Retargeting-Loop im Tool</span>\n    <span>Lane 4 = Retargeting \u2260 Lifecycle trennen</span>\n  </div>\n</div>\n\n<div class=\"modal\" id=\"modal\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"mlabel\">\n  <div class=\"sheet\">\n    <button class=\"x\" aria-label=\"Schlie\u00dfen\">\u00d7</button>\n    <div class=\"mlabel\" id=\"mlabel\"></div>\n    <div class=\"mbody\"></div>\n  </div>\n</div>\n\n<script>\n  (function(){\n    var modal=document.getElementById('modal');\n    var sheet=modal.querySelector('.sheet');\n    var body=modal.querySelector('.mbody');\n    var label=modal.querySelector('.mlabel');\n    var last=null;\n    function open(btn){\n      last=btn;\n      var store=btn.parentNode.querySelector('.store');\n      body.innerHTML=store?store.innerHTML:'';\n      label.textContent=btn.getAttribute('data-label')||'Info';\n      var c=getComputedStyle(btn).getPropertyValue('--c')||getComputedStyle(btn).color;\n      sheet.style.setProperty('--mc',c.trim()||'var(--goal)');\n      modal.classList.add('open');\n      modal.querySelector('.x').focus();\n    }\n    function close(){modal.classList.remove('open');if(last){last.focus();}}\n    [].forEach.call(document.querySelectorAll('.info'),function(btn){\n      btn.addEventListener('click',function(e){e.stopPropagation();open(btn);});\n    });\n    modal.querySelector('.x').addEventListener('click',close);\n    modal.addEventListener('click',function(e){if(e.target===modal)close();});\n    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))close();});\n  })();\n<\/script>\n";
+/* ═══════════════ KAMPAGNEN-ASSISTENT (Wizard) ═══════════════ */
+const WIZ_SOURCES=[
+  {k:'meta',    label:'wz.src.meta',    src:'meta_ads', pt:'paid',    paid:true},
+  {k:'google',  label:'wz.src.google',  src:'google',   pt:'paid',    paid:true},
+  {k:'email',   label:'wz.src.email',   src:'newsletter',pt:'email'},
+  {k:'organic', label:'wz.src.organic', src:'instagram',pt:'organic'},
+  {k:'rt',      label:'wz.src.rt',      src:'meta_ads', pt:'paid',    paid:true, rt:true}
+];
+const WIZ_GOAL={LeadMagnet:'lead',Webinar:'registration',Consultation:'booking',Brand:'engagement',Retargeting:'lead',Brochure:'lead'};
+const AC_PREFIXES=['Customer','Source','Status','Goal','Lead','Engagement','Interest','Language','Funnel','Subscription','Promotion','Signup'];
+let wizStep=0;
+let wiz=null;
+function wizFresh(){
+  let ym='';try{const d=new Date();ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}catch(e){ym='';}
+  return {type:'LeadMagnet',channel:'SWG',thema:'',datum:ym,temperature:'',
+    sources:{meta:{on:false,count:1,audtyp:'Cold'},google:{on:false,count:1,audtyp:'Cold'},email:{on:false,count:1},organic:{on:false,count:1},rt:{on:false,count:1,audtyp:'Retargeting'}},
+    lps:[{url:'',quelle:''}],dankeUrl:'',convMode:'new',convKey:'',convName:'',convValue:'',convExisting:'',acTag:'',seqName:''};
+}
+function wizInit(){if(!wiz){if(!wizLoadDraft())wiz=wizFresh();}wizRender();}
+function wizReset(){wiz=wizFresh();wizStep=0;wizClearDraft();}
+function wizPersist(){try{localStorage.setItem('tn_cc_wizdraft',JSON.stringify({s:wizStep,d:wiz}));}catch(e){}}
+function wizLoadDraft(){try{const r=localStorage.getItem('tn_cc_wizdraft');if(r){const o=JSON.parse(r);if(o&&o.d){wiz=o.d;wizStep=Math.max(0,Math.min(4,o.s||0));return true;}}}catch(e){}return false;}
+function wizClearDraft(){try{localStorage.removeItem('tn_cc_wizdraft');}catch(e){}}
+function wizNew(){if(wiz&&(String(wiz.thema||'').trim()||Object.values(wiz.sources).some(s=>s.on))){if(!confirm(t('wz.newconfirm')))return;}wiz=wizFresh();wizStep=0;wizClearDraft();wizRender();}
+function wizCampBase(){return join_(wiz.channel,wiz.type,wiz.thema.trim(),wiz.datum.trim());}
+function wizUtmCamp(){return kebab([wiz.channel,wiz.type,wiz.thema.trim(),wiz.datum.trim()].filter(Boolean).join('-'));}
+function wizFunnelName(){return kebab([wiz.thema.trim()||wiz.channel,wiz.type].filter(Boolean).join('-'));}
+function wizTag(){return wiz.type==='LeadMagnet'?'LM':(wiz.type==='Webinar'?'EVT':'');}
+function wizConvKeySug(){return snake((wiz.thema.trim()||wiz.channel)+'_'+(WIZ_GOAL[wiz.type]||'lead'));}
+
+function wizSet(f,v,noRender){wiz[f]=v;if(f==='thema'&&wiz.convMode==='new'&&!wiz._convKeyTouched)wiz.convKey='';wizPersist();if(noRender)wizLive();else wizRenderBody();}
+function wizToggleSrc(k){wiz.sources[k].on=!wiz.sources[k].on;wizPersist();wizRenderBody();}
+function wizSetSrc(k,f,v){wiz.sources[k][f]=v;wizPersist();}
+function wizAddLp(){wiz.lps.push({url:'',quelle:''});wizPersist();wizRenderBody();}
+function wizDelLp(i){wiz.lps.splice(i,1);if(!wiz.lps.length)wiz.lps.push({url:'',quelle:''});wizPersist();wizRenderBody();}
+function wizSetLp(i,f,v){wiz.lps[i][f]=v;wizPersist();}
+function wizSetConvMode(m){wiz.convMode=m;wizPersist();wizRenderBody();}
+function wizSetAcTag(v){wiz.acTag=v;wizPersist();var w=document.getElementById('wizAcWarn');if(w)w.innerHTML=wizAcTagWarn(v);}
+function wizAcTagWarn(v){v=(v||'').trim();if(!v)return '';const m=v.match(/^([A-Za-zÄÖÜäöü]+)\s*:\s*.+/);
+  if(!m)return t('wz.ac.format');
+  const pfx=m[1];if(!AC_PREFIXES.some(p=>p.toLowerCase()===pfx.toLowerCase()))return t('wz.ac.prefix',{p:AC_PREFIXES.slice(0,6).join(', ')});
+  return '<span class="wiz-ok">'+t('wz.ac.ok')+'</span>';}
+
+function wizLive(){const c=document.getElementById('wizCampPrev');if(c)c.textContent=wizCampBase()||'—';const u=document.getElementById('wizUtmCampPrev');if(u)u.textContent=wizUtmCamp()||'—';const f=document.getElementById('wizFunPrev');if(f)f.textContent=wizFunnelName()||'—';}
+
+function wizStepper(){
+  const labels=['wz.s1.tab','wz.s2.tab','wz.s3.tab','wz.s4.tab','wz.s5.tab'];
+  let h='';
+  labels.forEach((lb,i)=>{
+    const cls=i===wizStep?'on':(i<wizStep?'done':'');
+    h+=`<div class="wiz-stp ${cls}" ${i<wizStep?`onclick="wizJump(${i})"`:''}><span class="n">${i<wizStep?'✓':(i+1)}</span><span>${t(lb)}</span></div>`;
+    if(i<labels.length-1)h+=`<div class="wiz-conn ${i<wizStep?'pass':''}"></div>`;
+  });
+  return h;
+}
+function wizJump(i){if(i<wizStep){wizStep=i;wizPersist();wizRender();}}
+function wizRender(){const s=document.getElementById('wizSteps');if(s)s.innerHTML=wizStepper();wizRenderBody();
+  const last=wizStep===4;const bk=document.getElementById('wizBack'),nx=document.getElementById('wizNext'),cr=document.getElementById('wizCreate');
+  if(bk)bk.style.visibility=wizStep===0?'hidden':'visible';
+  if(nx)nx.style.display=last?'none':'';if(cr)cr.style.display=last?'':'none';
+  const fh=document.getElementById('wizFootHint');if(fh)fh.textContent='';
+}
+function selOpts(list,cur){return list.map(o=>{const val=Array.isArray(o)?o[0]:o,lbl=Array.isArray(o)?o[1]:o;return `<option value="${esc(val)}"${val===cur?' selected':''}>${esc(lbl)}</option>`;}).join('');}
+
+function wizRenderBody(){
+  const b=document.getElementById('wizBody');if(!b)return;
+  let h='';
+  if(wizStep===0){
+    h=`<div class="wiz-h">${t('wz.s1.h')}</div><div class="wiz-lead">${t('wz.s1.lead')}</div>
+    <div class="wiz-grid">
+      <div><label>${t('wz.f.type')}</label><select onchange="wizSet('type',this.value)">${selOpts(OPT.funnel,wiz.type)}</select></div>
+      <div><label>${t('wz.f.product')}</label><select onchange="wizSet('channel',this.value)">${selOpts(OPT.channel,wiz.channel)}</select></div>
+      <div><label>${t('wz.f.thema')} <span class="hint">(Slug)</span></label><input value="${esc(wiz.thema)}" oninput="wizSet('thema',this.value,true)" placeholder="Boersenampel"></div>
+      <div><label>${t('wz.f.datum')} <span class="hint">(YYYY-MM)</span></label><input value="${esc(wiz.datum)}" oninput="wizSet('datum',this.value,true)" placeholder="2026-07"></div>
+      <div class="full"><label>${t('nm.temp')}</label><div class="wiz-chips">${['cold','warm','hot'].map(tk=>`<div class="wiz-chip ${wiz.temperature===tk?'sel':''}" onclick="wizSet('temperature','${tk}')">${t('temp.'+tk)}</div>`).join('')}<div class="wiz-chip ${!wiz.temperature?'sel':''}" onclick="wizSet('temperature','')">${t('temp.open')}</div></div></div>
+    </div>
+    <div class="wiz-preview"><span class="pk">${t('wz.pv.camp')}</span><span class="pl" id="wizCampPrev">${esc(wizCampBase())||'—'}</span><span class="pk">utm_campaign</span><span class="pl" id="wizUtmCampPrev">${esc(wizUtmCamp())||'—'}</span></div>`;
+  }else if(wizStep===1){
+    h=`<div class="wiz-h">${t('wz.s2.h')}</div><div class="wiz-lead">${t('wz.s2.lead')}</div>
+    <div class="wiz-chips" style="margin-bottom:14px">${WIZ_SOURCES.map(s=>`<div class="wiz-chip ${wiz.sources[s.k].on?'sel':''}" onclick="wizToggleSrc('${s.k}')">${t(s.label)} <span class="ph">${s.src}</span></div>`).join('')}</div>
+    <div id="wizSrcCfg">`;
+    WIZ_SOURCES.filter(s=>wiz.sources[s.k].on).forEach(s=>{
+      const c=wiz.sources[s.k];
+      h+=`<div class="wiz-src"><div class="wiz-src-h"><b>${t(s.label)}</b><span class="pt">${s.src} · ${MEDIUM[s.src]||'—'}</span></div>
+        <div class="wiz-src-row">
+          <div><label>${t('wz.f.count')}</label><input type="number" min="1" max="20" value="${c.count}" oninput="wizSetSrc('${s.k}','count',Math.max(1,parseInt(this.value)||1))"></div>
+          ${s.paid?`<div style="grid-column:span 2"><label>${t('wz.f.aud')}</label><select onchange="wizSetSrc('${s.k}','audtyp',this.value)">${selOpts(OPT.audtyp,c.audtyp)}</select></div>`:'<div></div><div></div>'}
+        </div></div>`;
+    });
+    h+=`</div>`;
+    if(!WIZ_SOURCES.some(s=>wiz.sources[s.k].on))h+=`<div class="wiz-hint">${t('wz.s2.pick')}</div>`;
+  }else if(wizStep===2){
+    h=`<div class="wiz-h">${t('wz.s3.h')}</div><div class="wiz-lead">${t('wz.s3.lead')}</div>
+    <label>${t('wz.f.lps')}</label><div id="wizLps">`+
+      wiz.lps.map((l,i)=>`<div class="wiz-lprow"><input value="${esc(l.url)}" oninput="wizSetLp(${i},'url',this.value)" placeholder="https://…"><input style="max-width:150px" value="${esc(l.quelle)}" oninput="wizSetLp(${i},'quelle',this.value)" placeholder="${t('fn.lpv.qph')}">${wiz.lps.length>1?`<button class="del" onclick="wizDelLp(${i})">✕</button>`:''}</div>`).join('')+
+    `</div><button class="btn sm ghost" onclick="wizAddLp()">${t('wz.f.addlp')}</button>
+    <div style="margin-top:14px"><label>${t('wz.f.danke')}</label><input value="${esc(wiz.dankeUrl)}" oninput="wizSet('dankeUrl',this.value,true)" placeholder="https://…/danke"></div>
+    <div style="margin-top:16px;border-top:1px dashed var(--tn-border);padding-top:14px">
+      <label>${t('wz.f.conv')}</label>
+      <div class="wiz-chips" style="margin-bottom:10px"><div class="wiz-chip ${wiz.convMode==='new'?'sel':''}" onclick="wizSetConvMode('new')">${t('wz.conv.new')}</div><div class="wiz-chip ${wiz.convMode==='existing'?'sel':''}" onclick="wizSetConvMode('existing')">${t('wz.conv.exist')}</div><div class="wiz-chip ${wiz.convMode==='later'?'sel':''}" onclick="wizSetConvMode('later')">${t('wz.conv.later')}</div></div>`;
+    if(wiz.convMode==='later'){
+      h+=`<div class="wiz-hint">${t('wz.conv.laterhint')}</div>`;
+    }else if(wiz.convMode==='new'){
+      h+=`<div class="wiz-grid">
+        <div><label>${t('wz.f.convkey')} <span class="hint">(Slug)</span></label><input value="${esc(wiz.convKey||wizConvKeySug())}" oninput="wiz._convKeyTouched=true;wizSet('convKey',this.value,true)"></div>
+        <div><label>${t('wz.f.convname')}</label><input value="${esc(wiz.convName)}" oninput="wizSet('convName',this.value,true)" placeholder="${esc(t('wz.f.convname'))}"></div>
+        <div><label>${t('wz.f.convval')} <span class="hint">(AED, opt.)</span></label><input value="${esc(wiz.convValue)}" oninput="wizSet('convValue',this.value,true)"></div>
+      </div>`;
+    }else{
+      h+=`<select onchange="wizSet('convExisting',this.value)"><option value="">${t('fn.step.none')}</option>${state.convs.map(c=>`<option value="${esc(c.key)}"${wiz.convExisting===c.key?' selected':''}>${esc(c.name||c.key)} · ${esc(c.key)}</option>`).join('')}</select>`;
+    }
+    h+=`</div>`;
+  }else if(wizStep===3){
+    h=`<div class="wiz-h">${t('wz.s4.h')}</div><div class="wiz-lead">${t('wz.s4.lead')}</div>
+    <div class="wiz-grid">
+      <div class="full"><label>${t('wz.f.actag')} <span class="hint">(Kategorie: Wert)</span></label><input value="${esc(wiz.acTag)}" oninput="wizSetAcTag(this.value)" placeholder="Lead: Börsenampel"><div class="wiz-warn" id="wizAcWarn" style="${wiz.acTag?'':'display:none'}">${wizAcTagWarn(wiz.acTag)}</div></div>
+      <div class="full"><label>${t('wz.f.seq')} <span class="hint">(opt.)</span></label><input value="${esc(wiz.seqName)}" oninput="wizSet('seqName',this.value,true)" placeholder="Willkommens-Strecke"></div>
+    </div>
+    <div class="wiz-hint" style="margin-top:12px">${t('wz.s4.note')}</div>`;
+    setTimeout(()=>{var w=document.getElementById('wizAcWarn');if(w&&wiz.acTag)w.style.display='';},0);
+  }else{
+    h=`<div class="wiz-h">${t('wz.s5.h')}</div><div class="wiz-lead">${t('wz.s5.lead')}</div>${wizReviewHTML()}<div class="wiz-progress" id="wizProgress"></div>`;
+  }
+  b.innerHTML=h;
+  const w=document.getElementById('wizAcWarn');if(w)w.innerHTML=wizAcTagWarn(wiz.acTag);
+}
+
+function wizBuildPlan(){
+  const base=wizCampBase(),uc=wizUtmCamp(),fn=wizFunnelName(),tag=wizTag();
+  // Funnel-Steps
+  const steps=[];
+  const lpUrls=wiz.lps.filter(l=>l.url.trim());
+  const lp0=lpUrls[0]||{url:'',quelle:''};
+  const lpStep={type:'lp',title:'Landingpage',url:lp0.url.trim()};
+  if(lpUrls.length>1)lpStep.variants=lpUrls.slice(1).map(l=>({url:l.url.trim(),quelle:l.quelle.trim()}));
+  steps.push(lpStep);
+  steps.push({type:'form',title:'Formular'});
+  const convKey=wiz.convMode==='new'?(wiz.convKey.trim()||wizConvKeySug()):(wiz.convMode==='existing'?wiz.convExisting:'');
+  steps.push({type:'page',title:'Danke',url:wiz.dankeUrl.trim(),conversion_key:convKey||''});
+  if(wiz.acTag.trim())steps.push({type:'email',title:wiz.seqName.trim()||'Lifecycle',ac_tag:wiz.acTag.trim()});
+  const funnel={name:fn,slug:kebab(fn),product:wiz.channel,purpose:t('wz.funpurpose',{c:base}),status:'active',traffic:null,steps};
+  // Conversion
+  let newConv=null;
+  if(wiz.convMode==='new'&&convKey&&!state.convs.some(c=>c.key===convKey)){
+    newConv={key:convKey,name:wiz.convName.trim()||convKey,path:(lp0.url||'')+' → … → '+(wiz.dankeUrl||''),
+      ads_value:wiz.convValue.trim(),ga4_status:'open',ads_status:'open',meta_status:'open',
+      ga4_event:'',ga4_trigger:'',ads_conversion_id:'',ads_label:'',meta_event:'',purpose:wiz.convName.trim()||'',notes:'via Assistent'};
+  }
+  // Naming + UTM
+  const naming=[],utm=[];
+  WIZ_SOURCES.filter(s=>wiz.sources[s.k].on).forEach(s=>{
+    const c=wiz.sources[s.k];const n=Math.max(1,c.count||1);
+    for(let i=1;i<=n;i++){
+      const nn=String(i).padStart(2,'0');
+      let nmO={platform_type:s.pt,channel:wiz.channel,function_tag:tag,funnel_type:wiz.type,topic_slug:wiz.thema.trim(),
+        period:wiz.datum.trim(),variant:s.rt?'Retargeting':'',campaign_name:base,utm_campaign:uc,temperature:wiz.temperature,notes:'via Assistent'};
+      if(s.pt==='paid'){
+        nmO.adset_or_automation=join_(c.audtyp,wiz.thema.trim());
+        nmO.asset_identifier=join_('ADS',wiz.datum.trim(),wiz.channel,tag,'CB'+nn,wiz.thema.trim(),'DE','H1','CTA1');
+        nmO.utm_content=snake('cb'+nn+'_h1_cta1');
+      }else if(s.pt==='email'){
+        nmO.adset_or_automation=join_(base,'seq1');
+        nmO.asset_identifier=join_('EMAIL',wiz.datum.trim(),wiz.channel,tag,wiz.type,wiz.thema.trim(),'DE','E'+nn);
+        nmO.utm_content=snake('email'+nn+'_'+(wiz.thema.trim()||'mail'));
+      }else{
+        nmO.adset_or_automation='';nmO.asset_identifier='';
+        nmO.utm_content=snake((wiz.thema.trim()||'organic')+(n>1?('-'+nn):''));
+      }
+      naming.push(nmO);
+      utm.push({platform_type:s.pt,utm_source:s.src,utm_medium:MEDIUM[s.src]||'referral',utm_campaign:uc,utm_content:nmO.utm_content,
+        utm_term:'',asset_identifier:nmO.asset_identifier,funnel_ref:fn,target_url:lp0.url.trim(),anchor:'',notes:'via Assistent'});
+    }
+  });
+  return {base,uc,fn,funnel,newConv,convKey,naming,utm};
+}
+function wizReviewHTML(){
+  const p=wizBuildPlan();
+  const chain=p.funnel.steps.map(s=>esc(s.title||s.type)).join(' → ');
+  const convTxt=wiz.convMode==='new'?(p.newConv?`${t('wz.rev.convnew')}: <b>${esc(p.convKey)}</b>`:`${esc(p.convKey)} ${t('wz.rev.convdup')}`):(p.convKey?`${t('wz.rev.convex')}: <b>${esc(p.convKey)}</b>`:`<span class="wiz-ok" style="color:#ffce7a">${t('wz.rev.convnone')}</span>`);
+  const tchip=wiz.temperature?`<span class="temp-chip ${wiz.temperature}">${tempLbl(wiz.temperature)}</span>`:'';
+  return `<div class="wiz-sum">
+    <div class="wiz-sumcard"><h4>${t('wz.rev.camp')}</h4>${tchip} <b>${esc(p.base)}</b> <span class="wiz-hint">· ${esc(wiz.channel)} · utm=<span class="mono">${esc(p.uc)}</span></span></div>
+    <div class="wiz-sumcard"><h4>${t('wz.rev.funnel')}</h4><b>${esc(p.fn)}</b><div class="wiz-hint" style="margin-top:4px">${chain}</div></div>
+    <div class="wiz-sumcard"><h4>${t('wz.rev.convh')}</h4>${convTxt}</div>
+    <div class="wiz-sumcard"><h4>${t('wz.rev.naming')}<span class="cnt">${p.naming.length}×</span></h4>${p.naming.length?p.naming.slice(0,8).map(n=>`<div class="wiz-hint">• ${esc(n.platform_type)} · ${esc(n.adset_or_automation||n.utm_content)}</div>`).join('')+(p.naming.length>8?`<div class="wiz-hint">…+${p.naming.length-8}</div>`:''):`<div class="wiz-warn">${t('wz.rev.nonaming')}</div>`}</div>
+    <div class="wiz-sumcard"><h4>${t('wz.rev.utm')}<span class="cnt">${p.utm.length}×</span></h4><div class="wiz-hint">${t('wz.rev.utmnote')}</div></div>
+  </div>`;
+}
+function wizValidate(){
+  // Nur eine harte Bedingung: ohne Quelle erscheint die Kampagne nicht in der Übersicht.
+  if(wizStep===1){if(!WIZ_SOURCES.some(s=>wiz.sources[s.k].on))return t('wz.v.src');}
+  return null; // alles andere darf offen bleiben — Lücken zeigt die Übersicht als ⚠
+}
+function wizGo(dir){
+  if(dir>0){const err=wizValidate();if(err){toast(err,true);const fh=document.getElementById('wizFootHint');if(fh)fh.textContent=err;return;}}
+  wizStep=Math.max(0,Math.min(4,wizStep+dir));wizPersist();wizRender();
+}
+async function wizCreate(){
+  const p=wizBuildPlan();
+  if(!p.naming.length){toast(t('wz.rev.nonaming'),true);return;}
+  const log=document.getElementById('wizProgress');const say=m=>{if(log)log.textContent=(log.textContent?log.textContent+'\n':'')+m;};
+  const cr=document.getElementById('wizCreate');if(cr)cr.disabled=true;if(log)log.textContent='';
+  const by=whoami()||null;
+  try{
+    if(p.newConv){say(t('wz.log.conv'));await sb('conversions',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({...p.newConv,created_by:by})});}
+    say(t('wz.log.funnel'));
+    const fins=await sb('funnels',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({...p.funnel,created_by:by})});
+    const funnelName=(fins&&fins[0]&&fins[0].name)||p.fn;
+    for(let i=0;i<p.naming.length;i++){
+      say(t('wz.log.naming',{i:i+1,n:p.naming.length}));
+      const nm={...p.naming[i],funnel_reference:funnelName,created_by:by};
+      const nins=await sb('naming_registry',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(nm)});
+      const nid=nins&&nins[0]&&nins[0].id;
+      const up=p.utm[i];
+      if(up){
+        const uins=await sb('utm_registry',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({...up,naming_id:nid,created_by:by})});
+        const uid=uins&&uins[0]&&uins[0].utm_id;
+        if(uid){const full=buildUrl(up,uid);await sb('utm_registry?utm_id=eq.'+encodeURIComponent(uid),{method:'PATCH',body:JSON.stringify({full_url:full})});}
+      }
+    }
+    say(t('wz.log.done'));
+    await loadAll();toast(t('wz.done'));
+    wizReset();switchView('campaigns');
+  }catch(e){say(t('ct.savefail')+': '+e.message);toast(t('ct.savefail')+': '+e.message,true);if(cr)cr.disabled=false;}
+}
+
 /* DE→EN-Übersetzung der Phasenmodell-Grafik (nur Textknoten; Struktur/CSS bleiben).
    Reihenfolge: längste/eindeutigste Fragmente zuerst, damit keine Teilstring-Kollisionen. */
 const PHASEN_TR=[
@@ -2690,6 +3021,7 @@ function switchView(v){
   if(v==='structure')renderStructure();
   if(v==='verstehen')loadPhasenmodell();
   if(v==='lifecycle')renderLifecycle();
+  if(v==='assistant')wizInit();
 }
 
 /* ─────────────── Init ─────────────── */
