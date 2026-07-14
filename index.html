@@ -589,6 +589,22 @@
   .wiz-lprow .del{all:unset;cursor:pointer;color:#ff8f8f;padding:0 8px;align-self:center}
   .wiz-warn{margin-top:8px;font-size:12px;color:#ffce7a;background:rgba(255,206,122,.07);border:1px solid rgba(255,206,122,.3);border-radius:8px;padding:7px 10px}
   .wiz-ok{color:#7ee6a6}
+  .wiz-new{color:#d9d08c}
+  .wiz-portal{color:#9aa0d0}
+  .tc-wrap{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+  .tc-group{border:1px solid #272c5c;border-radius:12px;overflow:hidden}
+  .tc-gh{background:rgba(150,157,220,.08);padding:8px 12px;font-size:12px;font-weight:700;letter-spacing:.04em;color:#c9cdf0;border-bottom:1px solid #272c5c}
+  .tc-row{display:grid;grid-template-columns:190px 1fr;gap:6px 14px;padding:10px 12px;border-bottom:1px solid rgba(39,44,92,.55)}
+  .tc-row:last-child{border-bottom:none}
+  .tc-cat{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .tc-cat code{font-family:var(--mono,ui-monospace,Menlo,monospace);font-size:12.5px;color:#eceefc}
+  .tc-who{font-size:10px;padding:1px 6px;border-radius:5px;font-weight:600;letter-spacing:.03em}
+  .tc-du{background:rgba(126,230,166,.14);color:#7ee6a6} .tc-auto{background:rgba(217,208,140,.14);color:#d9d08c} .tc-portal{background:rgba(154,160,208,.14);color:#aab0d6}
+  .tc-note{grid-column:1/-1;font-size:12px;color:#8a90bd;line-height:1.45;margin:-2px 0 2px}
+  .tc-vals{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+  .tc-chip{font-family:var(--mono,ui-monospace,Menlo,monospace);font-size:11.5px;background:rgba(255,255,255,.04);border:1px solid #2d3363;border-radius:6px;padding:3px 8px;color:#c9cdf0}
+  .tc-open{font-size:11.5px;color:#8a90bd;font-style:italic}
+  @media(max-width:640px){.tc-row{grid-template-columns:1fr}}
   .wiz-sum{display:flex;flex-direction:column;gap:12px}
   .wiz-sumcard{border:1px solid var(--tn-border);border-radius:12px;padding:13px 15px;background:rgba(255,255,255,.02)}
   .wiz-sumcard h4{margin:0 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#9aa0d0}
@@ -1231,6 +1247,11 @@
       <p class="hint" style="margin:0 0 8px" data-i18n="lc.stepshint">Schritte, die <b>nach</b> dem Goal liegen (mit AC-Tag) — automatisch aus den Funnels gelesen.</p>
       <div id="lcSteps" class="lc-steps"></div>
     </div>
+    <div class="lc-card" style="margin-top:14px">
+      <h2 data-i18n="tc.h">Tag-Katalog 🛡️</h2>
+      <p style="color:#aab0d6;font-size:13.5px;line-height:1.6;margin:0 0 4px" data-i18n="tc.p">Die bekannten AC-Tags (Soll-Konvention). Der <b style="color:#fff">Wächter</b> im Assistenten prüft jeden getippten Tag hiergegen: <span class="wiz-ok">grün = existiert</span> · <span class="wiz-new">gelb = neuer Wert</span> · <span style="color:#f0a0a0">rot = passt nicht</span>.</p>
+      <div id="tagCatalog" class="tc-wrap"></div>
+    </div>
   </div>
 
   <div class="view" id="view-settings">
@@ -1301,7 +1322,8 @@ const T={
   'wz.f.type':'Art der Kampagne','wz.f.product':'Produkt','wz.f.thema':'Thema','wz.f.datum':'Zeitraum','wz.f.count':'Anzahl','wz.f.aud':'Audience','wz.f.lps':'Landingpage(s)','wz.f.addlp':'+ weitere LP','wz.f.danke':'Danke-Seite (URL)','wz.f.conv':'Conversion (misst den Abschluss)','wz.f.convkey':'Key','wz.f.convname':'Name','wz.f.convval':'Wert','wz.f.actag':'AC-Tags nach der Conversion','wz.f.actaghint':'Kategorie: Spezifizierung · eine pro Zeile','wz.f.addtag':'+ weiterer Tag','wz.f.recurring':'Wiederkehrender Magnet (immer neue Ausgaben, z. B. Report Q3) — dann zusätzlich datierte Edition „Lead: X-JJJJ-MM". Bei stehenden Evergreen-Magneten (z. B. Börsenampel) AUS lassen.','wz.tag.sugh':'Vorschläge (antippen zum Hinzufügen):','wz.tag.leadsource':'Test: eigens gebauter Magnet mit Funnel + Nachfass-Strecke? → <b>Lead:</b>. Nur eine Fläche, auf der zufällig ein Signup passierte? → <b>Source:</b>. Wiederkehrender Magnet? Evergreen-Basis + datierte Edition (beide Lead:).','wz.tag.tempnote':'ℹ Temperatur ist ein AC-Tag — jetzt „Stage: Cold/Warm/Hot" (der alte Name „Lead: Cold/Warm/Hot" ist <b>tot</b>). Er wird <b>nicht hier</b> gestempelt: ActiveCampaign vergibt beim Eintritt „Stage: Cold" und befördert per Automation (≥2 Source-Tags → Warm · Gespräch gebucht → Hot). Deine Lead-/Source-Tags oben sind die Bausteine dafür.','wz.f.seq':'Strecke / Sequenz-Name',
   'wz.src.meta':'Meta-Ad','wz.src.google':'Google-Ad','wz.src.email':'E-Mail','wz.src.organic':'Organisch','wz.src.rt':'Retargeting-Ad',
   'wz.conv.new':'Neue Conversion','wz.conv.exist':'Aus Katalog','wz.conv.later':'Später festlegen','wz.conv.laterhint':'Kein Conversion-Ziel jetzt — der Funnel bleibt offen (⚠ in der Übersicht). Du kannst es später in „Funnel & Tracking" ergänzen.','wz.pv.camp':'Kampagnen-Name (SOP)',
-  'wz.ac.format':'⚠ Format: „Kategorie: Spezifizierung" — Leerzeichen nach dem Doppelpunkt (z. B. „Lead: Börsenampel").','wz.ac.onecolon':'⚠ Genau <b>ein</b> Doppelpunkt pro Tag: „Kategorie: Spezifizierung".','wz.ac.prefix':'⚠ Nicht im finalen Schema — erlaubt: {p}.','wz.ac.stage':'⚠ „Stage: …" wird <b>nicht</b> pro Kampagne gesetzt — Temperatur ist automation-getrieben.','wz.ac.customer':'⚠ „Customer: …" nur für bezahlte Käufer — für die Herkunft „Lead:" oder „Source:" nehmen.','wz.ac.case':'⚠ Kategorie groß schreiben: „{p}: …".','wz.ac.ok':'✓ passt zur Konvention',
+  'wz.ac.format':'⚠ Format: „Kategorie: Spezifizierung" — Leerzeichen nach dem Doppelpunkt (z. B. „Lead: Börsenampel").','wz.ac.onecolon':'⚠ Genau <b>ein</b> Doppelpunkt pro Tag: „Kategorie: Spezifizierung".','wz.ac.prefix':'⚠ Nicht im finalen Schema — erlaubt: {p}.','wz.ac.stage':'⚠ „Stage: …" wird <b>nicht</b> pro Kampagne gesetzt — Temperatur ist automation-getrieben.','wz.ac.customer':'⚠ „Customer: …" nur für bezahlte Käufer — für die Herkunft „Lead:" oder „Source:" nehmen.','wz.ac.case':'⚠ Kategorie groß schreiben: „{p}: …".','wz.ac.ok':'✓ passt zur Konvention','wz.ac.known':'✓ existiert im Tag-Katalog','wz.ac.newval':'⧗ neuer Wert unter „{p}:" — formattreu, beim nächsten AC-Cleanup mit aufnehmen','wz.ac.portal':'ℹ „{p}:" setzt das Portal/der Webhook (Lennert) — nicht im Assistenten stempeln','wz.ac.openns':'✓ offener Namespace (datiert/variabel) — Format passt',
+  'tc.h':'Tag-Katalog 🛡️','tc.p':'Die bekannten AC-Tags (Soll-Konvention). Der <b style="color:#fff">Wächter</b> im Assistenten prüft jeden getippten Tag hiergegen: <span class="wiz-ok">grün = existiert</span> · <span class="wiz-new">gelb = neuer Wert</span> · <span style="color:#f0a0a0">rot = passt nicht</span>.','tc.gmkt':'Kampagnen-Tags · Du setzt sie','tc.gportal':'Portal-/Software-Tags · Lennert-Webhook','tc.who.du':'Du','tc.who.auto':'Automation','tc.who.portal':'Portal','tc.openval':'datiert / variabel',
   'wz.rev.camp':'Kampagne','wz.rev.funnel':'Funnel','wz.rev.convh':'Conversion','wz.rev.convnew':'neu','wz.rev.convdup':'(existiert schon — wird verknüpft)','wz.rev.convex':'aus Katalog','wz.rev.convnone':'⚠ keine Conversion gewählt','wz.rev.naming':'Naming-Einträge','wz.rev.nonaming':'⚠ Keine — mindestens eine Quelle in ① wählen.','wz.rev.utm':'UTM-Links','wz.rev.utmnote':'je Naming-Eintrag ein UTM-Link; die utm_id vergibt die Datenbank.',
   'wz.funpurpose':'Kampagne {c} (via Assistent)',
   'wz.v.src':'Wähle mindestens eine Quelle — sonst erscheint die Kampagne noch nicht in der Übersicht. Alles Weitere darfst Du offen lassen.',
@@ -1425,7 +1447,8 @@ const T={
   'wz.f.type':'Campaign type','wz.f.product':'Product','wz.f.thema':'Topic','wz.f.datum':'Period','wz.f.count':'Count','wz.f.aud':'Audience','wz.f.lps':'Landing page(s)','wz.f.addlp':'+ another LP','wz.f.danke':'Thank-you page (URL)','wz.f.conv':'Conversion (measures the finish)','wz.f.convkey':'Key','wz.f.convname':'Name','wz.f.convval':'Value','wz.f.actag':'AC tags after the conversion','wz.f.actaghint':'Category: Specifier · one per line','wz.f.addtag':'+ another tag','wz.f.recurring':'Recurring magnet (new editions each time, e.g. Report Q3) — then also add a dated edition “Lead: X-YYYY-MM”. Leave OFF for standing evergreen magnets (e.g. Börsenampel).','wz.tag.sugh':'Suggestions (tap to add):','wz.tag.leadsource':'Test: purpose-built magnet with a funnel + follow-up sequence? → <b>Lead:</b>. Just a surface where a signup happened to occur? → <b>Source:</b>. Recurring magnet? Evergreen base + dated edition (both Lead:).','wz.tag.tempnote':'ℹ Temperature is an AC tag — now “Stage: Cold/Warm/Hot” (the old name “Lead: Cold/Warm/Hot” is <b>dead</b>). It is <b>not stamped here</b>: ActiveCampaign sets “Stage: Cold” on entry and promotes via automation (≥2 Source tags → Warm · call booked → Hot). Your Lead/Source tags above are the building blocks.','wz.f.seq':'Sequence name',
   'wz.src.meta':'Meta ad','wz.src.google':'Google ad','wz.src.email':'Email','wz.src.organic':'Organic','wz.src.rt':'Retargeting ad',
   'wz.conv.new':'New conversion','wz.conv.exist':'From catalog','wz.conv.later':'Decide later','wz.conv.laterhint':'No conversion goal now — the funnel stays open (⚠ in the overview). You can add it later in “Funnel & Tracking”.','wz.pv.camp':'Campaign name (SOP)',
-  'wz.ac.format':'⚠ Format: “Category: Specifier” — space after the colon (e.g. “Lead: Börsenampel”).','wz.ac.onecolon':'⚠ Exactly <b>one</b> colon per tag: “Category: Specifier”.','wz.ac.prefix':'⚠ Not in the final schema — allowed: {p}.','wz.ac.stage':'⚠ “Stage: …” is <b>not</b> set per campaign — temperature is automation-driven.','wz.ac.customer':'⚠ “Customer: …” is for paid buyers only — use origin “Lead:” or “Source:”.','wz.ac.case':'⚠ Capitalize the category: “{p}: …”.','wz.ac.ok':'✓ matches the convention',
+  'wz.ac.format':'⚠ Format: “Category: Specifier” — space after the colon (e.g. “Lead: Börsenampel”).','wz.ac.onecolon':'⚠ Exactly <b>one</b> colon per tag: “Category: Specifier”.','wz.ac.prefix':'⚠ Not in the final schema — allowed: {p}.','wz.ac.stage':'⚠ “Stage: …” is <b>not</b> set per campaign — temperature is automation-driven.','wz.ac.customer':'⚠ “Customer: …” is for paid buyers only — use origin “Lead:” or “Source:”.','wz.ac.case':'⚠ Capitalize the category: “{p}: …”.','wz.ac.ok':'✓ matches the convention','wz.ac.known':'✓ exists in the tag catalog','wz.ac.newval':'⧗ new value under “{p}:” — format ok, add it in the next AC cleanup','wz.ac.portal':'ℹ “{p}:” is set by the portal/webhook (Lennert) — don’t stamp it in the assistant','wz.ac.openns':'✓ open namespace (dated/variable) — format ok',
+  'tc.h':'Tag catalog 🛡️','tc.p':'The known AC tags (target convention). The <b style="color:#fff">guardian</b> in the assistant checks every typed tag against this: <span class="wiz-ok">green = exists</span> · <span class="wiz-new">amber = new value</span> · <span style="color:#f0a0a0">red = doesn’t fit</span>.','tc.gmkt':'Campaign tags · you set them','tc.gportal':'Portal/software tags · Lennert webhook','tc.who.du':'You','tc.who.auto':'Automation','tc.who.portal':'Portal','tc.openval':'dated / variable',
   'wz.rev.camp':'Campaign','wz.rev.funnel':'Funnel','wz.rev.convh':'Conversion','wz.rev.convnew':'new','wz.rev.convdup':'(already exists — will be linked)','wz.rev.convex':'from catalog','wz.rev.convnone':'⚠ no conversion selected','wz.rev.naming':'Naming entries','wz.rev.nonaming':'⚠ None — pick at least one source in ①.','wz.rev.utm':'UTM links','wz.rev.utmnote':'one UTM link per naming entry; the utm_id is assigned by the database.',
   'wz.funpurpose':'Campaign {c} (via assistant)',
   'wz.v.src':'Pick at least one source — otherwise the campaign won’t show in the overview yet. Everything else can stay open.',
@@ -2718,6 +2741,37 @@ function wizAcTagSug(){const th=wizTopicNice();return th?((WIZ_ACCAT[wiz.type]||
 // Gültige Namespaces laut 10-tag-schema (Format „Kategorie: Spezifizierung"). Der Assistent SCHLÄGT nur
 // Herkunft vor (Lead/Source/Interest); Goal/Funnel/Status akzeptiert er, wenn manuell getippt; Stage/Customer = Warnfälle.
 const WIZ_NAMESPACES=['Lead','Source','Stage','Customer','Interest','Goal','Funnel','Status'];
+// ── AC-Tag-Katalog v1 (Wächter) ──────────────────────────────────────────────
+// Geseedet aus den SOLL-Tags der SoT (10-tag-schema.md + 30-tag-ist-soll-mapping.md, Stand 2026-07-13).
+// Bewusst Soll (saubere Konvention), NICHT der chaotische Ist-Screenshot (kein `Customer: ETFs`/`Broschure`).
+// who: 'du' = Marnie setzt im Marketing · 'portal' = Lennert-Webhook/Portal · 'auto' = AC-Automation.
+// open:true = Namespace mit datierten/variablen Werten (jeder formattreue Wert ok).
+const TAG_CATALOG=[
+  {cat:'Stage', who:'auto', note:'Lifecycle-Temperatur — automation-getrieben, NICHT pro Kampagne stempeln.', values:['Cold','Warm','Hot']},
+  {cat:'Lead', who:'du', note:'Aktiver Lead-Magnet (eigener Funnel + Nachfass-Strecke).', values:['Prop-Report','Börsenampel','Webinar KI im Trading']},
+  {cat:'Source', who:'du', note:'Passive Fläche ohne Magnet-Funnel.', values:['Blog-Artikel-Seite','Trading Crash Course','Daytrading Brochure Download','Swing Trading Brochure Download','Options Trading Brochure Download']},
+  {cat:'Interest', who:'du', note:'Evergreen-Thema (optional).', values:['Prop Trading','Daytrading','Swingtrading']},
+  {cat:'Goal', who:'du', note:'Funnel-Ziel erreicht.', values:['Consultation Booked – Daytrading']},
+  {cat:'Funnel', who:'du', note:'Aktive Funnel-Zuordnung.', values:['Daytrading Consultation']},
+  {cat:'Status', who:'du', note:'Temporärer/Event-Zustand — datiert, je Event 4 Stufen (Eingeladen/Registriert/Teilgenommen/Aufzeichnung gesehen).', values:[], open:true},
+  {cat:'Customer', who:'portal', note:'NUR bezahlte Käufer (bloßes „Customer" = hat gekauft).', values:['','ETF','Aktienhandel','Swingtrading','Daytrading','Optionshandel','LOI','FI','Alumni']},
+  {cat:'Subscription', who:'portal', note:'Aktives Abo-Produkt.', values:['LOI','FI','Daytrading Add-On']},
+  {cat:'Language', who:'portal', note:'Sprache.', values:['DE','EN']},
+  {cat:'LOI Status', who:'portal', note:'LOI-Subscription-Status.', values:['Active','Free','Cancelled']},
+  {cat:'LOI Market', who:'portal', note:'Gehandelter LOI-Markt.', values:['ES','NQ','GC','CL']},
+  {cat:'LOI Platform', who:'portal', note:'Heruntergeladene Plattform.', values:['TradingView','ATAS','Bookmap','NinjaTrader','MetaTrader 5','Quantower']},
+  {cat:'FI Status', who:'portal', note:'FI-Subscription-Status.', values:['Free','Active','Lifetime']},
+  {cat:'Billing Interval', who:'portal', note:'Abrechnungsintervall.', values:['Monthly','Yearly']},
+  {cat:'Tool', who:'portal', note:'Genutztes Free-Tool.', values:['Börsenampel','Dark Pool Profile']},
+  {cat:'Onboarding', who:'portal', note:'Onboarding-Trigger.', values:['LOI','FI','LOT','Welcome Done']},
+  {cat:'Onboarding Source', who:'portal', note:'Onboarding-Touchpoint (variabel).', values:[], open:true}
+];
+const TAG_NAMESPACES=TAG_CATALOG.map(c=>c.cat);
+const TAG_KNOWN=new Set();TAG_CATALOG.forEach(c=>c.values.forEach(v=>TAG_KNOWN.add((v?c.cat+': '+v:c.cat).toLowerCase())));
+const TAG_OPEN=new Set(TAG_CATALOG.filter(c=>c.open).map(c=>c.cat.toLowerCase()));
+const TAG_PORTAL=new Set(TAG_CATALOG.filter(c=>c.who==='portal').map(c=>c.cat));
+// Namespaces, die Marnie im Assistenten wirklich tippt (Vorschlag im Prefix-Hinweis):
+const TAG_MKTG_HINT='Lead, Source, Interest, Goal, Funnel, Status';
 let wizStep=0;
 let wiz=null;
 function wizFresh(){
@@ -2763,16 +2817,22 @@ function wizTagSuggestions(){
   return out;
 }
 function wizAcTagWarn(v){v=(v||'').trim();if(!v)return '';
-  if((v.match(/:/g)||[]).length!==1)return t('wz.ac.onecolon');
-  const m=v.match(/^([A-Za-zÄÖÜäöü]+):\s+\S.*$/);
-  if(!m)return t('wz.ac.format');
-  const pfx=v.split(':')[0].trim();
-  const canon=WIZ_NAMESPACES.find(p=>p.toLowerCase()===pfx.toLowerCase());
-  if(!canon)return t('wz.ac.prefix',{p:WIZ_NAMESPACES.join(', ')});
+  const ci=v.indexOf(':');
+  const cat=(ci>=0?v.slice(0,ci):v).trim();
+  const colons=(v.match(/:/g)||[]).length;
+  const canon=TAG_NAMESPACES.find(p=>p.toLowerCase()===cat.toLowerCase());
+  // Kontext-Warnungen zuerst — auch wenn der Tag „existiert": im Assistenten nicht stempeln.
   if(canon==='Stage')return t('wz.ac.stage');
   if(canon==='Customer')return t('wz.ac.customer');
-  if(pfx!==canon)return t('wz.ac.case',{p:canon});
-  return '<span class="wiz-ok">'+t('wz.ac.ok')+'</span>';}
+  if(canon&&TAG_PORTAL.has(canon))return '<span class="wiz-portal">'+t('wz.ac.portal',{p:canon})+'</span>';
+  // Formatprüfung (Marketing-Tags)
+  if(colons!==1)return t('wz.ac.onecolon');
+  if(!/^[^:]+:\s+\S/.test(v))return t('wz.ac.format');
+  if(!canon)return t('wz.ac.prefix',{p:TAG_MKTG_HINT});
+  if(cat!==canon)return t('wz.ac.case',{p:canon});
+  if(TAG_OPEN.has(canon.toLowerCase()))return '<span class="wiz-ok">'+t('wz.ac.openns')+'</span>';
+  if(TAG_KNOWN.has(v.toLowerCase()))return '<span class="wiz-ok">'+t('wz.ac.known')+'</span>';
+  return '<span class="wiz-new">'+t('wz.ac.newval',{p:canon})+'</span>';}
 
 function wizLive(){const c=document.getElementById('wizCampPrev');if(c)c.textContent=wizCampBase()||'—';const u=document.getElementById('wizUtmCampPrev');if(u)u.textContent=wizUtmCamp()||'—';const f=document.getElementById('wizFunPrev');if(f)f.textContent=wizFunnelName()||'—';
   const dw=document.getElementById('wizDupWarn');if(dw){const base=wizCampBase();const dup=!!base&&(state.naming||[]).some(n=>{const cn=n.campaign_name||'';return cn===base||cn.startsWith(base+'_');});dw.innerHTML=dup?t('wz.dup'):'';dw.style.display=dup?'':'none';}}
@@ -3071,6 +3131,23 @@ function renderLifecycle(){
     });
   });
   host.innerHTML=out.length?out.join(''):'<div class="lc-empty">'+t('lc.empty')+'</div>';
+  renderTagCatalog();
+}
+function tcWhoBadge(who){var m={du:['tc-du',t('tc.who.du')],auto:['tc-auto',t('tc.who.auto')],portal:['tc-portal',t('tc.who.portal')]};var x=m[who]||m.du;return '<span class="tc-who '+x[0]+'">'+x[1]+'</span>';}
+function tcGroupHtml(items,head){
+  var rows=items.map(function(c){
+    var vals=c.open?'<span class="tc-open">'+t('tc.openval')+'</span>'
+      :c.values.map(function(v){return '<span class="tc-chip">'+esc(c.cat+': '+(v||'—'))+'</span>';}).join('');
+    return '<div class="tc-row"><div class="tc-cat"><code>'+esc(c.cat)+':</code> '+tcWhoBadge(c.who)+'</div>'
+      +'<div class="tc-note">'+esc(c.note)+'</div><div class="tc-vals">'+vals+'</div></div>';
+  }).join('');
+  return '<div class="tc-group"><div class="tc-gh">'+head+'</div>'+rows+'</div>';
+}
+function renderTagCatalog(){
+  var host=document.getElementById('tagCatalog');if(!host)return;
+  var mkt=TAG_CATALOG.filter(function(c){return c.who!=='portal';});
+  var por=TAG_CATALOG.filter(function(c){return c.who==='portal';});
+  host.innerHTML=tcGroupHtml(mkt,t('tc.gmkt'))+tcGroupHtml(por,t('tc.gportal'));
 }
 function switchView(v){
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
