@@ -2278,6 +2278,7 @@ function ccImportPreview(){
   const fNames=new Set(state.funnels.map(f=>(f.name||'').trim()).filter(Boolean));
   const cKeys=new Set(state.convs.map(c=>c.key).filter(Boolean));
   const uIds=new Set(state.rows.map(r=>r.utm_id).filter(Boolean));
+  const uLogical=new Set(state.rows.map(r=>((r.utm_campaign||'')+'|'+(r.utm_content||'')+'|'+(r.target_url||'')).toLowerCase()).filter(k=>k.replace(/\|/g,'')));
   items.forEach((o,i)=>{const type=ccImportDetect(o);
     if(type==='funnel'){const steps=o.steps||[], doors=steps.reduce((a,s)=>a+((s.variants||[]).length),0);
       const slug=kebab(o.slug||o.name||''), name=String(o.name||'').trim();
@@ -2291,10 +2292,13 @@ function ccImportPreview(){
       }else{plan.conversions.push(o); cKeys.add(key);
         rows.push(`<div class="imp-row"><span class="imp-badge c">Conversion</span> <b>${esc(o.key||'—')}</b></div>`);}
     }else if(type==='utm'){const id=o.utm_id;
-      if(id&&uIds.has(id)){skipped++;
-        rows.push(`<div class="imp-row imp-skip"><span class="imp-badge u">UTM</span> <b>${esc(id)}</b> — <span class="imp-warn">${de?'existiert schon → übersprungen':'exists → skipped'}</span></div>`);
-      }else{plan.utm.push(o); if(id)uIds.add(id);
-        rows.push(`<div class="imp-row"><span class="imp-badge u">UTM</span> <b>${esc(o.utm_id||o.campaign_name||'—')}</b></div>`);}
+      const lkey=((o.utm_campaign||'')+'|'+(o.utm_content||'')+'|'+(o.target_url||'')).toLowerCase();
+      const dup=(id&&uIds.has(id))||(!!lkey.replace(/\|/g,'')&&uLogical.has(lkey));
+      const lbl=esc(o.utm_content||o.utm_id||o.campaign_name||o.utm_campaign||'—');
+      if(dup){skipped++;
+        rows.push(`<div class="imp-row imp-skip"><span class="imp-badge u">UTM</span> <b>${lbl}</b> — <span class="imp-warn">${de?'existiert schon → übersprungen':'exists → skipped'}</span></div>`);
+      }else{plan.utm.push(o); if(id)uIds.add(id); if(lkey.replace(/\|/g,''))uLogical.add(lkey);
+        rows.push(`<div class="imp-row"><span class="imp-badge u">UTM</span> <b>${lbl}</b>${o.target_url?` <span style="opacity:.55">→ ${esc(o.target_url)}</span>`:''}</div>`);}
     }else{
       rows.push(`<div class="imp-err">${de?'Unbekannter Typ bei Eintrag':'Unknown type at item'} #${i+1} — ${de?'bitte "_type" angeben (funnel/conversion/utm)':'add "_type" (funnel/conversion/utm)'}</div>`);
     }});
@@ -2314,7 +2318,15 @@ async function ccImportRun(){
     for(const o of ccImportPlan.conversions){const b=ccStrip(o); b.created_by=by; if(b.key)b.key=snake(b.key);
       await sb('conversions',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(b)}); n++;}
     if(ccImportPlan.utm.length){const batch=ccImportPlan.utm.map(o=>{const b=ccStrip(o); b.created_by=b.created_by||by; return b;});
-      await sb('utm_registry',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(batch)}); n+=batch.length;}
+      // return=representation → DB-vergebene utm_id zurücklesen, dann full_url in Tool-Reihenfolge nachtragen
+      const ins=await sb('utm_registry',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(batch)});
+      for(const row of (ins||[])){
+        if(!row.full_url&&row.target_url&&row.utm_id){
+          const full=buildUrl(row,row.utm_id);
+          await sb('utm_registry?utm_id=eq.'+encodeURIComponent(row.utm_id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({full_url:full})});
+        }
+      }
+      n+=batch.length;}
     await loadAll(); ccImportClear();
     if($('impBox'))$('impBox').open=false;
     toast(n+' '+(de?'importiert':'imported'));
