@@ -479,6 +479,25 @@
   .lpv-live.live-live{border-color:rgba(74,222,128,.55);color:#4ade80}
   .lpv-live.live-planned{border-color:rgba(233,180,90,.55);color:#e9b45a}
   .lpv-live.live-off{border-color:rgba(140,144,176,.5);color:#8a90b0}
+  /* Import-Box (JSON → Supabase) */
+  .imp-box{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-m);margin:0 0 16px;overflow:hidden}
+  .imp-box>summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px;color:#c9cdf5}
+  .imp-box>summary::-webkit-details-marker{display:none}
+  .imp-box>summary::after{content:'▸';color:#7c81aa;margin-left:auto;transition:transform .15s}
+  .imp-box[open]>summary::after{transform:rotate(90deg)}
+  .imp-ic{display:inline-flex;color:var(--tn-teal)}
+  .imp-body{padding:0 16px 16px}
+  .imp-ta{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.5;resize:vertical}
+  .imp-actions{display:flex;gap:8px;margin:10px 0 6px}
+  .imp-preview{display:flex;flex-direction:column;gap:6px}
+  .imp-row{font-size:13px;color:#c9cdf5;padding:7px 11px;background:var(--tn-surf-2);border:1px solid var(--tn-border);border-radius:7px}
+  .imp-badge{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:5px;margin-right:7px;font-weight:700}
+  .imp-badge.f{background:rgba(23,248,224,.14);color:#17f8e0}
+  .imp-badge.c{background:rgba(156,123,255,.16);color:#b79bff}
+  .imp-badge.u{background:rgba(232,180,90,.16);color:#e8b45a}
+  .imp-warn{color:#e9b45a;font-size:12px}
+  .imp-err{color:var(--tn-pink);font-size:13px;padding:7px 11px;background:rgba(255,60,141,.08);border:1px solid rgba(255,60,141,.3);border-radius:7px}
+  .imp-sum{font-size:13px;color:#4ade80;margin-top:2px;font-weight:600}
   .rdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;flex:none}
   .rdot-live{background:#4ade80;box-shadow:0 0 5px rgba(74,222,128,.6)}
   .rdot-planned{background:#e9b45a}
@@ -1061,6 +1080,21 @@
   <div class="view" id="view-fc">
     <div class="note" data-i18n="fc.note"></div>
 
+    <!-- Import-Box: JSON von Claude → Vorschau → Supabase -->
+    <details class="imp-box" id="impBox">
+      <summary><span class="imp-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span> <span data-i18n="imp.title">Import (JSON)</span></summary>
+      <div class="imp-body">
+        <p class="hint" data-i18n="imp.sub">Von Claude erhaltenes JSON hier einfügen → Vorschau → Importieren.</p>
+        <textarea id="impText" class="imp-ta" spellcheck="false" data-i18n-ph="imp.ph" placeholder='{"_type":"funnel", "name":"…", "steps":[…]}'></textarea>
+        <div class="imp-actions">
+          <button class="btn sm" onclick="ccImportPreview()" data-i18n="imp.preview">Vorschau</button>
+          <button class="btn sm" id="impRunBtn" onclick="ccImportRun()" disabled data-i18n="imp.run">Importieren</button>
+          <button class="btn sm ghost" onclick="ccImportClear()" data-i18n="imp.clear">Leeren</button>
+        </div>
+        <div id="impPreview" class="imp-preview"></div>
+      </div>
+    </details>
+
     <!-- Gruppen-Leiste (wie Excel-Tabs) -->
     <div class="fctabs" id="fcTabs"></div>
 
@@ -1449,6 +1483,7 @@ const T={
   'ct.urlcopied':'— URL kopiert','ct.needSource':'Bitte utm_source wählen','ct.needCampaign':'Bitte utm_campaign angeben','ct.dup':'utm_id schon vergeben — Override ändern',
   'ct.loadfail':'Laden fehlgeschlagen','ct.savefail':'Speichern fehlgeschlagen','ct.delfail':'Löschen fehlgeschlagen','ct.updfail':'Update fehlgeschlagen',
   'ct.importfail':'Import fehlgeschlagen','ct.imported':'Zeile(n) importiert','ct.nonew':'Nichts Neues zu importieren','ct.noexport':'Keine Zeilen zum Export','ct.csvok':'CSV exportiert','ct.sessexp':'Sitzung abgelaufen — bitte neu anmelden',
+  'imp.title':'Import (JSON)','imp.sub':'Von Claude erhaltenes JSON hier einfügen → Vorschau → Importieren. Funnel, Conversion oder UTM — einzeln oder als Liste.','imp.ph':'{"_type":"funnel", "name":"…", "steps":[…]}','imp.preview':'Vorschau','imp.run':'Importieren','imp.clear':'Leeren',
   'cf.del':'Zeile {id} wirklich löschen? Das lässt sich nicht rückgängig machen.','saving':'speichere…','copy':'kopieren'
  },
  en:{
@@ -1572,6 +1607,7 @@ const T={
   'ct.urlcopied':'— URL copied','ct.needSource':'Please pick a utm_source','ct.needCampaign':'Please provide utm_campaign','ct.dup':'utm_id already taken — change override',
   'ct.loadfail':'Load failed','ct.savefail':'Save failed','ct.delfail':'Delete failed','ct.updfail':'Update failed',
   'ct.importfail':'Import failed','ct.imported':'row(s) imported','ct.nonew':'Nothing new to import','ct.noexport':'No rows to export','ct.csvok':'CSV exported','ct.sessexp':'Session expired — please log in again',
+  'imp.title':'Import (JSON)','imp.sub':'Paste JSON from Claude here → Preview → Import. Funnel, conversion or UTM — single or list.','imp.ph':'{"_type":"funnel", "name":"…", "steps":[…]}','imp.preview':'Preview','imp.run':'Import','imp.clear':'Clear',
   'cf.del':'Really delete row {id}? This cannot be undone.','saving':'saving…','copy':'copy'
  }
 };
@@ -2218,6 +2254,60 @@ function parseCsvLine(line){const out=[];let cur='',q=false;
     if(q){if(c==='"'){if(line[i+1]==='"'){cur+='"';i++}else q=false}else cur+=c}
     else{if(c==='"')q=true;else if(c===','){out.push(cur);cur=''}else cur+=c}}
   out.push(cur);return out;}
+
+/* ── Import-Box: JSON (Funnel / Conversion / UTM) → Supabase ── */
+let ccImportPlan=null;
+function ccImportDetect(o){
+  if(!o||typeof o!=='object')return 'unknown';
+  if(o._type)return String(o._type).toLowerCase();
+  if(Array.isArray(o.steps))return 'funnel';
+  if(o.utm_id||o.full_url||o.utm_campaign)return 'utm';
+  if(o.key&&!o.steps)return 'conversion';
+  return 'unknown';
+}
+function ccStrip(o){const c={...o};delete c._type;return c;}
+function ccImportPreview(){
+  const raw=($('impText').value||'').trim(), box=$('impPreview'), btn=$('impRunBtn');
+  ccImportPlan=null; btn.disabled=true; box.innerHTML='';
+  if(!raw)return;
+  let data; try{data=JSON.parse(raw);}catch(e){box.innerHTML=`<div class="imp-err">${LANG==='de'?'Kein gültiges JSON':'Invalid JSON'}: ${esc(e.message)}</div>`;return;}
+  const items=Array.isArray(data)?data:[data], de=LANG==='de';
+  const plan={funnels:[],conversions:[],utm:[]}, rows=[];
+  items.forEach((o,i)=>{const type=ccImportDetect(o);
+    if(type==='funnel'){const steps=o.steps||[], doors=steps.reduce((a,s)=>a+((s.variants||[]).length),0);
+      const dup=state.funnels.some(f=>f.status!=='archived'&&(f.name||'').trim()===String(o.name||'').trim());
+      plan.funnels.push(o);
+      rows.push(`<div class="imp-row"><span class="imp-badge f">Funnel</span> <b>${esc(o.name||'—')}</b> · ${steps.length} Steps · ${doors} ${de?'Türen':'doors'}${dup?` <span class="imp-warn">${de?'· Name existiert schon':'· name exists'}</span>`:''}</div>`);
+    }else if(type==='conversion'){const dup=state.convs.some(c=>(c.key||'')===String(o.key||''));
+      plan.conversions.push(o);
+      rows.push(`<div class="imp-row"><span class="imp-badge c">Conversion</span> <b>${esc(o.key||'—')}</b>${dup?` <span class="imp-warn">${de?'· Key existiert schon':'· key exists'}</span>`:''}</div>`);
+    }else if(type==='utm'){plan.utm.push(o);
+      rows.push(`<div class="imp-row"><span class="imp-badge u">UTM</span> <b>${esc(o.utm_id||o.campaign_name||'—')}</b></div>`);
+    }else{
+      rows.push(`<div class="imp-err">${de?'Unbekannter Typ bei Eintrag':'Unknown type at item'} #${i+1} — ${de?'bitte "_type" angeben (funnel/conversion/utm)':'add "_type" (funnel/conversion/utm)'}</div>`);
+    }});
+  const total=plan.funnels.length+plan.conversions.length+plan.utm.length;
+  ccImportPlan=total?plan:null; btn.disabled=!total;
+  box.innerHTML=rows.join('')+(total?`<div class="imp-sum">${de?'Bereit':'Ready'}: ${total} ${de?'Objekt(e) — auf "Importieren" klicken.':'object(s) — click "Import".'}</div>`:'');
+}
+async function ccImportRun(){
+  if(!ccImportPlan)return;
+  const by=whoami()||null, de=LANG==='de', btn=$('impRunBtn'); btn.disabled=true;
+  let n=0;
+  try{
+    for(const o of ccImportPlan.funnels){const b=ccStrip(o); b.created_by=by; b.status=b.status||'draft';
+      if(!b.slug)b.slug=kebab(b.name||'')||('funnel-'+(state.funnels.length+1+n));
+      await sb('funnels',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(b)}); n++;}
+    for(const o of ccImportPlan.conversions){const b=ccStrip(o); b.created_by=by; if(b.key)b.key=snake(b.key);
+      await sb('conversions',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(b)}); n++;}
+    if(ccImportPlan.utm.length){const batch=ccImportPlan.utm.map(o=>{const b=ccStrip(o); b.created_by=b.created_by||by; return b;});
+      await sb('utm_registry',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(batch)}); n+=batch.length;}
+    await loadAll(); ccImportClear();
+    if($('impBox'))$('impBox').open=false;
+    toast(n+' '+(de?'importiert':'imported'));
+  }catch(e){toast((de?'Import-Fehler':'Import error')+': '+e.message,true); btn.disabled=false;}
+}
+function ccImportClear(){$('impText').value='';$('impPreview').innerHTML='';ccImportPlan=null;$('impRunBtn').disabled=true;}
 
 /* ═══════════════ TAB 3 · FUNNELS & CONVERSIONS ═══════════════ */
 // Gruppen-Leiste (wie Excel-Tabs): Alle · <Gruppen mit Funnels> · Common Conversions
