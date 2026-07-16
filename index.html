@@ -132,6 +132,10 @@
   .fctabs button.on{background:var(--tn-grad);color:#fff;border-color:transparent;box-shadow:var(--tn-glow)}
   .fctabs button .n{opacity:.65;margin-left:5px;font-size:11px}
   .fctabs button.newgrp{border-style:dashed;color:#8e94c0}
+  .fctabs .fc-glabel{align-self:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6b70a0;font-weight:700;padding:0 6px 0 2px}
+  .fctabs .fc-sep{align-self:stretch;width:1px;background:var(--tn-border);margin:2px 8px}
+  .fctabs button.conv-chip{border-color:color-mix(in srgb,var(--tn-teal) 45%,var(--tn-border))}
+  .fctabs button.conv-chip::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--tn-teal);box-shadow:0 0 7px var(--tn-teal);margin-right:6px;vertical-align:middle}
   /* Kampagnen-Baum */
   .cmcamp{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:14px 16px;margin-bottom:12px}
   .cmcamp>h3{margin:0 0 10px;font-size:14px;color:#fff;font-weight:700;font-family:"SF Mono",Menlo,Consolas,monospace;word-break:break-all}
@@ -1412,7 +1416,7 @@ const T={
   'tbl.empty':'Noch keine Zeilen — oben bauen und „In Registry speichern".',
   'warn.internal':'<b>Interner Link?</b> Interne Verlinkungen (Menü, Footer, Cross-Sell) <b>nie</b> mit UTM taggen — sonst überschreibt der interne Klick die echte Kampagnen-Quelle in GA4.',
   // Funnels & Conversions
-  'fc.note':'<b>Funnels &amp; Conversions.</b> Die Breitsicht ist die Liste — Klick auf eine Zeile öffnet den Step-Editor darunter. Setzt Du an einem Step ein Goal (Conversion), klappt Prabas Tracking darunter auf. Reporting: Looker Studio.',
+  'fc.note':'<b>Dieser Tab hält zwei Naturen — bewusst zusammen.</b> <b>Funnels</b> = Häuser mit Türen &amp; Steps (Deine Reisen). <b>Common Conversions</b> = die geteilten Sensoren, die Praba misst (z. B. account_signup). Ein Funnel <i>zeigt</i> an seinem Goal-Step auf eine Conversion — er erzeugt sie nicht; dieselbe Conversion kann von vielen Funnels angesteuert werden. Oben in der Leiste: links filterst Du <b>Funnels</b>, der Chip mit dem Teal-Punkt ist der <b>Conversions-Katalog</b>. Praxis: Die Breitsicht IST die Liste — Klick auf eine Zeile öffnet den Step-Editor darunter; Goal an einem Step setzen → Prabas Tracking klappt darunter auf. Reporting: Looker Studio.',
   'fc.funnels':'Funnels','fc.steps':'Schritte','fc.showarch':'Archivierte zeigen','fc.archive':'Archivieren','fc.unarchive':'Reaktivieren','fc.archived':'archiviert','fc.open':'öffnen',
   'fn.detail':'Funnel','fn.name':'Name','fn.product':'Gruppe/Produkt','fn.status':'Status','fn.desc':'Beschreibung',
   'fn.purpose':'Zweck / Ziel des Funnels','fn.tracking':'Tracking (Praba)',
@@ -1535,7 +1539,7 @@ const T={
   'r.override':'utm_id override','r.reload':'↻ Reload','r.type':'Type','r.fullurl':'Full URL','r.idpending':'assigned on save',
   'tbl.empty':'No rows yet — build above and “Save to registry”.',
   'warn.internal':'<b>Internal link?</b> Never tag internal links (menu, footer, cross-sell) with UTM — the internal click would overwrite the real campaign source in GA4.',
-  'fc.note':'<b>Funnels &amp; Conversions.</b> The wide view IS the list — click a row to open the step editor below it. Set a goal (conversion) on a step and Praba tracking expands below. Reporting: Looker Studio.',
+  'fc.note':'<b>This tab holds two natures — deliberately together.</b> <b>Funnels</b> = houses with doors &amp; steps (your journeys). <b>Common Conversions</b> = the shared sensors Praba measures (e.g. account_signup). A funnel <i>points</i> at a conversion at its goal step — it does not create it; the same conversion can be targeted by many funnels. Top bar: on the left you filter <b>Funnels</b>, the chip with the teal dot is the <b>conversions catalog</b>. In practice: the wide view IS the list — click a row to open the step editor below; set a goal on a step → Praba tracking expands below. Reporting: Looker Studio.',
   'fc.funnels':'Funnels','fc.steps':'Steps','fc.showarch':'Show archived','fc.archive':'Archive','fc.unarchive':'Reactivate','fc.archived':'archived','fc.open':'open',
   'fn.detail':'Funnel','fn.name':'Name','fn.product':'Group/Product','fn.status':'Status','fn.desc':'Description',
   'fn.purpose':'Purpose / goal of the funnel','fn.tracking':'Tracking (Praba)',
@@ -2215,9 +2219,11 @@ function renderFcTabs(){
   // Ungültige Gruppe (keine Funnels mehr) → zurück auf „Alle"
   if(state.fcTab!=='all'&&state.fcTab!=='conv'&&!groupsInUse().includes(state.fcTab))state.fcTab='all';
   const chip=(key,label,count,cls)=>`<button class="${cls||''}${state.fcTab===key?' on':''}" onclick="setFcTab('${key}')">${esc(label)}${count!=null?`<span class="n">${count}</span>`:''}</button>`;
-  let h=chip('all',LANG==='de'?'Alle':'All',activeF.length);
+  let h='<span class="fc-glabel">Funnels</span>';
+  h+=chip('all',LANG==='de'?'Alle':'All',activeF.length);
   groupsInUse().forEach(g=>h+=chip(g,(groupLabel(g).split(' · ')[0])||g,activeF.filter(f=>f.product===g).length));
-  h+=chip('conv','Common Conversions',state.convs.length);
+  h+='<span class="fc-sep"></span>';
+  h+=chip('conv','Common Conversions',state.convs.length,'conv-chip');
   bar.innerHTML=h;
   const isConv=state.fcTab==='conv';
   if($('fcFunnels'))$('fcFunnels').style.display=isConv?'none':'';
