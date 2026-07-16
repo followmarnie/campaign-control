@@ -498,6 +498,7 @@
   .imp-warn{color:#e9b45a;font-size:12px}
   .imp-err{color:var(--tn-pink);font-size:13px;padding:7px 11px;background:rgba(255,60,141,.08);border:1px solid rgba(255,60,141,.3);border-radius:7px}
   .imp-sum{font-size:13px;color:#4ade80;margin-top:2px;font-weight:600}
+  .imp-skip{opacity:.72}
   .rdot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;flex:none}
   .rdot-live{background:#4ade80;box-shadow:0 0 5px rgba(74,222,128,.6)}
   .rdot-planned{background:#e9b45a}
@@ -2272,23 +2273,35 @@ function ccImportPreview(){
   if(!raw)return;
   let data; try{data=JSON.parse(raw);}catch(e){box.innerHTML=`<div class="imp-err">${LANG==='de'?'Kein gültiges JSON':'Invalid JSON'}: ${esc(e.message)}</div>`;return;}
   const items=Array.isArray(data)?data:[data], de=LANG==='de';
-  const plan={funnels:[],conversions:[],utm:[]}, rows=[];
+  const plan={funnels:[],conversions:[],utm:[]}, rows=[]; let skipped=0;
+  const fSlugs=new Set(state.funnels.map(f=>f.slug).filter(Boolean));
+  const fNames=new Set(state.funnels.map(f=>(f.name||'').trim()).filter(Boolean));
+  const cKeys=new Set(state.convs.map(c=>c.key).filter(Boolean));
+  const uIds=new Set(state.rows.map(r=>r.utm_id).filter(Boolean));
   items.forEach((o,i)=>{const type=ccImportDetect(o);
     if(type==='funnel'){const steps=o.steps||[], doors=steps.reduce((a,s)=>a+((s.variants||[]).length),0);
-      const dup=state.funnels.some(f=>f.status!=='archived'&&(f.name||'').trim()===String(o.name||'').trim());
-      plan.funnels.push(o);
-      rows.push(`<div class="imp-row"><span class="imp-badge f">Funnel</span> <b>${esc(o.name||'—')}</b> · ${steps.length} Steps · ${doors} ${de?'Türen':'doors'}${dup?` <span class="imp-warn">${de?'· Name existiert schon':'· name exists'}</span>`:''}</div>`);
-    }else if(type==='conversion'){const dup=state.convs.some(c=>(c.key||'')===String(o.key||''));
-      plan.conversions.push(o);
-      rows.push(`<div class="imp-row"><span class="imp-badge c">Conversion</span> <b>${esc(o.key||'—')}</b>${dup?` <span class="imp-warn">${de?'· Key existiert schon':'· key exists'}</span>`:''}</div>`);
-    }else if(type==='utm'){plan.utm.push(o);
-      rows.push(`<div class="imp-row"><span class="imp-badge u">UTM</span> <b>${esc(o.utm_id||o.campaign_name||'—')}</b></div>`);
+      const slug=kebab(o.slug||o.name||''), name=String(o.name||'').trim();
+      if(fSlugs.has(slug)||fNames.has(name)){skipped++;
+        rows.push(`<div class="imp-row imp-skip"><span class="imp-badge f">Funnel</span> <b>${esc(o.name||'—')}</b> — <span class="imp-warn">${de?'existiert schon → übersprungen (Ergänzen-Modus kommt)':'already exists → skipped (merge mode coming)'}</span></div>`);
+      }else{plan.funnels.push(o); fSlugs.add(slug); fNames.add(name);
+        rows.push(`<div class="imp-row"><span class="imp-badge f">Funnel</span> <b>${esc(o.name||'—')}</b> · ${steps.length} Steps · ${doors} ${de?'Türen':'doors'}</div>`);}
+    }else if(type==='conversion'){const key=String(o.key||'');
+      if(cKeys.has(key)){skipped++;
+        rows.push(`<div class="imp-row imp-skip"><span class="imp-badge c">Conversion</span> <b>${esc(o.key||'—')}</b> — <span class="imp-warn">${de?'Key existiert schon → übersprungen':'key exists → skipped'}</span></div>`);
+      }else{plan.conversions.push(o); cKeys.add(key);
+        rows.push(`<div class="imp-row"><span class="imp-badge c">Conversion</span> <b>${esc(o.key||'—')}</b></div>`);}
+    }else if(type==='utm'){const id=o.utm_id;
+      if(id&&uIds.has(id)){skipped++;
+        rows.push(`<div class="imp-row imp-skip"><span class="imp-badge u">UTM</span> <b>${esc(id)}</b> — <span class="imp-warn">${de?'existiert schon → übersprungen':'exists → skipped'}</span></div>`);
+      }else{plan.utm.push(o); if(id)uIds.add(id);
+        rows.push(`<div class="imp-row"><span class="imp-badge u">UTM</span> <b>${esc(o.utm_id||o.campaign_name||'—')}</b></div>`);}
     }else{
       rows.push(`<div class="imp-err">${de?'Unbekannter Typ bei Eintrag':'Unknown type at item'} #${i+1} — ${de?'bitte "_type" angeben (funnel/conversion/utm)':'add "_type" (funnel/conversion/utm)'}</div>`);
     }});
   const total=plan.funnels.length+plan.conversions.length+plan.utm.length;
   ccImportPlan=total?plan:null; btn.disabled=!total;
-  box.innerHTML=rows.join('')+(total?`<div class="imp-sum">${de?'Bereit':'Ready'}: ${total} ${de?'Objekt(e) — auf "Importieren" klicken.':'object(s) — click "Import".'}</div>`:'');
+  const sk=skipped?` <span class="imp-warn">· ${skipped} ${de?'übersprungen':'skipped'}</span>`:'';
+  box.innerHTML=rows.join('')+(total?`<div class="imp-sum">${de?'Bereit':'Ready'}: ${total} ${de?'Objekt(e) — auf "Importieren" klicken.':'object(s) — click "Import".'}${sk}</div>`:(skipped?`<div class="imp-warn" style="padding:7px 11px">${de?'Nichts Neues — alles existiert schon.':'Nothing new — everything already exists.'}</div>`:''));
 }
 async function ccImportRun(){
   if(!ccImportPlan)return;
