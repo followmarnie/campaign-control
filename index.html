@@ -486,6 +486,11 @@
   th .sarr{margin-left:6px;font-size:9px;opacity:.3}
   th.sortable.on .sarr{opacity:1;color:#aab0ff}
   td.rid{font-family:"SF Mono",Menlo,Consolas,monospace;color:#7d84b4;width:56px;white-space:nowrap}
+  /* #-Spalte beim Horizontal-Scroll fest anpinnen, damit die Zeilennummer immer sichtbar bleibt */
+  table.reg th.rid-col,table.reg td.rid{position:sticky;left:0}
+  table.reg td.rid{z-index:2;background:#191539;box-shadow:6px 0 8px -6px rgba(0,0,0,.55)}
+  table.reg thead th.rid-col{z-index:4;box-shadow:6px 0 8px -6px rgba(0,0,0,.55)}
+  table.reg tbody tr.reg-row:hover>td.rid{background:#211a45}
   .dstat.attn{border-color:rgba(255,132,106,.42);background:rgba(255,132,106,.08);color:#ffb39f}
   .dstat.attn b{color:#ffb39f}
   .dstat.clear{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08);color:#8ff0b0}
@@ -1427,7 +1432,7 @@ const T={
   'lc.stepshead':'Lifecycle steps from your funnels','lc.stepshint':'Steps that sit <b>after</b> the goal (with an AC tag) — read automatically from the funnels.','lc.empty':'No lifecycle steps yet — they appear as soon as a funnel has steps AFTER the goal (e.g. an AC automation).',
   'nm.temp':'Temperature','nm.temphint':'(Cold / Warm / Hot)','nm.templabel':'Temperature:',
   'temp.open':'— open —','temp.cold':'🧊 Cold','temp.warm':'🌤 Warm','temp.hot':'🔥 Hot','temp.all':'All',
-  'fn.lpvars':'LP variants','fn.lpvarshint':'(more entrances → same form/thank-you, Praba tracks 1×)','fn.lpv.urlph':'https://… (another LP)','fn.lpv.qph':'Source (e.g. retargeting)','fn.lpv.add':'+ LP variant','fn.lpv.del':'remove','fn.lpv.badge':'+{n} LP variant(s)',
+  'fn.lpvars':'LP-Varianten','fn.lpvarshint':'(weitere Eingänge → gleiche Form/Danke, Praba trackt 1×)','fn.lpv.urlph':'https://… (weitere LP)','fn.lpv.qph':'Quelle (z. B. Retargeting)','fn.lpv.add':'+ LP-Variante','fn.lpv.del':'entfernen','fn.lpv.badge':'+{n} LP-Variante(n)',
   'ovc.p1':'① Arrival','ovc.p2':'② On-Site','ovc.p3':'③ Lifecycle','ovc.ads':'Ads','ovc.mails':'Emails','ovc.organic':'Organic','ovc.noassets':'no assets yet',
   'ovc.utm.ok':'✓ UTM set','ovc.utm.part':'⚠ {n} without UTM','ovc.utm.none':'✗ no UTM','ovc.funnel.ok':'✓ Funnel','ovc.funnel.none':'⚠ no funnel','ovc.conv.none':'⚠ no conversion goal',
   'ovc.ac.ok':'✓ Lifecycle active','ovc.ac.none':'⚠ no AC tag / no sequence','ovc.autos':'automation(s)','ovc.empty':'No campaigns in this filter.',
@@ -2243,7 +2248,7 @@ function renderFunnelDetail(){
   card.style.display='';
   $('fnName').value=f.name||'';$('fnStatus').value=f.status||'draft';$('fnProduct').value=f.product||'';
   $('fnPurpose').value=f.purpose||'';$('fnDesc').value=f.description||'';$('fnTraffic').value=f.traffic||'';
-  $('fnStatusPill').textContent=(f.id==null?(LANG==='de'?'neu':'new'):('#'+f.id))+(f.slug?' · '+f.slug:'');
+  $('fnStatusPill').innerHTML=(f.id==null?(LANG==='de'?'neu':'new'):('<b style="color:#c9a6ff;font-size:1.05em">#'+f.id+'</b>'))+(f.slug?' · '+esc(f.slug):'');
   if($('fnTitleView'))$('fnTitleView').textContent=f.name||(LANG==='de'?'Neuer Funnel':'New funnel');
   $('fnArchive').style.display=(f.id!=null&&f.status!=='archived')?'':'none';
   const allSteps=f.steps||[];
@@ -2345,7 +2350,7 @@ function renderFunnelRegistry(){
   const yn=st=>st==='done'?'<span class="st done">✓</span>':`<span class="st open">${t('reg.open')}</span>`;
   const sth=(sk,label,extra='')=>`<th class="col-mine sortable${extra}" data-sk="${sk}" onclick="setSort('reg','${sk}')">${label}<span class="sarr">⇅</span></th>`;
   // Kopf: „meine" Spalten (lila) links, Prabas Spalten (blau) ab GA4; Bearbeiten-Stift ganz rechts.
-  let head='<tr>'+sth('id','#')+sth('product',esc(t('fn.product')))+sth('funnel','Funnel')+sth('purpose',esc(t('fn.purpose')));
+  let head='<tr>'+sth('id','#',' rid-col')+sth('product',esc(t('fn.product')))+sth('funnel','Funnel')+sth('purpose',esc(t('fn.purpose')));
   for(let i=0;i<maxSteps;i++)head+=`<th class="col-mine">${t('reg.step')} ${String(i+1).padStart(2,'0')}</th>`;
   head+=`<th class="col-mine">${t('reg.notes')}</th>`
     +`<th class="col-praba pcol-first">GA4 Event</th><th class="col-praba">GA4</th><th class="col-praba">Trigger</th>`
@@ -2764,7 +2769,9 @@ const TAG_CATALOG=[
   {cat:'Billing Interval', who:'portal', note:'Abrechnungsintervall.', values:['Monthly','Yearly']},
   {cat:'Tool', who:'portal', note:'Genutztes Free-Tool.', values:['Börsenampel','Dark Pool Profile']},
   {cat:'Onboarding', who:'portal', note:'Onboarding-Trigger.', values:['LOI','FI','LOT','Welcome Done']},
-  {cat:'Onboarding Source', who:'portal', note:'Onboarding-Touchpoint (variabel).', values:[], open:true}
+  {cat:'Onboarding Source', who:'portal', note:'Onboarding-Touchpoint (variabel).', values:[], open:true},
+  {cat:'Signup', who:'portal', note:'Free-Signup-Marker — startet L0-Willkommen (nie entfernt, keine Entitlement-Aussage).', values:['Free']},
+  {cat:'Signup Source', who:'portal', note:'Eintritts-Tür beim Signup — wählt die L0-Variante.', values:['Menu','Börsenampel','Dark Pool Profile','LOI LP','FI LP']}
 ];
 const TAG_NAMESPACES=TAG_CATALOG.map(c=>c.cat);
 const TAG_KNOWN=new Set();TAG_CATALOG.forEach(c=>c.values.forEach(v=>TAG_KNOWN.add((v?c.cat+': '+v:c.cat).toLowerCase())));
