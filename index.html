@@ -2591,7 +2591,7 @@ function selectFunnel(id,keepRet,scrollTo){
   if(!keepRet)state.jret=null; // Rückweg-Krümel nur beim Sprung aus Phase 3 behalten
   state.editF=JSON.parse(JSON.stringify(f));
   if(!Array.isArray(state.editF.steps))state.editF.steps=[];
-  state.stepSel=0;
+  state.stepSel=0;state.stepEditOpen=false; // Funnel öffnet mit sauberer Reise; Step-Editor klappt erst per Klick auf
   renderFunnelDetail();renderFunnelList();
   const tgt=(scrollTo==='ctx'&&$('fnEditCtx'))?$('fnEditCtx'):$('fnDetail');
   tgt.scrollIntoView({behavior:'smooth',block:scrollTo==='ctx'?'center':'nearest'});
@@ -2599,7 +2599,7 @@ function selectFunnel(id,keepRet,scrollTo){
 function newFunnel(scroll){
   const grp=(state.fcTab!=='all'&&state.fcTab!=='conv')?state.fcTab:'';
   state.editF={id:null,slug:'',name:'',purpose:'',description:'',status:'draft',product:grp,traffic:'',steps:[{type:'page',title:'',url:'',conversion_key:'',ac_tag:'',note:'',interaction:''}]};
-  state.stepSel=0;
+  state.stepSel=0;state.stepEditOpen=true; // neuer Funnel: ersten Step gleich offen zum Ausfüllen
   renderFunnelDetail();renderFunnelList();if(scroll!==false)$('fnDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function renderFunnelDetail(){
@@ -2623,7 +2623,7 @@ function renderFunnelDetail(){
   const goalIdx=gk.length?gk[gk.length-1]:-1;
   $('fnSteps').innerHTML=allSteps.map((s,i)=>{
     const cv=state.convs.find(c=>c.key===s.conversion_key);
-    const sel=i===state.stepSel;
+    const sel=state.stepEditOpen&&i===state.stepSel; // markiert nur, wenn der Editor auch offen ist
     const life=goalIdx>=0&&i>goalIdx;
     const p=cv?convPct(cv):null;
     const title=(s.title||s.url)?esc(s.title||s.url):`<span style="color:#6b7099;font-style:italic">${t('fn.step.empty')}</span>`;
@@ -2837,6 +2837,7 @@ function renderFcJourney(f){
 function convPct(c){if(!c)return 0;const parts=[c.ga4_status==='done',c.ads_status==='done',c.meta_status==='done'];return Math.round(parts.filter(Boolean).length/parts.length*100)}
 function renderStepEditor(f){
   const box=$('fnStepEditor');if(!box)return;
+  if(!state.stepEditOpen){box.innerHTML='';return} // zugeklappt → Band zeigt nur die Step-Kette (.jb-stepedit:empty)
   const steps=f.steps||[];
   if(!steps.length){box.innerHTML=`<p class="hint" style="margin:8px 0">${t('fn.nosteps')}</p>`;return}
   if(state.stepSel>=steps.length)state.stepSel=steps.length-1;
@@ -2850,6 +2851,7 @@ function renderStepEditor(f){
         <button onclick="moveStep(${i},-1)" title="up">↑</button>
         <button onclick="moveStep(${i},1)" title="down">↓</button>
         <button onclick="delStep(${i})" title="remove" style="color:var(--tn-pink)">✕</button>
+        <button class="se-close" onclick="closeStepEdit()" title="${LANG==='de'?'Zuklappen':'Collapse'}">⌃</button>
       </span></div>
     <div class="se-grid">
       <div><label>${t('fn.step.type')}</label><select data-f="type" onchange="onStepTypeChange()">${STEP_TYPES.map(x=>`<option${x===(s.type||'page')?' selected':''}>${x}</option>`).join('')}</select></div>
@@ -2898,11 +2900,17 @@ function autoStepTitle(){if(!state.editF)return;syncFunnelInputs();const s=state
 function onStepTypeChange(){syncFunnelInputs();const s=state.editF&&state.editF.steps[state.stepSel];if(s&&looksLikeUrl(s.title))s.title=stepTitleDefault(s.type);renderFunnelDetail();}
 function titleSuggestions(){return LANG==='de'?['Anzeige','Landingpage','Werbe-Landingpage','Formular','Terminwahl','Buchungsseite','Danke-Seite','E-Mail','Asset / Download','Checkout / Kauf']:['Ad','Landing page','Ad landing page','Form','Booking','Booking page','Thank-you page','Email','Asset / download','Checkout'];}
 function titleDatalistHtml(){return '<datalist id="ccTitleList">'+titleSuggestions().map(s=>'<option value="'+esc(s)+'"></option>').join('')+'</datalist>';}
-function selectStep(i){if(!state.editF)return;syncFunnelInputs();state.stepSel=i;renderFunnelDetail();
-  // Der Step-Editor klappt jetzt INLINE direkt unter der Step-Kette auf (im Phase-2-Band),
-  // nicht mehr am Seitenende. block:'nearest' = kein Springen, wenn ohnehin schon sichtbar.
-  var e=$('fnStepEditor');if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});
+function selectStep(i){if(!state.editF)return;syncFunnelInputs();
+  // Toggle: Klick auf den bereits offenen Step klappt zu; sonst diesen Step öffnen.
+  if(state.stepEditOpen&&state.stepSel===i){state.stepEditOpen=false;}
+  else{state.stepSel=i;state.stepEditOpen=true;}
+  renderFunnelDetail();
+  // Der Step-Editor klappt INLINE direkt unter der Step-Kette auf (im Phase-2-Band).
+  // Nur beim Öffnen sanft in Sicht scrollen; block:'nearest' = kein Springen, wenn ohnehin sichtbar.
+  if(state.stepEditOpen){var e=$('fnStepEditor');if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
+// Zuklappen über den Chevron im Editor-Kopf (zweite Geste neben „nochmal auf den Step klicken").
+function closeStepEdit(){if(!state.editF)return;syncFunnelInputs();state.stepEditOpen=false;renderFunnelDetail();}
 function toggleRegistry(){const el=$('fnRegistry');if(el)el.classList.toggle('collapsed')}
 function toggleRegZone(k){const Z=state.regZone||(state.regZone={p1:true,p2:true,p3:true,track:false});Z[k]=!Z[k];renderFunnelRegistry();}
 // Excel-Breitsicht: eine Zeile pro Funnel, alle Steps + verknüpftes Tracking (aus dem Katalog) nebeneinander.
@@ -3005,7 +3013,7 @@ async function savePrabaConv(key){
   try{await sb(`conversions?key=eq.${encodeURIComponent(key)}`,{method:'PATCH',body:JSON.stringify(patch)});await loadAll();toast(t('cv.saved'))}
   catch(e){toast(t('ct.savefail')+': '+e.message,true)}
 }
-function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:stepTitleDefault('page'),url:'',conversion_key:'',ac_tag:'',note:'',interaction:''});state.stepSel=state.editF.steps.length-1;renderFunnelDetail()}
+function addStep(){if(!state.editF)return;syncFunnelInputs();state.editF.steps.push({type:'page',title:stepTitleDefault('page'),url:'',conversion_key:'',ac_tag:'',note:'',interaction:''});state.stepSel=state.editF.steps.length-1;state.stepEditOpen=true;renderFunnelDetail()}
 function delStep(i){if(!state.editF)return;syncFunnelInputs();state.editF.steps.splice(i,1);if(state.stepSel>=state.editF.steps.length)state.stepSel=state.editF.steps.length-1;if(state.stepSel<0)state.stepSel=0;renderFunnelDetail()}
 function moveStep(i,d){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps;const j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];if(state.stepSel===i)state.stepSel=j;else if(state.stepSel===j)state.stepSel=i;renderFunnelDetail()}
 function addVariant(i){if(!state.editF)return;syncFunnelInputs();const s=state.editF.steps[i];if(!s)return;s.variants=(s.variants||[]).concat([{url:'',quelle:''}]);renderFunnelDetail();}
