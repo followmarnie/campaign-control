@@ -320,6 +320,10 @@
   .fcard .prog{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:5px}
   .fcard .prog>i{display:block;height:100%;background:linear-gradient(90deg,#4ade80,#17f8e0)}
   .step-editor{margin-top:14px;background:transparent;border:0;border-top:1px dashed var(--tn-border);border-radius:0;padding:14px 0 0}
+  /* Inline im Band (Phase 2 / Serie): der Step-Editor klappt direkt unter der Step-Kette auf,
+     als fokussierte Karte — dort, wo geklickt wurde, kein Runterscrollen. */
+  .jb-stepedit:empty{display:none}
+  .jb-stepedit .step-editor{margin-top:12px;background:rgba(124,131,255,.05);border:1px solid var(--tn-border);border-top:1px solid var(--tn-border);border-radius:var(--tn-r-m);padding:14px}
   .step-editor .se-h{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--tn-teal);font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:8px}
   .step-editor .se-ctrl{margin-left:auto;display:flex;gap:5px}
   .step-editor .se-ctrl button{background:var(--tn-surf-3);border:1px solid var(--tn-border);color:#b9bee6;border-radius:7px;padding:3px 9px;cursor:pointer;font-size:12px}
@@ -1273,7 +1277,7 @@
 
         <div class="editor-sec">
           <div id="fnEditCtx"></div>
-          <div class="sec-h"><span class="sec-n">1</span><span data-i18n="fc.sec.funnel">Funnel & ausgewählten Step bearbeiten</span></div>
+          <div class="sec-h"><span class="sec-n">1</span><span data-i18n="fc.sec.funnel">Funnel-Einstellungen</span></div>
           <div class="row3">
             <div><label data-i18n="fn.name">Name</label><input id="fnName"></div>
             <div><label data-i18n="fn.product">Gruppe/Produkt <span class="hint" data-i18n="fn.producthint">(oder neue tippen)</span></label>
@@ -1301,7 +1305,8 @@
           </div>
           <label data-i18n="fn.desc">Warum dieser Path? <span class="hint">(opt.)</span></label>
           <textarea id="fnDesc" rows="2"></textarea>
-          <div id="fnStepEditor"></div>
+          <!-- #fnStepEditor wohnt jetzt INLINE im Phase-2-Band (bzw. im Serien-Band),
+               direkt unter der Step-Kette — kein Runterscrollen mehr. Siehe renderFcJourney. -->
         </div>
 
         <div class="btns">
@@ -1608,7 +1613,7 @@ const T={
   'fn.stepn':'Step {n}','fn.step.empty':'(leer)','fn.step.type':'Typ','fn.expandall':'Alle ausklappen','fn.collapseall':'Alle einklappen',
   'fn.step.interaction':'Was passiert hier? (opt.)','fn.step.edit':'Schritt bearbeiten','fn.stepshint':'Karte anklicken → unten bearbeiten',
   'reg.title':'Alle Funnel & Tracking · Breitsicht','reg.toggle':'Ein-/ausklappen','reg.sub':'Eine Zeile pro Funnel — die ganze Reise nebeneinander: Phase 1 · Ankunft ┊ Phase 2 · On-Site ┊ Phase 3 · Lifecycle ┊ Tracking. Auf einen Zonen-Kopf klicken klappt Phase 2 / Tracking ein. Zeile öffnet den Editor. Horizontal scrollen.','reg.step':'Step','reg.notes':'Notizen (TradeNeon)','reg.qa':'QA / MeasureSchool','reg.f.label':'Prabas Tracking:','reg.f.all':'Alle','reg.f.open':'offen','reg.f.done':'komplett','reg.f.empty':'Keine Funnels in diesem Filter.',
-  'fc.search':'Suchen…','fc.worksub':'Die ganze Reise dieses Funnels, von oben nach unten: Phase 1 (Türen &amp; UTMs) → Phase 2 (Step-Kette bis zum Goal) → Phase 3 (Lifecycle-Serien) → Tracking. Jedes Band klappt einzeln auf/zu; aufgeklappt scrollst Du horizontal durch die Karten.','fc.lg.step':'Interaction Step','fc.lg.goal':'Conversion Goal / Ende','fc.lg.sel':'Ausgewählt','fc.lg.life':'Lifecycle · ActiveCampaign','fc.handoff.lbl':'ab hier · ActiveCampaign','fc.handoff.title':'Ab dem Goal endet Prabas Tracking (Pixel/GA4/Ads). Was danach kommt, läuft als Lifecycle in ActiveCampaign — Automationen & Tags, keine URL, kein Pixel.','fc.hint.step.h':'Step-Logik','fc.hint.step.p':'Jede Karte beantwortet: Wo ist der User? Welche URL / welcher Ort? Welche Interaktion passiert?','fc.hint.track.h':'Tracking-Logik','fc.hint.track.p':'Tracking hängt am Goal-Step. Sobald ein Step als Goal eine Conversion trägt, füllt sich das Tracking-Band (unter Phase 3) mit Prabas Feldern.','fc.sec.funnel':'Funnel & ausgewählten Step bearbeiten','fn.step.isgoal':'Dieser Step ist das Goal / Ende dieses Funnel-Pfads','fn.step.convpick':'Conversion aus dem Katalog (misst dieses Goal)','fn.step.convhint':'Wähle eine Conversion — Prabas Tracking-Felder erscheinen dann unten im Katalog-Block.',
+  'fc.search':'Suchen…','fc.worksub':'Die ganze Reise dieses Funnels, von oben nach unten: Phase 1 (Türen &amp; UTMs) → Phase 2 (Step-Kette bis zum Goal) → Phase 3 (Lifecycle-Serien) → Tracking. Jedes Band klappt einzeln auf/zu; aufgeklappt scrollst Du horizontal durch die Karten.','fc.lg.step':'Interaction Step','fc.lg.goal':'Conversion Goal / Ende','fc.lg.sel':'Ausgewählt','fc.lg.life':'Lifecycle · ActiveCampaign','fc.handoff.lbl':'ab hier · ActiveCampaign','fc.handoff.title':'Ab dem Goal endet Prabas Tracking (Pixel/GA4/Ads). Was danach kommt, läuft als Lifecycle in ActiveCampaign — Automationen & Tags, keine URL, kein Pixel.','fc.hint.step.h':'Step-Logik','fc.hint.step.p':'Jede Karte beantwortet: Wo ist der User? Welche URL / welcher Ort? Welche Interaktion passiert?','fc.hint.track.h':'Tracking-Logik','fc.hint.track.p':'Tracking hängt am Goal-Step. Sobald ein Step als Goal eine Conversion trägt, füllt sich das Tracking-Band (unter Phase 3) mit Prabas Feldern.','fc.sec.funnel':'Funnel-Einstellungen','fn.step.isgoal':'Dieser Step ist das Goal / Ende dieses Funnel-Pfads','fn.step.convpick':'Conversion aus dem Katalog (misst dieses Goal)','fn.step.convhint':'Wähle eine Conversion — Prabas Tracking-Felder erscheinen dann unten im Katalog-Block.',
   'fn.emptylist':'Noch keine Funnels — „+ Neuer Funnel".',
   'cv.title':'Conversions · Event-Katalog','cv.name':'Name','cv.notes':'Notizen','cv.new':'Neue Conversion','cv.edit':'Conversion bearbeiten',
   'cv.keyhint':'(Slug, fix nach Anlage)','cv.value':'Wert (AED)','cv.purpose':'Zweck','cv.path':'Pfad (LP → … → Danke)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
@@ -1733,7 +1738,7 @@ const T={
   'fn.stepn':'Step {n}','fn.step.empty':'(empty)','fn.step.type':'Type','fn.expandall':'Expand all','fn.collapseall':'Collapse all',
   'fn.step.interaction':'What happens here? (opt.)','fn.step.edit':'Edit step','fn.stepshint':'Click a card → edit below',
   'reg.title':'All funnels & tracking · wide view','reg.toggle':'Collapse/expand','reg.sub':'One row per funnel — the whole journey side by side: Phase 1 · Arrival ┊ Phase 2 · On-Site ┊ Phase 3 · Lifecycle ┊ Tracking. Click a zone header to collapse Phase 2 / tracking. Row opens the editor. Scroll horizontally.','reg.step':'Step','reg.notes':'Notes (TradeNeon)','reg.qa':'QA / MeasureSchool','reg.f.label':'Praba tracking:','reg.f.all':'All','reg.f.open':'open','reg.f.done':'complete','reg.f.empty':'No funnels in this filter.',
-  'fc.search':'Search…','fc.worksub':'This funnel&rsquo;s whole journey, top to bottom: Phase 1 (doors &amp; UTMs) → Phase 2 (step chain to the goal) → Phase 3 (lifecycle series) → tracking. Each band collapses on its own; expanded, you scroll horizontally through the cards.','fc.lg.step':'Interaction Step','fc.lg.goal':'Conversion Goal / End','fc.lg.sel':'Selected','fc.lg.life':'Lifecycle · ActiveCampaign','fc.handoff.lbl':'from here · ActiveCampaign','fc.handoff.title':'At the goal, Praba tracking ends (pixel/GA4/Ads). What comes after runs as lifecycle in ActiveCampaign — automations & tags, no URL, no pixel.','fc.hint.step.h':'Step logic','fc.hint.step.p':'Each card answers: where is the user? Which URL / place? Which interaction happens?','fc.hint.track.h':'Tracking logic','fc.hint.track.p':'Tracking hangs on the goal step. As soon as a step carries a conversion as its goal, the tracking band (below Phase 3) fills with Praba&rsquo;s fields.','fc.sec.funnel':'Edit funnel & selected step','fn.step.isgoal':'This step is the goal / end of this funnel path','fn.step.convpick':'Conversion from the catalog (measures this goal)','fn.step.convhint':'Pick a conversion — Praba tracking fields then appear in the catalog block below.',
+  'fc.search':'Search…','fc.worksub':'This funnel&rsquo;s whole journey, top to bottom: Phase 1 (doors &amp; UTMs) → Phase 2 (step chain to the goal) → Phase 3 (lifecycle series) → tracking. Each band collapses on its own; expanded, you scroll horizontally through the cards.','fc.lg.step':'Interaction Step','fc.lg.goal':'Conversion Goal / End','fc.lg.sel':'Selected','fc.lg.life':'Lifecycle · ActiveCampaign','fc.handoff.lbl':'from here · ActiveCampaign','fc.handoff.title':'At the goal, Praba tracking ends (pixel/GA4/Ads). What comes after runs as lifecycle in ActiveCampaign — automations & tags, no URL, no pixel.','fc.hint.step.h':'Step logic','fc.hint.step.p':'Each card answers: where is the user? Which URL / place? Which interaction happens?','fc.hint.track.h':'Tracking logic','fc.hint.track.p':'Tracking hangs on the goal step. As soon as a step carries a conversion as its goal, the tracking band (below Phase 3) fills with Praba&rsquo;s fields.','fc.sec.funnel':'Funnel settings','fn.step.isgoal':'This step is the goal / end of this funnel path','fn.step.convpick':'Conversion from the catalog (measures this goal)','fn.step.convhint':'Pick a conversion — Praba tracking fields then appear in the catalog block below.',
   'fn.emptylist':'No funnels yet — “+ New funnel”.',
   'cv.title':'Conversions · Event catalog','cv.name':'Name','cv.notes':'Notes','cv.new':'New conversion','cv.edit':'Edit conversion',
   'cv.keyhint':'(slug, fixed after creation)','cv.value':'Value (AED)','cv.purpose':'Purpose','cv.path':'Path (LP → … → thank-you)','cv.status':'Status','cv.trigger':'Trigger (GA4)',
@@ -2656,16 +2661,10 @@ function renderEditCtx(f){
   var idlbl=lc?'':(f.id==null?(de?'neu &middot; ':'new &middot; '):('#'+f.id+' &middot; '));
   var kind=lc?(de?'Lifecycle-Serie':'Lifecycle series'):'Funnel';
   var back=state.jret?'<button type="button" class="ectx-back" onclick="jretBack()">&larr; #'+state.jret.id+' '+esc(state.jret.name||'')+'</button>':'';
-  // Zusätzlich den ausgewählten Step nennen — so steht immer klar über den Feldern, WAS gerade editiert wird.
-  var stepSeg='';
-  var steps=f.steps||[];
-  if(steps.length){
-    var si=(state.stepSel>=0&&state.stepSel<steps.length)?state.stepSel:0;
-    var s=steps[si];var sttl=(s&&(s.title||s.url))?esc(s.title||s.url):'';
-    stepSeg='<span class="ectx-step">'+(lc?(de?'Mail ':'Email '):'Step ')+(si+1)+(sttl?' &middot; '+sttl:'')+'</span>';
-  }
+  // Der Step/Mail wird jetzt INLINE im Band editiert (mit eigenem „Step bearbeiten"-Titel) —
+  // darum nennt diese Boden-Zeile nur noch den Funnel/die Serie, nicht mehr den Step.
   box.innerHTML='<div class="ectx">'+back
-    +'<div class="ectx-now"><span class="ectx-lbl">'+(de?'Bearbeiten':'Editing')+'</span> <b>'+idlbl+esc(f.name||(de?'Neuer Funnel':'New funnel'))+'</b> <span class="ectx-kind">'+kind+'</span>'+(stepSeg?'<span class="ectx-arr">&rsaquo;</span>'+stepSeg:'')+'</div></div>';
+    +'<div class="ectx-now"><span class="ectx-lbl">'+(de?'Bearbeiten':'Editing')+'</span> <b>'+idlbl+esc(f.name||(de?'Neuer Funnel':'New funnel'))+'</b> <span class="ectx-kind">'+kind+'</span></div></div>';
 }
 // ── Reise-Bänder ──────────────────────────────────────────────
 // Die ganze Reise eines Akquise-Funnels, gestapelt: P1 Ankunft → Mess-Naht →
@@ -2782,7 +2781,7 @@ function renderFcJourney(f){
   // Lifecycle-Serien haben keine Akquise-Reise — nur die Mail-Kette. Orientierung
   // liefert die einheitliche Kontext-Zeile unten (renderEditCtx), kein zweiter Indikator.
   if(isLifecycle(f)){
-    host.innerHTML='<div class="jband jp3"><button class="jb-h" type="button" style="cursor:default"><span class="jb-eye">'+(de?'Lifecycle-Serie':'Lifecycle series')+'</span>'+sysBadge(f.system)+'<span class="jb-sum">'+(f.steps||[]).length+' '+(de?'Mails':'emails')+'</span></button><div class="jb-body"><div id="fnSteps" class="flow"></div><div class="uce-sec"><div class="uce-sec-h">'+(de?'UTM-Links dieser Serie':'This series&rsquo; UTM links')+'</div>'+fcUtmListHtml(f.name)+'</div></div></div>';
+    host.innerHTML='<div class="jband jp3"><button class="jb-h" type="button" style="cursor:default"><span class="jb-eye">'+(de?'Lifecycle-Serie':'Lifecycle series')+'</span>'+sysBadge(f.system)+'<span class="jb-sum">'+(f.steps||[]).length+' '+(de?'Mails':'emails')+'</span></button><div class="jb-body"><div id="fnSteps" class="flow"></div><div id="fnStepEditor" class="jb-stepedit"></div><div class="uce-sec"><div class="uce-sec-h">'+(de?'UTM-Links dieser Serie':'This series&rsquo; UTM links')+'</div>'+fcUtmListHtml(f.name)+'</div></div></div>';
     return;
   }
   var steps=f.steps||[];
@@ -2826,7 +2825,7 @@ function renderFcJourney(f){
     +'<div class="jseam" onclick="switchView(\'verstehen\')" title="'+seam1t+'"><span class="js-lbl">'+(de?'Mess-Naht · P1→P2':'Measure seam · P1→P2')+'</span></div>'
     +'<div class="jband jp2'+(jbandOpen('p2')?'':' closed')+'">'
       +jbH('p2','Phase 2 · On-Site',steps.length+' Steps'+(goalKey?' &middot; Goal '+esc(goalKey):''))
-      +'<div class="jb-body"><div id="fnSteps" class="flow"></div></div></div>'
+      +'<div class="jb-body"><div id="fnSteps" class="flow"></div><div id="fnStepEditor" class="jb-stepedit"></div></div></div>'
     +'<div class="jseam" onclick="switchView(\'verstehen\')" title="'+seam2t+'"><span class="js-lbl">'+(de?'Besitz-Naht · P2→P3':'Ownership seam · P2→P3')+(goalKey?' · '+esc(goalKey):'')+'</span></div>'
     +'<div class="jband jp3'+(jbandOpen('p3')?'':' closed')+'">'
       +jbH('p3','Phase 3 · Lifecycle',hand.length+' '+(de?'Serien':'series'))
@@ -2900,8 +2899,9 @@ function onStepTypeChange(){syncFunnelInputs();const s=state.editF&&state.editF.
 function titleSuggestions(){return LANG==='de'?['Anzeige','Landingpage','Werbe-Landingpage','Formular','Terminwahl','Buchungsseite','Danke-Seite','E-Mail','Asset / Download','Checkout / Kauf']:['Ad','Landing page','Ad landing page','Form','Booking','Booking page','Thank-you page','Email','Asset / download','Checkout'];}
 function titleDatalistHtml(){return '<datalist id="ccTitleList">'+titleSuggestions().map(s=>'<option value="'+esc(s)+'"></option>').join('')+'</datalist>';}
 function selectStep(i){if(!state.editF)return;syncFunnelInputs();state.stepSel=i;renderFunnelDetail();
-  // Wie beim Phase-3-Sprung: zur Kontext-Zeile scrollen. block:'nearest' = kein Springen, wenn schon sichtbar.
-  var e=$('fnEditCtx');if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});
+  // Der Step-Editor klappt jetzt INLINE direkt unter der Step-Kette auf (im Phase-2-Band),
+  // nicht mehr am Seitenende. block:'nearest' = kein Springen, wenn ohnehin schon sichtbar.
+  var e=$('fnStepEditor');if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function toggleRegistry(){const el=$('fnRegistry');if(el)el.classList.toggle('collapsed')}
 function toggleRegZone(k){const Z=state.regZone||(state.regZone={p1:true,p2:true,p3:true,track:false});Z[k]=!Z[k];renderFunnelRegistry();}
