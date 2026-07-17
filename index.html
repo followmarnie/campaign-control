@@ -2455,7 +2455,10 @@ async function ccImportRun(){
     for(const o of ccImportPlan.conversions){const b=ccStrip(o); b.created_by=by; if(b.key)b.key=snake(b.key);
       try{await sb('conversions',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(b)}); n++;}
       catch(e){if(is409(e))dup++;else throw e;}}
-    if(ccImportPlan.utm.length){const batch=ccImportPlan.utm.map(o=>{const b=ccStrip(o); b.created_by=b.created_by||by; return b;});
+    if(ccImportPlan.utm.length){let batch=ccImportPlan.utm.map(o=>{const b=ccStrip(o); b.created_by=b.created_by||by; return b;});
+      // PostgREST-Bulk-Insert verlangt bei JEDEM Objekt dieselben Keys → auf Vereinigungsmenge normalisieren (fehlende = null), sonst 400.
+      const allKeys=[...new Set(batch.reduce((a,o)=>a.concat(Object.keys(o)),[]))];
+      batch=batch.map(o=>{const r={};allKeys.forEach(k=>{r[k]=(k in o)?o[k]:null;});return r;});
       // return=representation → DB-vergebene utm_id zurücklesen, dann full_url in Tool-Reihenfolge nachtragen
       const ins=await sb('utm_registry',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(batch)});
       for(const row of (ins||[])){
