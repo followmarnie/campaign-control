@@ -271,6 +271,8 @@
   .ectx-now b{color:#fff;font-weight:600}
   .ectx-lbl{font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8e94c0}
   .ectx-kind{font-size:10px;font-weight:700;letter-spacing:.05em;color:#a9a7ff;background:rgba(143,140,255,.1);border:1px solid rgba(143,140,255,.3);border-radius:6px;padding:2px 7px}
+  .ectx-arr{color:#6b7099;font-size:15px}
+  .ectx-step{font-size:12.5px;color:#c9cdf5;background:var(--tn-surf-2);border:1px solid var(--tn-border);border-radius:6px;padding:2px 9px}
   /* Serien-Karten (Phase 3 · Lifecycle) */
   .scard{min-width:250px;max-width:310px;background:linear-gradient(180deg,rgba(237,251,140,.05),var(--tn-surf-1));border:1px solid rgba(237,251,140,.26);border-radius:var(--tn-r-s);padding:11px 12px;cursor:pointer;transition:border-color .15s var(--tn-ease)}
   .scard:hover{border-color:rgba(237,251,140,.6)}
@@ -2513,8 +2515,16 @@ function renderEditCtx(f){
   var idlbl=lc?'':(f.id==null?(de?'neu &middot; ':'new &middot; '):('#'+f.id+' &middot; '));
   var kind=lc?(de?'Lifecycle-Serie':'Lifecycle series'):'Funnel';
   var back=state.jret?'<button type="button" class="ectx-back" onclick="jretBack()">&larr; #'+state.jret.id+' '+esc(state.jret.name||'')+'</button>':'';
+  // Zusätzlich den ausgewählten Step nennen — so steht immer klar über den Feldern, WAS gerade editiert wird.
+  var stepSeg='';
+  var steps=f.steps||[];
+  if(steps.length){
+    var si=(state.stepSel>=0&&state.stepSel<steps.length)?state.stepSel:0;
+    var s=steps[si];var sttl=(s&&(s.title||s.url))?esc(s.title||s.url):'';
+    stepSeg='<span class="ectx-step">'+(lc?(de?'Mail ':'Email '):'Step ')+(si+1)+(sttl?' &middot; '+sttl:'')+'</span>';
+  }
   box.innerHTML='<div class="ectx">'+back
-    +'<div class="ectx-now"><span class="ectx-lbl">'+(de?'Bearbeiten':'Editing')+'</span> <b>'+idlbl+esc(f.name||(de?'Neuer Funnel':'New funnel'))+'</b> <span class="ectx-kind">'+kind+'</span></div></div>';
+    +'<div class="ectx-now"><span class="ectx-lbl">'+(de?'Bearbeiten':'Editing')+'</span> <b>'+idlbl+esc(f.name||(de?'Neuer Funnel':'New funnel'))+'</b> <span class="ectx-kind">'+kind+'</span>'+(stepSeg?'<span class="ectx-arr">&rsaquo;</span>'+stepSeg:'')+'</div></div>';
 }
 // ── Reise-Bänder ──────────────────────────────────────────────
 // Die ganze Reise eines Akquise-Funnels, gestapelt: P1 Ankunft → Mess-Naht →
@@ -2668,7 +2678,10 @@ function autoStepTitle(){if(!state.editF)return;syncFunnelInputs();const s=state
 function onStepTypeChange(){syncFunnelInputs();const s=state.editF&&state.editF.steps[state.stepSel];if(s&&looksLikeUrl(s.title))s.title=stepTitleDefault(s.type);renderFunnelDetail();}
 function titleSuggestions(){return LANG==='de'?['Anzeige','Landingpage','Werbe-Landingpage','Formular','Terminwahl','Buchungsseite','Danke-Seite','E-Mail','Asset / Download','Checkout / Kauf']:['Ad','Landing page','Ad landing page','Form','Booking','Booking page','Thank-you page','Email','Asset / download','Checkout'];}
 function titleDatalistHtml(){return '<datalist id="ccTitleList">'+titleSuggestions().map(s=>'<option value="'+esc(s)+'"></option>').join('')+'</datalist>';}
-function selectStep(i){if(!state.editF)return;syncFunnelInputs();state.stepSel=i;renderFunnelDetail()}
+function selectStep(i){if(!state.editF)return;syncFunnelInputs();state.stepSel=i;renderFunnelDetail();
+  // Wie beim Phase-3-Sprung: zur Kontext-Zeile scrollen. block:'nearest' = kein Springen, wenn schon sichtbar.
+  var e=$('fnEditCtx');if(e)e.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 function toggleRegistry(){const el=$('fnRegistry');if(el)el.classList.toggle('collapsed')}
 // Excel-Breitsicht: eine Zeile pro Funnel, alle Steps + verknüpftes Tracking (aus dem Katalog) nebeneinander.
 function setRegFilter(v){state.regFilter=v;document.querySelectorAll('#regFilter button').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick')===`setRegFilter('${v}')`));renderFunnelRegistry();}
