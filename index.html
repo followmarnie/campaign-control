@@ -512,6 +512,8 @@
   .lc-series{background:var(--tn-surf-1);border:1px solid var(--tn-border);border-radius:12px;padding:14px 16px;margin-bottom:10px}
   .lc-series-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .lc-series-h b{color:#fff;font-size:14px}
+  .sys-badge{font-size:9.5px;font-weight:700;letter-spacing:.04em;color:#8fb7ff;background:rgba(70,120,245,.12);border:1px solid rgba(70,120,245,.32);border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .sys-badge.wg{color:#ff9e6a;background:rgba(255,132,106,.12);border-color:rgba(255,132,106,.38)}
   .lc-trig{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:#8fe3c8;background:rgba(23,248,224,.10);border:1px solid rgba(23,248,224,.25);border-radius:5px;padding:2px 7px}
   .lc-count{margin-left:auto;font-size:12px;color:#9198c4}
   .lc-chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
@@ -1265,6 +1267,11 @@
             <div style="grid-column:2/4"><label data-i18n="fn.purpose">Conversion Purpose / Ziel des Funnels</label>
               <input id="fnPurpose"></div>
           </div>
+          <div class="row3" id="fnSystemRow" style="display:none">
+            <div style="grid-column:1/4"><label data-i18n="fn.system">Absender-System <span class="hint" data-i18n="fn.systemhint">(wer verschickt die Mails)</span></label>
+              <input id="fnSystem" list="ccSystemList" placeholder="ActiveCampaign" autocomplete="off">
+              <datalist id="ccSystemList"><option value="ActiveCampaign"></option><option value="WebinarGeek"></option></datalist></div>
+          </div>
           <label data-i18n="fn.desc">Warum dieser Path? <span class="hint">(opt.)</span></label>
           <textarea id="fnDesc" rows="2"></textarea>
           <div id="fnStepEditor"></div>
@@ -1566,6 +1573,7 @@ const T={
   'fn.detail':'Funnel','fn.name':'Name','fn.product':'Gruppe/Produkt','fn.status':'Status','fn.desc':'Beschreibung',
   'fn.purpose':'Zweck / Ziel des Funnels','fn.tracking':'Tracking (Praba)',
   'fn.traffic':'Traffic-Weg','fn.traffic.unset':'— offen —','fn.traffic.paid':'Bezahlt (Ads)','fn.traffic.organic':'Organisch','fn.traffic.both':'Beides (Ads + organisch)',
+  'fn.system':'Absender-System','fn.systemhint':'(wer die Mails verschickt — leer = ActiveCampaign)',
   'fn.steps':'Schritte (der Weg)','fn.addstep':'+ Schritt','fn.delete':'Funnel löschen','fn.save':'Funnel speichern',
   'fn.new':'+ Neuer Funnel','fn.saved':'Funnel gespeichert','fn.deleted':'Funnel gelöscht','fn.archived':'Funnel archiviert','fn.reactivated':'Funnel reaktiviert',
   'fn.confirmdel':'Funnel „{name}" wirklich löschen?','fn.needname':'Bitte Namen eingeben','fn.nosteps':'Noch keine Schritte — „+ Schritt" klicken.',
@@ -1690,6 +1698,7 @@ const T={
   'fn.detail':'Funnel','fn.name':'Name','fn.product':'Group/Product','fn.status':'Status','fn.desc':'Description',
   'fn.purpose':'Purpose / goal of the funnel','fn.tracking':'Tracking (Praba)',
   'fn.traffic':'Traffic path','fn.traffic.unset':'— open —','fn.traffic.paid':'Paid (ads)','fn.traffic.organic':'Organic','fn.traffic.both':'Both (ads + organic)',
+  'fn.system':'Sender system','fn.systemhint':'(who sends the mails — empty = ActiveCampaign)',
   'fn.steps':'Steps (the path)','fn.addstep':'+ Step','fn.delete':'Delete funnel','fn.save':'Save funnel',
   'fn.new':'+ New funnel','fn.saved':'Funnel saved','fn.deleted':'Funnel deleted','fn.archived':'Funnel archived','fn.reactivated':'Funnel reactivated',
   'fn.confirmdel':'Really delete funnel “{name}”?','fn.needname':'Please enter a name','fn.nosteps':'No steps yet — click “+ Step”.',
@@ -1785,6 +1794,8 @@ const kebab=s=>(s||'').toString().toLowerCase().replace(/[^a-z0-9]+/g,'-').repla
 const snake=s=>(s||'').toString().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
 // Lifecycle-Serie (Phase 3) explizit über kind='lifecycle' — kein Raten, damit nichts ungewollt verschwindet.
 const isLifecycle=f=>!!f&&f.kind==='lifecycle';
+// Absender-System einer Lifecycle-Serie (wer verschickt die Mails): leer = ActiveCampaign.
+function sysBadge(system){var s=String(system||'').trim();var wg=/webinargeek/i.test(s);var lbl=s||'ActiveCampaign';return '<span class="sys-badge'+(wg?' wg':'')+'" title="'+(LANG==='de'?'Absender-System':'Sender system')+'">'+esc(lbl)+'</span>';}
 const join_=(...a)=>a.filter(x=>x!==''&&x!=null).join('_');
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const fmtId=n=>'tradeneon'+String(parseInt(n,10)).padStart(5,'0');
@@ -2549,6 +2560,8 @@ function renderFunnelDetail(){
   card.style.display='';
   $('fnName').value=f.name||'';$('fnStatus').value=f.status||'draft';$('fnProduct').value=f.product||'';
   $('fnPurpose').value=f.purpose||'';$('fnDesc').value=f.description||'';$('fnTraffic').value=f.traffic||'';
+  if($('fnSystem'))$('fnSystem').value=f.system||''; // Absender-System nur bei Lifecycle-Serien
+  if($('fnSystemRow'))$('fnSystemRow').style.display=isLifecycle(f)?'':'none';
   // Serien tragen keine Funnel-# (benanntes, geteiltes Objekt) — Funnels behalten ihre #.
   const idpill=isLifecycle(f)?(LANG==='de'?'Serie':'Series'):(f.id==null?(LANG==='de'?'neu':'new'):('<b style="color:#c9a6ff;font-size:1.05em">#'+f.id+'</b>'));
   $('fnStatusPill').innerHTML=idpill+(f.slug?' · '+esc(f.slug):'');
@@ -2674,7 +2687,7 @@ function renderFcJourney(f){
       var n=(state.rows||[]).filter(function(r){return (r.funnel_ref||'')===x.name;}).length;
       var chain=xs.map(function(s){return '<span class="lc-mail">'+esc(s.title||s.type||'Step')+'</span>';}).join('<span class="lc-arr">&rarr;</span>');
       return '<div class="scard" onclick="openSeries('+x.id+')" title="'+(de?'Serie unten im Editor öffnen':'Open series in the editor below')+'">'
-        +'<div class="sc-h">'+esc(x.name||x.slug||'—')+(trig?'<span class="lc-trig">'+esc(trig)+'</span>':'')+'</div>'
+        +'<div class="sc-h">'+esc(x.name||x.slug||'—')+sysBadge(x.system)+(trig?'<span class="lc-trig">'+esc(trig)+'</span>':'')+'</div>'
         +(chain?'<div class="lc-chain">'+chain+'</div>':'')
         +'<div class="sc-meta">'+xs.length+' '+(de?'Mails':'emails')+' &middot; '+n+' UTMs</div></div>';
     }).join('')+'</div>';
@@ -2897,6 +2910,7 @@ function acTagGuard(inp){const w=inp.parentNode.querySelector('.ac-tag-warn');if
 function syncFunnelInputs(){
   const f=state.editF;if(!f)return;
   f.name=$('fnName').value;f.status=$('fnStatus').value;f.description=$('fnDesc').value;f.product=$('fnProduct').value;f.purpose=$('fnPurpose').value;f.traffic=$('fnTraffic').value;
+  if(isLifecycle(f)&&$('fnSystem'))f.system=$('fnSystem').value.trim();
   const ed=document.querySelector('#fnStepEditor .step-editor');
   if(ed){const i=parseInt(ed.dataset.eidx,10);if(f.steps[i])ed.querySelectorAll('[data-f]').forEach(el=>{f.steps[i][el.dataset.f]=el.type==='checkbox'?el.checked:el.value});}
 }
@@ -2904,7 +2918,7 @@ async function saveFunnel(){
   syncFunnelInputs();
   const f=state.editF;if(!f)return;
   if(!f.name.trim()){toast(t('fn.needname'),true);return}
-  const body={name:f.name.trim(),purpose:f.purpose||null,description:f.description||'',status:f.status||'draft',product:f.product||null,traffic:f.traffic||null,steps:f.steps,created_by:whoami()||null};
+  const body={name:f.name.trim(),purpose:f.purpose||null,description:f.description||'',status:f.status||'draft',product:f.product||null,traffic:f.traffic||null,system:(f.system||null),steps:f.steps,created_by:whoami()||null};
   try{
     if(f.id==null){
       body.slug=kebab(f.name)||('funnel-'+(state.funnels.length+1));
@@ -3636,6 +3650,7 @@ function renderLifecycle(){
       var chain=steps.map(function(s){return '<span class="lc-mail">'+esc(s.title||s.type||'Step')+'</span>';}).join('<span class="lc-arr">&rarr;</span>');
       out.push('<div class="lc-series">'
         +'<div class="lc-series-h"><b>'+esc(f.name||f.slug||'—')+'</b>'
+        +sysBadge(f.system)
         +(trig?'<span class="lc-trig">'+esc(trig)+'</span>':'')
         +'<span class="lc-count">'+steps.length+' '+(de?'Mails':'emails')+' &middot; '+utmN+' UTMs</span></div>'
         +(chain?'<div class="lc-chain">'+chain+'</div>':'')
