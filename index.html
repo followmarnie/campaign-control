@@ -562,6 +562,8 @@
   .imp-badge.f{background:rgba(23,248,224,.14);color:#17f8e0}
   .imp-badge.c{background:rgba(156,123,255,.16);color:#b79bff}
   .imp-badge.u{background:rgba(232,180,90,.16);color:#e8b45a}
+  .imp-badge.s{background:rgba(217,224,140,.16);color:#d9e08c}
+  .imp-badge.j{background:rgba(143,140,255,.18);color:#a9a7ff}
   .imp-warn{color:#e9b45a;font-size:12px}
   .imp-err{color:var(--tn-pink);font-size:13px;padding:7px 11px;background:rgba(255,60,141,.08);border:1px solid rgba(255,60,141,.3);border-radius:7px}
   .imp-sum{font-size:13px;color:#4ade80;margin-top:2px;font-weight:600}
@@ -2363,19 +2365,48 @@ let ccImportPlan=null;
 function ccImportDetect(o){
   if(!o||typeof o!=='object')return 'unknown';
   if(o._type)return String(o._type).toLowerCase();
+  if(o.funnel&&(o.arrivals||o.lifecycle))return 'journey';
   if(Array.isArray(o.steps))return 'funnel';
   if(o.utm_id||o.full_url||o.utm_campaign)return 'utm';
   if(o.key&&!o.steps)return 'conversion';
   return 'unknown';
 }
 function ccStrip(o){const c={...o};delete c._type;return c;}
+// Journey = die ganze Reise in EINEM Paste. Wird hier in die schon vorhandenen Einzeltypen
+// expandiert (Funnel + Ankunfts-UTMs + Lifecycle-Serien + deren UTMs); Querverweise werden
+// automatisch verdrahtet: Ankunfts-/Serien-UTMs bekommen funnel_ref, Serien erben das Produkt.
+function ccExpandJourney(o){
+  const out=[]; const f=o.funnel||o.acquisition||null; let fname='', fproduct='';
+  if(f&&typeof f==='object'){
+    const fc=Object.assign({},f); fc._type='funnel'; delete fc.kind;
+    fname=String(fc.name||'').trim(); fproduct=fc.product||'';
+    out.push(fc);
+    (o.arrivals||o.arrival||[]).forEach(u=>{const uc=Object.assign({},u); uc._type='utm'; if(!uc.funnel_ref)uc.funnel_ref=fname; out.push(uc);});
+  }
+  (o.conversions||[]).forEach(c=>{const cc=Object.assign({},c); cc._type='conversion'; out.push(cc);});
+  (o.lifecycle||o.series||[]).forEach(ls=>{
+    const series=(ls&&(ls.series||ls.funnel))||ls;
+    if(series&&typeof series==='object'&&(series.steps||series.name)){
+      const sc=Object.assign({},series); sc._type='funnel'; if(!sc.kind)sc.kind='lifecycle';
+      if(!sc.product&&fproduct)sc.product=fproduct; // Produkt erben → Serien-Match greift
+      const sname=String(sc.name||'').trim();
+      out.push(sc);
+      ((ls&&(ls.utms||ls.utm))||[]).forEach(u=>{const uc=Object.assign({},u); uc._type='utm'; if(!uc.funnel_ref)uc.funnel_ref=sname; out.push(uc);});
+    }
+  });
+  return out;
+}
 function ccImportPreview(){
   const raw=($('impText').value||'').trim(), box=$('impPreview'), btn=$('impRunBtn');
   ccImportPlan=null; btn.disabled=true; box.innerHTML='';
   if(!raw)return;
   let data; try{data=JSON.parse(raw);}catch(e){box.innerHTML=`<div class="imp-err">${LANG==='de'?'Kein gültiges JSON':'Invalid JSON'}: ${esc(e.message)}</div>`;return;}
-  const items=Array.isArray(data)?data:[data], de=LANG==='de';
+  const items0=Array.isArray(data)?data:[data], de=LANG==='de';
+  // Journey-Objekte zuerst in Einzeltypen expandieren, dann läuft alles durch die normale Pipeline.
+  const items=[]; let jN=0;
+  items0.forEach(o=>{ if(ccImportDetect(o)==='journey'){ const ex=ccExpandJourney(o); jN++; items.push.apply(items,ex); } else items.push(o); });
   const plan={funnels:[],conversions:[],utm:[]}, rows=[]; let skipped=0;
+  if(jN)rows.push(`<div class="imp-row"><span class="imp-badge j">Journey</span> <b>${jN}</b> ${de?'Reise(n) → in Einzelobjekte aufgeteilt:':'journey(s) → split into objects:'}</div>`);
   const fSlugs=new Set(state.funnels.map(f=>f.slug).filter(Boolean));
   const fNames=new Set(state.funnels.map(f=>(f.name||'').trim()).filter(Boolean));
   const cKeys=new Set(state.convs.map(c=>c.key).filter(Boolean));
@@ -2383,11 +2414,13 @@ function ccImportPreview(){
   const uLogical=new Set(state.rows.map(r=>((r.utm_campaign||'')+'|'+(r.utm_content||'')+'|'+(r.target_url||'')).toLowerCase()).filter(k=>k.replace(/\|/g,'')));
   items.forEach((o,i)=>{const type=ccImportDetect(o);
     if(type==='funnel'){const steps=o.steps||[], doors=steps.reduce((a,s)=>a+((s.variants||[]).length),0);
+      const lc=o.kind==='lifecycle', blab=lc?(de?'Serie':'Series'):'Funnel', bcls=lc?'s':'f';
+      const detail=lc?`${steps.length} ${de?'Mails':'emails'}`:`${steps.length} Steps · ${doors} ${de?'Türen':'doors'}`;
       const slug=kebab(o.slug||o.name||''), name=String(o.name||'').trim();
       if(fSlugs.has(slug)||fNames.has(name)){skipped++;
-        rows.push(`<div class="imp-row imp-skip"><span class="imp-badge f">Funnel</span> <b>${esc(o.name||'—')}</b> — <span class="imp-warn">${de?'existiert schon → übersprungen (Ergänzen-Modus kommt)':'already exists → skipped (merge mode coming)'}</span></div>`);
+        rows.push(`<div class="imp-row imp-skip"><span class="imp-badge ${bcls}">${blab}</span> <b>${esc(o.name||'—')}</b> — <span class="imp-warn">${de?'existiert schon → übersprungen (Ergänzen-Modus kommt)':'already exists → skipped (merge mode coming)'}</span></div>`);
       }else{plan.funnels.push(o); fSlugs.add(slug); fNames.add(name);
-        rows.push(`<div class="imp-row"><span class="imp-badge f">Funnel</span> <b>${esc(o.name||'—')}</b> · ${steps.length} Steps · ${doors} ${de?'Türen':'doors'}</div>`);}
+        rows.push(`<div class="imp-row"><span class="imp-badge ${bcls}">${blab}</span> <b>${esc(o.name||'—')}</b> · ${detail}</div>`);}
     }else if(type==='conversion'){const key=String(o.key||'');
       if(cKeys.has(key)){skipped++;
         rows.push(`<div class="imp-row imp-skip"><span class="imp-badge c">Conversion</span> <b>${esc(o.key||'—')}</b> — <span class="imp-warn">${de?'Key existiert schon → übersprungen':'key exists → skipped'}</span></div>`);
