@@ -104,6 +104,9 @@
   .tag.paid{background:rgba(102,102,255,.18);color:#aab0ff}
   .tag.email{background:rgba(23,248,224,.15);color:#7df3e6}
   .tag.organic{background:rgba(237,251,140,.15);color:#d9e08c}
+.langchip{display:inline-block;border-radius:5px;padding:0 5px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-right:6px;vertical-align:middle}
+.langchip.de{background:rgba(150,57,243,.18);color:#c9a3ff}
+.langchip.en{background:rgba(255,189,102,.18);color:#ffce88}
   .st{display:inline-block;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:700}
   .st.done{background:rgba(74,222,128,.15);color:#7fe6a4}
   .st.open{background:rgba(255,132,106,.15);color:#ffb39f}
@@ -1209,9 +1212,10 @@
             <th class="sortable" data-sk="platform_type" onclick="setSort('utm','platform_type')"><span data-i18n="r.type">Typ</span><span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="utm_campaign" onclick="setSort('utm','utm_campaign')">utm_campaign<span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="asset_identifier" onclick="setSort('utm','asset_identifier')"><span data-i18n="nm.ident">Identifier</span><span class="sarr">⇅</span></th>
-            <th class="sortable" data-sk="utm_source" onclick="setSort('utm','utm_source')">source<span class="sarr">⇅</span></th>
-            <th class="sortable" data-sk="utm_medium" onclick="setSort('utm','utm_medium')">medium<span class="sarr">⇅</span></th>
-            <th class="sortable" data-sk="utm_content" onclick="setSort('utm','utm_content')">content<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_source" onclick="setSort('utm','utm_source')">utm_source<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_medium" onclick="setSort('utm','utm_medium')">utm_medium<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_content" onclick="setSort('utm','utm_content')">utm_content<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="utm_term" onclick="setSort('utm','utm_term')">utm_term<span class="sarr">⇅</span></th>
             <th data-i18n="r.fullurl">Volle URL</th><th style="width:110px"></th>
           </tr></thead>
           <tbody></tbody>
@@ -2361,6 +2365,13 @@ function refreshFilters(){
   $('fFunnel').innerHTML=`<option value="">${t('r.funAll')}</option>`+funs.map(s=>`<option${s===ff?' selected':''}>${esc(s)}</option>`).join('');
 }
 function paramsOnly(u){if(!u)return '';const q=String(u).split('#')[0];const i=q.indexOf('?');return i>=0?q.slice(i+1):'';}
+// Sprache aus dem Pfad (/de/ vs /en/) ableiten — kein eigenes Feld noetig, steht schon in der URL
+function langChip(r){
+  const m=String(r.full_url||r.target_url||'').match(/\/(de|en)\//i);
+  if(!m)return '';
+  const l=m[1].toLowerCase();
+  return `<span class="langchip ${l}">${l.toUpperCase()}</span>`;
+}
 function renderRegistry(){
   const fy=$('fYear').value.trim(), fc=$('fCampaign').value.trim().toLowerCase(), fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
   const flt=state.rows.filter(r=>(!fy||(r.period||'').includes(fy)||(r.utm_campaign||'').includes(fy))&&(!fc||(r.utm_campaign||'').toLowerCase().includes(fc))
@@ -2368,18 +2379,19 @@ function renderRegistry(){
   $('tbl').querySelector('tbody').innerHTML=sortList(flt,'utm').map(r=>`<tr data-id="${esc(r.utm_id)}">
     <td class="mono counter">${esc(r.utm_id)}</td>
     <td><span class="tag ${esc(r.platform_type)}">${esc(r.platform_type)}</span></td>
-    <td class="mono" data-col="utm_campaign">${esc(r.utm_campaign)||'—'}</td>
+    <td class="mono" data-col="utm_campaign">${langChip(r)}${esc(r.utm_campaign)||'—'}</td>
     <td class="mono ident" data-col="asset_identifier">${esc(r.asset_identifier)||'—'}</td>
     <td class="mono" data-col="utm_source">${esc(r.utm_source)||'—'}</td>
     <td class="mono" data-col="utm_medium">${esc(r.utm_medium)||'—'}</td>
     <td class="mono" data-col="utm_content">${esc(r.utm_content)||'—'}</td>
+    <td class="mono" data-col="utm_term">${esc(r.utm_term)||'—'}</td>
     <td class="mono url" data-col="full_url" title="${esc(r.full_url)}">${esc(r.full_url)||'—'}</td>
     <td>
       <span class="act edit" title="Edit" onclick="startEdit('${esc(r.utm_id)}')">✎</span>
       <span class="minicopy" title="${t('o.copyUrl')}" onclick="copyText(${JSON.stringify(String(r.full_url||''))})">⧉URL</span>
       <span class="minicopy" title="${t('o.copyParams')}" onclick="copyText(${JSON.stringify(paramsOnly(r.full_url))})">⧉?=</span>
       <span class="act del" title="Delete" onclick="delRow('${esc(r.utm_id)}')">✕</span>
-    </td></tr>`).join('')||`<tr><td colspan="9" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
+    </td></tr>`).join('')||`<tr><td colspan="10" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
   $('rowCount').textContent=state.rows.length+' '+(state.rows.length===1?(LANG==='de'?'Zeile':'row'):(LANG==='de'?'Zeilen':'rows'));
   updateSortArrows('tbl','utm');
 }
@@ -2388,7 +2400,7 @@ async function delRow(id){
   try{await sb(`utm_registry?utm_id=eq.${encodeURIComponent(id)}`,{method:'DELETE'});await loadAll();toast(t('ct.deleted')+': '+id)}
   catch(e){toast(t('ct.delfail')+': '+e.message,true)}
 }
-const EDITABLE=['utm_campaign','asset_identifier','utm_source','utm_medium','utm_content','full_url'];
+const EDITABLE=['utm_campaign','asset_identifier','utm_source','utm_medium','utm_content','utm_term','full_url'];
 let editing=null;
 function startEdit(id){
   if(editing&&editing!==id)cancelEdit();
