@@ -97,6 +97,21 @@
   #tbl td{white-space:nowrap}
   #tbl td.url{max-width:360px;overflow:hidden;text-overflow:ellipsis}
   #tbl td.ident{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+  /* Orientierung beim Horizontal-Scrollen (Marnie 2026-07-21): Die Tabelle ist
+     ~1080px breit; wer nach rechts zur URL-Spalte scrollt, verlor die Zeile.
+     Drei Mittel zusammen — Hover-Tint, Klick = BLEIBENDE Auswahl, und die
+     utm_id-Spalte klebt links als Anker (gleiches Muster wie table.reg .rid). */
+  #tbl tbody tr{cursor:pointer}
+  #tbl tbody tr:hover>td{background:rgba(102,102,255,.07)}
+  #tbl tbody tr.rowsel>td{background:rgba(150,57,243,.18)}
+  #tbl thead th:first-child,#tbl td.counter{position:sticky;left:0}
+  /* Sticky-Spalten brauchen einen DECKENDEN Hintergrund, sonst scrollt der
+     Text der Nachbarspalten sichtbar darunter durch. .card liegt bei
+     rgba(255,255,255,.03) ueber #07071a -> effektiv ~#0e0e21. */
+  #tbl td.counter{background:#0e0e21;z-index:2;box-shadow:6px 0 8px -6px rgba(0,0,0,.55)}
+  #tbl thead th:first-child{background:#0e0e21;z-index:3;box-shadow:6px 0 8px -6px rgba(0,0,0,.55)}
+  #tbl tbody tr:hover>td.counter{background:#15153a}
+  #tbl tbody tr.rowsel>td.counter{background:#291a4b;box-shadow:inset 3px 0 0 var(--tn-accent),6px 0 8px -6px rgba(0,0,0,.55)}
   #namingTbl{min-width:900px}
   #namingTbl td{white-space:nowrap}
   #namingTbl td.ident{min-width:360px}
@@ -2372,6 +2387,20 @@ function langChip(r){
   const l=m[1].toLowerCase();
   return `<span class="langchip ${l}">${l.toUpperCase()}</span>`;
 }
+// Zeilen-Auswahl im UTM-Grid (Marnie 2026-07-21): Klick markiert eine Zeile
+// bleibend, damit sie beim Scrollen nach rechts (URL-Spalte) nicht verlorengeht.
+// Bewusst KEIN Zustand in Supabase — reine Ansichtshilfe, lebt nur in der Session.
+let selUtmRow=null;
+function applyUtmRowSel(){
+  const tb=$('tbl').querySelector('tbody');if(!tb)return;
+  tb.querySelectorAll('tr').forEach(tr=>tr.classList.toggle('rowsel',!!selUtmRow&&tr.dataset.id===selUtmRow));
+}
+function toggleUtmRow(tr){
+  if(!tr||!tr.dataset.id)return;
+  selUtmRow=(selUtmRow===tr.dataset.id)?null:tr.dataset.id;
+  applyUtmRowSel();
+}
+
 function renderRegistry(){
   const fy=$('fYear').value.trim(), fc=$('fCampaign').value.trim().toLowerCase(), fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
   const flt=state.rows.filter(r=>(!fy||(r.period||'').includes(fy)||(r.utm_campaign||'').includes(fy))&&(!fc||(r.utm_campaign||'').toLowerCase().includes(fc))
@@ -2394,6 +2423,7 @@ function renderRegistry(){
     </td></tr>`).join('')||`<tr><td colspan="10" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
   $('rowCount').textContent=state.rows.length+' '+(state.rows.length===1?(LANG==='de'?'Zeile':'row'):(LANG==='de'?'Zeilen':'rows'));
   updateSortArrows('tbl','utm');
+  applyUtmRowSel();  // Auswahl ueberlebt Filter/Sortierung
 }
 async function delRow(id){
   if(!confirm(t('cf.del',{id})))return;
@@ -3901,6 +3931,13 @@ $('uNaming').addEventListener('change',onNamingPick);
 $('uSrc').addEventListener('change',onSrcChange);
 ['uCampaign','uContent','uMed','uTerm','uFunnelRef','uRef','uUrl','uAnchor','uNotes'].forEach(id=>$(id).addEventListener('input',renderUtmOut));
 $('ctrOverride').addEventListener('input',renderUtmOut);
+// Delegation auf dem tbody: ueberlebt jeden Re-Render (innerHTML wird ersetzt,
+// das tbody-Element nicht). Klicks auf die Aktions-Icons duerfen NICHT
+// mitmarkieren — sonst waehlt jedes Kopieren nebenbei die Zeile aus.
+$('tbl').querySelector('tbody').addEventListener('click',e=>{
+  if(e.target.closest('.act,.minicopy'))return;
+  toggleUtmRow(e.target.closest('tr'));
+});
 ['fYear','fCampaign','fSource','fFunnel','fChannel'].forEach(id=>$(id).addEventListener('input',renderRegistry));
 $('showArch').addEventListener('change',()=>{renderFcTabs();renderFunnelList();renderFunnelRegistry();});
 $('uOnlyOpen').addEventListener('change',refreshDynamic);
