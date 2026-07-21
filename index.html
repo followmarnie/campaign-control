@@ -605,10 +605,28 @@
   .lc-next .txt{font-size:11.5px;color:#c9cdf5}
   .lc-next .txt b{color:#ffcf70}
   .lc-next.ok .txt b{color:var(--tn-success)}
-  .lc-sum{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
-  .lc-sum .m{border:1px solid var(--tn-border);border-radius:12px;padding:9px 13px;background:var(--tn-surf-1);min-width:96px}
-  .lc-sum .m strong{display:block;font-size:17px;color:#fff;line-height:1.15}
-  .lc-sum .m span{font-size:10.5px;color:#8a90c0}
+  .lc-sum{display:flex;gap:8px;flex-wrap:wrap}
+  .lc-sum .m{border:1px solid var(--tn-border);border-radius:12px;padding:7px 12px;background:var(--tn-surf-1);min-width:88px}
+  .lc-sum .m strong{display:block;font-size:16px;color:#fff;line-height:1.15}
+  .lc-sum .m span{font-size:10px;color:#8a90c0}
+  .lc-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 16px}
+  .lc-ended{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#9aa0d0;cursor:pointer}
+  /* ── Netz-Ansicht ── */
+  .lc-net{position:relative;overflow-x:auto;border:1px solid var(--tn-border);border-radius:var(--tn-r-l);background:var(--tn-surf-1);padding:10px}
+  .lc-net svg{display:block;min-width:760px}
+  .ln-tag rect{fill:rgba(23,248,224,.08);stroke:rgba(23,248,224,.35)}
+  .ln-tag text{fill:#8fe3c8;font:11px ui-monospace,Menlo,Consolas,monospace}
+  .ln-ser{cursor:pointer}
+  .ln-ser rect{fill:rgba(255,255,255,.045);stroke:rgba(255,255,255,.14)}
+  .ln-ser:hover rect{stroke:rgba(102,102,255,.65);fill:rgba(102,102,255,.08)}
+  .ln-ser .nm{fill:#eef0ff;font:600 12px Outfit,system-ui,sans-serif}
+  .ln-ser .mt{fill:#8a90c0;font:10px Outfit,system-ui,sans-serif}
+  .ln-ser .st-built{fill:#4ade80}.ln-ser .st-draft{fill:#ffcf70}.ln-ser .st-ended{fill:#6b70a0}
+  .ln-guard{fill:#ffb0bb;font:9.5px ui-monospace,Menlo,Consolas,monospace}
+  .ln-edge{fill:none;stroke:rgba(102,102,255,.55);stroke-width:1.5}
+  .ln-edge.set{stroke:rgba(150,57,243,.6);stroke-dasharray:5 4}
+  .ln-lg{display:flex;gap:16px;flex-wrap:wrap;padding:10px 8px 2px;font-size:11px;color:#9aa0d0}
+  .ln-lg i{display:inline-block;width:20px;height:2px;vertical-align:middle;margin-right:6px;border-radius:2px}
   .temp-chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--tn-border);white-space:nowrap}
   .temp-chip.cold{color:#7cc4ff;border-color:rgba(124,196,255,.4);background:rgba(124,196,255,.08)}
   .temp-chip.warm{color:#ffce7a;border-color:rgba(255,206,122,.4);background:rgba(255,206,122,.08)}
@@ -1523,26 +1541,29 @@
   <div class="view" id="view-lifecycle">
     <div style="margin-bottom:16px">
       <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700" data-i18n="lc.title">Phase 3 · Lifecycle</h2>
-      <p class="sub" data-i18n="lc.sub">Deine E-Mail-Serien: was in ActiveCampaign schon gebaut ist, in welchem Rhythmus sie laufen — und was als Nächstes dran ist.</p>
+      <p class="sub" data-i18n="lc.sub">Das Netz Deiner Betreuung: welches Tag startet welche Strecke, welche Mail setzt das nächste Tag — und wo etwas gestoppt wird.</p>
     </div>
-    <div class="lc-sum" id="lcSum"></div>
-    <div id="lcSteps" class="lc-steps"></div>
-    <details class="lc-card" style="margin-top:16px">
-      <summary style="cursor:pointer;color:#fff;font-weight:600;font-size:14px" data-i18n="lc.card.h">Die Naht ist überschritten</summary>
-      <p style="color:#aab0d6;font-size:13.5px;line-height:1.6;margin:10px 0 6px" data-i18n="lc.card.p">Phase 1 + 2 (Akquise) enden an der Conversion. Ab hier läuft die Betreuung — E-Mail-Strecken, Handouts, Angebote — <b style="color:#fff">über ActiveCampaign</b>, gesteuert durch das Signup-Tag. Praba trackt hier nicht mehr.</p>
-      <div class="lc-zone" data-i18n="lc.merk"><b>Merksatz:</b> Haben wir schon seine E-Mail? <b>Nein</b> → Retargeting (Akquise). <b>Ja</b> → Lifecycle (hier).</div>
-    </details>
-    <div class="lc-card" style="margin-top:14px">
-      <h2 data-i18n="tc.h">Tag-Katalog 🛡️</h2>
-      <p style="color:#aab0d6;font-size:13.5px;line-height:1.6;margin:0 0 4px" data-i18n="tc.p">Die bekannten AC-Tags (Soll-Konvention). Der <b style="color:#fff">Wächter</b> im Assistenten prüft jeden getippten Tag hiergegen: <span class="wiz-ok">grün = existiert</span> · <span class="wiz-new">gelb = neuer Wert</span> · <span style="color:#f0a0a0">rot = passt nicht</span>.</p>
-      <div id="tagCatalog" class="tc-wrap"></div>
+    <div class="lc-bar">
+      <div class="cm-switch lc-switch">
+        <button data-lc="net" class="on" onclick="lcShow('net')" data-i18n="lc.v.net">Netz</button>
+        <button data-lc="list" onclick="lcShow('list')" data-i18n="lc.v.list">Liste</button>
+      </div>
+      <div class="lc-sum" id="lcSum"></div>
+      <label class="lc-ended"><input type="checkbox" id="lcEnded" onchange="renderLifecycle()"> <span data-i18n="lc.showended">Beendete Kampagnen-Strecken zeigen</span></label>
     </div>
+    <div id="lcNet" class="lc-net"></div>
+    <div id="lcSteps" class="lc-steps" style="display:none"></div>
   </div>
 
   <div class="view" id="view-settings">
     <div style="margin-bottom:16px">
       <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700" data-i18n="set.title">SOP / Settings</h2>
       <p class="sub" data-i18n="set.lead">Regelquellen. Die SOP bleibt maßgeblich — das Tool bildet sie nur ab.</p>
+    </div>
+    <div class="lc-card" style="margin-bottom:14px;max-width:none">
+      <h2 data-i18n="tc.h">Tag-Katalog</h2>
+      <p style="color:#aab0d6;font-size:13.5px;line-height:1.6;margin:0 0 4px" data-i18n="tc.p">Die bekannten AC-Tags (Soll-Konvention). Der <b style="color:#fff">Wächter</b> im Assistenten prüft jeden getippten Tag hiergegen: <span class="wiz-ok">grün = existiert</span> · <span class="wiz-new">gelb = neuer Wert</span> · <span style="color:#f0a0a0">rot = passt nicht</span>.</p>
+      <div id="tagCatalog" class="tc-wrap"></div>
     </div>
     <div class="card">
       <h2>Plattform-Hierarchie (SOP_Platform_Naming)</h2>
@@ -1582,11 +1603,13 @@ const T={
   'navg.create':'Erstellen','navg.journey':'Die Reise','navg.adworld':'Kampagnen · Ad-Welt','navg.reference':'Referenz',
   'vs.title':'Verstehen · Die Reise in 3 Phasen','vs.sub':'Ankunft · On-Site · Lifecycle — mit Retargeting-Loop. Die ⓘ-Punkte antippen für Erklärungen.',
   'lk.title':'Die Lieferkette · Naming, UTM & Funnel','lk.sub':'Eine Lieferung, mehrere LKWs, viele Pakete — drei Sticker auf drei Ebenen. Wie Campaign-Name, utm_campaign/term/content und Funnel zusammenhängen.',
-  'lc.title':'Phase 3 · Lifecycle','lc.sub':'Deine E-Mail-Serien: was in ActiveCampaign schon gebaut ist, in welchem Rhythmus sie laufen — und was als Nächstes dran ist.',
+  'lc.title':'Phase 3 · Lifecycle','lc.sub':'Das Netz Deiner Betreuung: welches Tag startet welche Strecke, welche Mail setzt das nächste Tag — und wo etwas gestoppt wird.',
   'lc.card.h':'Die Naht ist überschritten','lc.card.p':'Phase 1 + 2 (Akquise) enden an der Conversion. Ab hier läuft die Betreuung — E-Mail-Strecken, Handouts, Angebote — <b style="color:#fff">über ActiveCampaign</b>, gesteuert durch das Signup-Tag. Praba trackt hier nicht mehr.',
   'lc.merk':'<b>Merksatz:</b> Haben wir schon seine E-Mail? <b>Nein</b> → Retargeting (Akquise). <b>Ja</b> → Lifecycle (hier).',
   'lc.m.total':'Serien','lc.m.built':'in AC gebaut','lc.m.open':'offen',
-  'lc.st.built':'in AC gebaut','lc.st.draft':'Entwurf',
+  'lc.st.built':'in AC gebaut','lc.st.draft':'Entwurf','lc.st.ended':'beendet',
+  'lc.v.net':'Netz','lc.v.list':'Liste','lc.showended':'Beendete Kampagnen-Strecken zeigen',
+  'lc.lg.trig':'Tag startet Serie','lc.lg.set':'Mail setzt Tag (Link-Aktion)','lc.lg.click':'Serie anklicken öffnet sie in Funnel & Tracking.',
   'lc.trigger':'Trigger','lc.guard':'Guard','lc.next':'Nächster Schritt',
   'lc.stepshead':'Deine Lifecycle-Serien','lc.stepshint':'ActiveCampaign-Strecken, gruppiert nach Produkt — getriggert vom Signup-Tag der jeweiligen Serie. Jeder Akquise-Funnel zeigt am Ende (Besitz-Naht) hierher.','lc.empty':'Noch keine Lifecycle-Serien — sie erscheinen, sobald ein Funnel als Lifecycle-Serie importiert ist (kind: lifecycle).',
   'nm.temp':'Temperatur','nm.temphint':'(Kalt / Warm / Heiß)','nm.templabel':'Temperatur:',
@@ -1612,7 +1635,7 @@ const T={
   'wz.src.meta':'Meta-Ad','wz.src.google':'Google-Ad','wz.src.email':'E-Mail','wz.src.organic':'Organisch','wz.src.rt':'Retargeting-Ad',
   'wz.conv.new':'Neue Conversion','wz.conv.exist':'Aus Katalog','wz.conv.later':'Später festlegen','wz.conv.laterhint':'Kein Conversion-Ziel jetzt — der Funnel bleibt offen (⚠ in der Übersicht). Du kannst es später in „Funnel & Tracking" ergänzen.','wz.pv.camp':'Kampagnen-Name (SOP)',
   'wz.ac.format':'⚠ Format: „Kategorie: Spezifizierung" — Leerzeichen nach dem Doppelpunkt (z. B. „Lead: Börsenampel").','wz.ac.onecolon':'⚠ Genau <b>ein</b> Doppelpunkt pro Tag: „Kategorie: Spezifizierung".','wz.ac.prefix':'⚠ Nicht im finalen Schema — erlaubt: {p}.','wz.ac.stage':'⚠ „Stage: …" wird <b>nicht</b> pro Kampagne gesetzt — Temperatur ist automation-getrieben.','wz.ac.customer':'⚠ „Customer: …" nur für bezahlte Käufer — für die Herkunft „Lead:" oder „Source:" nehmen.','wz.ac.case':'⚠ Kategorie groß schreiben: „{p}: …".','wz.ac.ok':'✓ passt zur Konvention','wz.ac.known':'✓ existiert im Tag-Katalog','wz.ac.newval':'⧗ neuer Wert unter „{p}:" — formattreu, beim nächsten AC-Cleanup mit aufnehmen','wz.ac.portal':'ℹ „{p}:" setzt das Portal/der Webhook (Lennert) — nicht im Assistenten stempeln','wz.ac.openns':'✓ offener Namespace (datiert/variabel) — Format passt',
-  'tc.h':'Tag-Katalog 🛡️','tc.p':'Die bekannten AC-Tags (Soll-Konvention). Der <b style="color:#fff">Wächter</b> im Assistenten prüft jeden getippten Tag hiergegen: <span class="wiz-ok">grün = existiert</span> · <span class="wiz-new">gelb = neuer Wert</span> · <span style="color:#f0a0a0">rot = passt nicht</span>.','tc.gmkt':'Kampagnen-Tags · Du setzt sie','tc.gportal':'Portal-/Software-Tags · Lennert-Webhook','tc.who.du':'Du','tc.who.auto':'Automation','tc.who.portal':'Portal','tc.openval':'datiert / variabel',
+  'tc.h':'Tag-Katalog','tc.p':'Die bekannten AC-Tags (Soll-Konvention). Der <b style="color:#fff">Wächter</b> im Assistenten prüft jeden getippten Tag hiergegen: <span class="wiz-ok">grün = existiert</span> · <span class="wiz-new">gelb = neuer Wert</span> · <span style="color:#f0a0a0">rot = passt nicht</span>.','tc.gmkt':'Kampagnen-Tags · Du setzt sie','tc.gportal':'Portal-/Software-Tags · Lennert-Webhook','tc.who.du':'Du','tc.who.auto':'Automation','tc.who.portal':'Portal','tc.openval':'datiert / variabel',
   'wz.rev.camp':'Kampagne','wz.rev.funnel':'Funnel','wz.rev.convh':'Conversion','wz.rev.convnew':'neu','wz.rev.convdup':'(existiert schon — wird verknüpft)','wz.rev.convex':'aus Katalog','wz.rev.convnone':'⚠ keine Conversion gewählt','wz.rev.naming':'Naming-Einträge','wz.rev.nonaming':'⚠ Keine — mindestens eine Quelle in ① wählen.','wz.rev.utm':'UTM-Links','wz.rev.utmnote':'je Naming-Eintrag ein UTM-Link; die utm_id vergibt die Datenbank.',
   'wz.funpurpose':'Kampagne {c} (via Assistent)',
   'wz.v.src':'Wähle mindestens eine Quelle — sonst erscheint die Kampagne noch nicht in der Übersicht. Alles Weitere darfst Du offen lassen.',
@@ -1715,11 +1738,13 @@ const T={
   'navg.create':'Create','navg.journey':'The journey','navg.adworld':'Campaigns · Ad world','navg.reference':'Reference',
   'vs.title':'Understand · The journey in 3 phases','vs.sub':'Arrival · On-Site · Lifecycle — with a retargeting loop. Tap the ⓘ points for explanations.',
   'lk.title':'The supply chain · naming, UTM & funnel','lk.sub':'One shipment, several trucks, many packages — three stickers on three levels. How campaign name, utm_campaign/term/content and the funnel connect.',
-  'lc.title':'Phase 3 · Lifecycle','lc.sub':'Your email series: what is already built in ActiveCampaign, at what rhythm they run — and what is next.',
+  'lc.title':'Phase 3 · Lifecycle','lc.sub':'The web of your nurturing: which tag starts which sequence, which email sets the next tag — and where something is stopped.',
   'lc.card.h':'The seam is crossed 🧵','lc.card.p':'Phase 1 + 2 (acquisition) end at the conversion. From here on, nurturing runs — email sequences, handouts, offers — <b style="color:#fff">via ActiveCampaign</b>, steered by the signup tag. Praba no longer tracks here.',
   'lc.merk':'<b>Rule of thumb:</b> Do we already have their email? <b>No</b> → retargeting (acquisition). <b>Yes</b> → lifecycle (here).',
   'lc.m.total':'series','lc.m.built':'built in AC','lc.m.open':'open',
-  'lc.st.built':'built in AC','lc.st.draft':'draft',
+  'lc.st.built':'built in AC','lc.st.draft':'draft','lc.st.ended':'ended',
+  'lc.v.net':'Network','lc.v.list':'List','lc.showended':'Show ended campaign sequences',
+  'lc.lg.trig':'tag starts series','lc.lg.set':'email sets tag (link action)','lc.lg.click':'Click a series to open it in Funnel & Tracking.',
   'lc.trigger':'Trigger','lc.guard':'Guard','lc.next':'Next step',
   'lc.stepshead':'Your lifecycle series','lc.stepshint':'ActiveCampaign flows, grouped by product — triggered by the signup tag of each series. Every acquisition funnel points here at its end (ownership seam).','lc.empty':'No lifecycle series yet — they appear as soon as a funnel is imported as a lifecycle series (kind: lifecycle).',
   'nm.temp':'Temperature','nm.temphint':'(Cold / Warm / Hot)','nm.templabel':'Temperature:',
@@ -1745,7 +1770,7 @@ const T={
   'wz.src.meta':'Meta ad','wz.src.google':'Google ad','wz.src.email':'Email','wz.src.organic':'Organic','wz.src.rt':'Retargeting ad',
   'wz.conv.new':'New conversion','wz.conv.exist':'From catalog','wz.conv.later':'Decide later','wz.conv.laterhint':'No conversion goal now — the funnel stays open (⚠ in the overview). You can add it later in “Funnel & Tracking”.','wz.pv.camp':'Campaign name (SOP)',
   'wz.ac.format':'⚠ Format: “Category: Specifier” — space after the colon (e.g. “Lead: Börsenampel”).','wz.ac.onecolon':'⚠ Exactly <b>one</b> colon per tag: “Category: Specifier”.','wz.ac.prefix':'⚠ Not in the final schema — allowed: {p}.','wz.ac.stage':'⚠ “Stage: …” is <b>not</b> set per campaign — temperature is automation-driven.','wz.ac.customer':'⚠ “Customer: …” is for paid buyers only — use origin “Lead:” or “Source:”.','wz.ac.case':'⚠ Capitalize the category: “{p}: …”.','wz.ac.ok':'✓ matches the convention','wz.ac.known':'✓ exists in the tag catalog','wz.ac.newval':'⧗ new value under “{p}:” — format ok, add it in the next AC cleanup','wz.ac.portal':'ℹ “{p}:” is set by the portal/webhook (Lennert) — don’t stamp it in the assistant','wz.ac.openns':'✓ open namespace (dated/variable) — format ok',
-  'tc.h':'Tag catalog 🛡️','tc.p':'The known AC tags (target convention). The <b style="color:#fff">guardian</b> in the assistant checks every typed tag against this: <span class="wiz-ok">green = exists</span> · <span class="wiz-new">amber = new value</span> · <span style="color:#f0a0a0">red = doesn’t fit</span>.','tc.gmkt':'Campaign tags · you set them','tc.gportal':'Portal/software tags · Lennert webhook','tc.who.du':'You','tc.who.auto':'Automation','tc.who.portal':'Portal','tc.openval':'dated / variable',
+  'tc.h':'Tag catalog','tc.p':'The known AC tags (target convention). The <b style="color:#fff">guardian</b> in the assistant checks every typed tag against this: <span class="wiz-ok">green = exists</span> · <span class="wiz-new">amber = new value</span> · <span style="color:#f0a0a0">red = doesn’t fit</span>.','tc.gmkt':'Campaign tags · you set them','tc.gportal':'Portal/software tags · Lennert webhook','tc.who.du':'You','tc.who.auto':'Automation','tc.who.portal':'Portal','tc.openval':'dated / variable',
   'wz.rev.camp':'Campaign','wz.rev.funnel':'Funnel','wz.rev.convh':'Conversion','wz.rev.convnew':'new','wz.rev.convdup':'(already exists — will be linked)','wz.rev.convex':'from catalog','wz.rev.convnone':'⚠ no conversion selected','wz.rev.naming':'Naming entries','wz.rev.nonaming':'⚠ None — pick at least one source in ①.','wz.rev.utm':'UTM links','wz.rev.utmnote':'one UTM link per naming entry; the utm_id is assigned by the database.',
   'wz.funpurpose':'Campaign {c} (via assistant)',
   'wz.v.src':'Pick at least one source — otherwise the campaign won’t show in the overview yet. Everything else can stay open.',
@@ -3996,21 +4021,102 @@ function lcNext(f,steps,utmN,de){
   return {cls:' ok',txt:'<b>'+(de?'Vollständig':'Complete')+'</b> — '
     +(de?'gebaut, getaktet, getrackt.':'built, timed, tracked.')};
 }
+function lcShow(mode){
+  if(mode!=='net'&&mode!=='list')mode='net';
+  state.lcDisplay=mode;
+  var net=document.getElementById('lcNet'),list=document.getElementById('lcSteps');
+  if(net)net.style.display=(mode==='net')?'':'none';
+  if(list)list.style.display=(mode==='list')?'':'none';
+  document.querySelectorAll('.lc-switch button').forEach(function(b){b.classList.toggle('on',b.dataset.lc===mode);});
+  renderLifecycle();
+}
+function lcSeriesList(){
+  var showEnded=!!(document.getElementById('lcEnded')||{}).checked;
+  return (state.funnels||[]).filter(function(f){
+    if(!isLifecycle(f))return false;
+    if(f.status==='archived'&&!showEnded)return false;
+    return true;
+  });
+}
+/* Netz: Tags starten Serien (durchgezogen) · Mails setzen Tags (gestrichelt).
+   Beides wird aus steps abgeleitet: steps[0].ac_tag = Trigger, ac_tag auf
+   spaeteren Steps = Tags, die eine Link-Aktion setzt. Kein eigenes Feld. */
+function renderLcNet(lc){
+  var host=document.getElementById('lcNet');if(!host)return;
+  var de=LANG==='de';
+  var groups={};
+  lc.forEach(function(f){
+    var base=String(f.name||'').replace(/\s*\((DE|EN)\)\s*$/i,'');
+    (groups[base]=groups[base]||[]).push(f);
+  });
+  var sers=Object.keys(groups).map(function(base){
+    var vs=groups[base];
+    var steps=(vs[0].steps||[]);
+    var trig='';vs.forEach(function(v){if(!trig)trig=String(((v.steps||[])[0]||{}).ac_tag||'').trim();});
+    var made={},guard='';
+    vs.forEach(function(v){(v.steps||[]).forEach(function(s,i){
+      if(i>0)String(s.ac_tag||'').split(',').forEach(function(x){x=x.trim();if(x)made[x]=1;});
+      if(!guard&&s.guard)guard=String(s.guard).trim();
+    });});
+    var st=vs.some(function(v){return v.status==='active'||v.status==='live';})?'built'
+          :vs.every(function(v){return v.status==='archived';})?'ended':'draft';
+    return {base:base,vs:vs,trig:trig,made:Object.keys(made),guard:guard,st:st,
+            langs:vs.map(lcLang).filter(Boolean),
+            mails:Math.max.apply(null,vs.map(function(v){return (v.steps||[]).length;}))};
+  });
+  var trigs=[];sers.forEach(function(s){if(s.trig&&trigs.indexOf(s.trig)<0)trigs.push(s.trig);});
+  var TX=20,TW=200,SX=330,SW=400,SH=58,SR=76,TH=34,TR=64,top=16;
+  var H=Math.max(trigs.length*TR,sers.length*SR)+top+20;
+  var sy=function(i){return top+i*SR;},ty=function(j){return top+j*TR;};
+  var svg=['<svg viewBox="0 0 '+(SX+SW+30)+' '+H+'" width="100%" height="'+H+'">'];
+  // Kanten zuerst (unter den Knoten)
+  sers.forEach(function(s,i){
+    var j=trigs.indexOf(s.trig);
+    if(j>=0)svg.push('<path class="ln-edge" d="M'+(TX+TW)+' '+(ty(j)+TH/2)+' C '+(TX+TW+60)+' '+(ty(j)+TH/2)+', '+(SX-60)+' '+(sy(i)+SH/2)+', '+SX+' '+(sy(i)+SH/2)+'"/>');
+    s.made.forEach(function(m){
+      var k=trigs.indexOf(m);
+      if(k>=0)svg.push('<path class="ln-edge set" d="M'+SX+' '+(sy(i)+SH-10)+' C '+(SX-90)+' '+(sy(i)+SH+8)+', '+(TX+TW+90)+' '+(ty(k)+TH+6)+', '+(TX+TW)+' '+(ty(k)+TH-6)+'"/>');
+    });
+  });
+  trigs.forEach(function(tg,j){
+    svg.push('<g class="ln-tag"><rect x="'+TX+'" y="'+ty(j)+'" width="'+TW+'" height="'+TH+'" rx="8"/>'
+      +'<text x="'+(TX+10)+'" y="'+(ty(j)+21)+'">'+esc(tg.length>26?tg.slice(0,25)+'…':tg)+'</text></g>');
+  });
+  sers.forEach(function(s,i){
+    var y=sy(i);
+    svg.push('<g class="ln-ser" onclick="openFunnelFromOv('+s.vs[0].id+')"><rect x="'+SX+'" y="'+y+'" width="'+SW+'" height="'+SH+'" rx="10"/>'
+      +'<circle class="st-'+s.st+'" cx="'+(SX+14)+'" cy="'+(y+16)+'" r="4.5"/>'
+      +'<text class="nm" x="'+(SX+26)+'" y="'+(y+20)+'">'+esc(s.base.length>42?s.base.slice(0,41)+'…':s.base)+'</text>'
+      +'<text class="mt" x="'+(SX+26)+'" y="'+(y+36)+'">'+s.mails+' '+(de?'Mails':'emails')
+        +(s.langs.length?' · '+s.langs.join(' '):'')
+        +' · '+t(s.st==='built'?'lc.st.built':s.st==='ended'?'lc.st.ended':'lc.st.draft')+'</text>'
+      +(s.guard?'<text class="ln-guard" x="'+(SX+26)+'" y="'+(y+50)+'">'+(de?'Guard: ':'Guard: ')+esc(s.guard.length>48?s.guard.slice(0,47)+'…':s.guard)+'</text>':'')
+      +'</g>');
+  });
+  svg.push('</svg>');
+  host.innerHTML=svg.join('')
+    +'<div class="ln-lg"><span><i style="background:rgba(102,102,255,.8)"></i>'+t('lc.lg.trig')+'</span>'
+    +'<span><i style="background:rgba(150,57,243,.8);height:0;border-top:2px dashed rgba(150,57,243,.8)"></i>'+t('lc.lg.set')+'</span>'
+    +'<span>'+t('lc.lg.click')+'</span></div>';
+}
 function renderLifecycle(){
   var host=document.getElementById('lcSteps');if(!host)return;
   var de=LANG==='de';
-  var lc=(state.funnels||[]).filter(function(f){return f.status!=='archived'&&isLifecycle(f);});
+  var lc=lcSeriesList();
   var sum=document.getElementById('lcSum');
   if(!lc.length){
     if(sum)sum.innerHTML='';
-    host.innerHTML='<div class="lc-empty">'+t('lc.empty')+'</div>';renderTagCatalog();return;
+    host.innerHTML='<div class="lc-empty">'+t('lc.empty')+'</div>';
+    var net=document.getElementById('lcNet');if(net)net.innerHTML='';
+    renderTagCatalog();return;
   }
   var built=lc.filter(function(f){return f.status==='active'||f.status==='live';}).length;
-  var open=lc.length-built;
+  var open=lc.filter(function(f){return f.status!=='archived';}).length-built;
   if(sum)sum.innerHTML=
      '<div class="m"><strong>'+lc.length+'</strong><span>'+t('lc.m.total')+'</span></div>'
     +'<div class="m"><strong>'+built+'</strong><span>'+t('lc.m.built')+'</span></div>'
     +'<div class="m"><strong>'+open+'</strong><span>'+t('lc.m.open')+'</span></div>';
+  renderLcNet(lc);
   var glabel=function(k){var m=FUNNEL_GROUPS.find(function(x){return x[0]===k;});return m?m[1].split(' · ')[0]:(k||'—');};
   var groups={},order=[];
   lc.forEach(function(f){var g=f.product||'—';if(!groups[g]){groups[g]=[];order.push(g);}groups[g].push(f);});
@@ -4089,6 +4195,7 @@ function switchView(v){
   if(v==='dashboard')renderDashboard();
   if(v==='verstehen'){loadPhasenmodell();loadLieferkette();}
   if(v==='lifecycle')renderLifecycle();
+  if(v==='settings')renderTagCatalog();
   if(v==='assistant')wizInit();
 }
 
