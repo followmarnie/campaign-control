@@ -1561,6 +1561,7 @@
       <p style="color:#aab0d6;font-size:13.5px;line-height:1.6;margin:0 0 4px" data-i18n="tc.p">Die bekannten AC-Tags (Soll-Konvention). Der <b style="color:#fff">Wächter</b> im Assistenten prüft jeden getippten Tag hiergegen: <span class="wiz-ok">grün = existiert</span> · <span class="wiz-new">gelb = neuer Wert</span> · <span style="color:#f0a0a0">rot = passt nicht</span>.</p>
       <div class="tcx-bar">
         <button class="btn sm" onclick="acSyncTags()" data-i18n="tcx.sync">Mit AC abgleichen</button>
+        <button class="btn sm ghost" id="tcxCsv" onclick="tcxDownloadCsv()" style="display:none" data-i18n="tcx.csv">CSV herunterladen</button>
         <span id="tcxState" class="hint"></span>
       </div>
       <div id="tcxDiff"></div>
@@ -1610,7 +1611,7 @@ const T={
   'lc.m.total':'Serien','lc.m.built':'in AC gebaut','lc.m.open':'offen',
   'lc.st.built':'in AC gebaut','lc.st.draft':'Entwurf','lc.st.ended':'beendet',
   'lc.all':'Alle','lc.glabel':'Serien','lc.showended':'Beendete Kampagnen-Strecken zeigen',
-  'tcx.sync':'Mit AC abgleichen','tcx.known':'Tags deckungsgleich mit der Konvention','tcx.missing':'in der Konvention, fehlen in AC','tcx.drift':'in AC, passen nicht zur Konvention — prüfen','tcx.open':'Werte in offenen Kategorien (frei erlaubt)','tcx.create':'In AC anlegen','tcx.created':'Tag in AC angelegt.','tcx.deployhint':'Edge Function „ac-tags" nicht erreichbar? Deploy-Anleitung: edge/README.md im Repo — 5 Minuten, einmalig.',
+  'tcx.sync':'Mit AC abgleichen','tcx.csv':'CSV herunterladen','tcx.known':'Tags deckungsgleich mit der Konvention','tcx.missing':'in der Konvention, fehlen in AC','tcx.drift':'in AC, passen nicht zur Konvention — prüfen','tcx.open':'Werte in offenen Kategorien (frei erlaubt)','tcx.create':'In AC anlegen','tcx.created':'Tag in AC angelegt.','tcx.deployhint':'Edge Function „ac-tags" nicht erreichbar? Deploy-Anleitung: edge/README.md im Repo — 5 Minuten, einmalig.',
   'lc.trigger':'Trigger','lc.guard':'Guard','lc.next':'Nächster Schritt',
   'lc.stepshead':'Deine Lifecycle-Serien','lc.stepshint':'ActiveCampaign-Strecken, gruppiert nach Produkt — getriggert vom Signup-Tag der jeweiligen Serie. Jeder Akquise-Funnel zeigt am Ende (Besitz-Naht) hierher.','lc.empty':'Noch keine Lifecycle-Serien — sie erscheinen, sobald ein Funnel als Lifecycle-Serie importiert ist (kind: lifecycle).',
   'nm.temp':'Temperatur','nm.temphint':'(Kalt / Warm / Heiß)','nm.templabel':'Temperatur:',
@@ -1745,7 +1746,7 @@ const T={
   'lc.m.total':'series','lc.m.built':'built in AC','lc.m.open':'open',
   'lc.st.built':'built in AC','lc.st.draft':'draft','lc.st.ended':'ended',
   'lc.all':'All','lc.glabel':'Series','lc.showended':'Show ended campaign sequences',
-  'tcx.sync':'Sync with AC','tcx.known':'tags match the convention','tcx.missing':'in the convention, missing in AC','tcx.drift':'in AC, off-convention — review','tcx.open':'values in open categories (allowed)','tcx.create':'Create in AC','tcx.created':'Tag created in AC.','tcx.deployhint':'Edge function “ac-tags” unreachable? Deploy guide: edge/README.md in the repo — one-time, 5 minutes.',
+  'tcx.sync':'Sync with AC','tcx.csv':'Download CSV','tcx.known':'tags match the convention','tcx.missing':'in the convention, missing in AC','tcx.drift':'in AC, off-convention — review','tcx.open':'values in open categories (allowed)','tcx.create':'Create in AC','tcx.created':'Tag created in AC.','tcx.deployhint':'Edge function “ac-tags” unreachable? Deploy guide: edge/README.md in the repo — one-time, 5 minutes.',
   'lc.trigger':'Trigger','lc.guard':'Guard','lc.next':'Next step',
   'lc.stepshead':'Your lifecycle series','lc.stepshint':'ActiveCampaign flows, grouped by product — triggered by the signup tag of each series. Every acquisition funnel points here at its end (ownership seam).','lc.empty':'No lifecycle series yet — they appear as soon as a funnel is imported as a lifecycle series (kind: lifecycle).',
   'nm.temp':'Temperature','nm.temphint':'(Cold / Warm / Hot)','nm.templabel':'Temperature:',
@@ -3587,6 +3588,8 @@ const WIZ_NAMESPACES=['Lead','Source','Stage','Customer','Interest','Goal','Funn
 // Bewusst Soll (saubere Konvention), NICHT der chaotische Ist-Screenshot (kein `Customer: ETFs`/`Broschure`).
 // who: 'du' = Marnie setzt im Marketing · 'portal' = Lennert-Webhook/Portal · 'auto' = AC-Automation.
 // open:true = Namespace mit datierten/variablen Werten (jeder formattreue Wert ok).
+/* TAG_CATALOG-GENERIERT-START — erzeugt von build_tag_catalog.py aus _meta/ac-tag-katalog.md.
+   NICHT von Hand aendern: der naechste Lauf ueberschreibt es. */
 const TAG_CATALOG=[
   {cat:'Stage', who:'auto', note:'Lifecycle-Temperatur — automation-getrieben, NICHT pro Kampagne stempeln.', values:['Cold','Warm','Hot']},
   {cat:'Lead', who:'du', note:'Aktiver Lead-Magnet (eigener Funnel + Nachfass-Strecke).', values:['Prop-Report','Börsenampel','Webinar KI im Trading']},
@@ -3595,20 +3598,22 @@ const TAG_CATALOG=[
   {cat:'Goal', who:'du', note:'Funnel-Ziel erreicht.', values:['Consultation Booked – Daytrading']},
   {cat:'Funnel', who:'du', note:'Aktive Funnel-Zuordnung.', values:['Daytrading Consultation']},
   {cat:'Status', who:'du', note:'Temporärer/Event-Zustand — datiert, je Event 4 Stufen (Eingeladen/Registriert/Teilgenommen/Aufzeichnung gesehen).', values:[], open:true},
-  {cat:'Customer', who:'portal', note:'NUR bezahlte Käufer (bloßes „Customer" = hat gekauft).', values:['','ETF','Aktienhandel','Swingtrading','Daytrading','Optionshandel','LOI','FI','Alumni']},
+  {cat:'Customer', who:'portal', note:'NUR bezahlte Käufer (bloßes „Customer" = hat gekauft).', values:['','ETF','Aktienhandel','Swingtrading','Daytrading','Daytrading Club','Optionshandel','LOI','FI','Alumni']},
   {cat:'Subscription', who:'portal', note:'Aktives Abo-Produkt.', values:['LOI','FI','Daytrading Add-On']},
   {cat:'Language', who:'portal', note:'Sprache.', values:['DE','EN']},
-  {cat:'LOI Status', who:'portal', note:'LOI-Subscription-Status.', values:['Active','Free','Cancelled']},
+  {cat:'LOI Status', who:'portal', note:'LOI-Subscription-Status. Kein „Free" — frei wird abgeleitet (kein Active/Lifetime).', values:['Active','Cancelled','Lifetime']},
   {cat:'LOI Market', who:'portal', note:'Gehandelter LOI-Markt.', values:['ES','NQ','GC','CL']},
   {cat:'LOI Platform', who:'portal', note:'Heruntergeladene Plattform.', values:['TradingView','ATAS','Bookmap','NinjaTrader','MetaTrader 5','Quantower']},
-  {cat:'FI Status', who:'portal', note:'FI-Subscription-Status.', values:['Free','Active','Lifetime']},
+  {cat:'FI Status', who:'portal', note:'FI-Subscription-Status. Kein „Free" — frei wird abgeleitet (kein Active/Lifetime).', values:['Active','Cancelled','Lifetime']},
   {cat:'Billing Interval', who:'portal', note:'Abrechnungsintervall.', values:['Monthly','Yearly']},
-  {cat:'Tool', who:'portal', note:'Genutztes Free-Tool.', values:['Börsenampel','Dark Pool Profile']},
+  {cat:'Tool', who:'portal', note:'Genutztes Free-Tool.', values:['Börsenampel','Dark Pool Profile','Zinsrechner']},
   {cat:'Onboarding', who:'portal', note:'Onboarding-Trigger.', values:['LOI','FI','LOT','Welcome Done']},
   {cat:'Onboarding Source', who:'portal', note:'Onboarding-Touchpoint (variabel).', values:[], open:true},
   {cat:'Signup', who:'portal', note:'Free-Signup-Marker — startet L0-Willkommen (nie entfernt, keine Entitlement-Aussage).', values:['Free']},
-  {cat:'Signup Source', who:'portal', note:'Eintritts-Tür beim Signup — wählt die L0-Variante.', values:['Menu','Börsenampel','Dark Pool Profile','LOI LP','FI LP']}
+  {cat:'Signup Source', who:'portal', note:'Eintritts-Tür beim Signup — wählt die L0-Variante.', values:['Menu','Börsenampel','Dark Pool Profile','LOI LP','FI LP']},
+  {cat:'QA', who:'du', note:'Testkontakt — jede Onboarding-Automation prüft am Eingang „QA Existiert nicht" und schickt sonst nichts. Ohne dieses Tag im Katalog meldet der Wächter unseren eigenen Test-Guard als unbekannt.', values:['']}
 ];
+/* TAG_CATALOG-GENERIERT-ENDE */
 const TAG_NAMESPACES=TAG_CATALOG.map(c=>c.cat);
 const TAG_KNOWN=new Set();TAG_CATALOG.forEach(c=>c.values.forEach(v=>TAG_KNOWN.add((v?c.cat+': '+v:c.cat).toLowerCase())));
 const TAG_OPEN=new Set(TAG_CATALOG.filter(c=>c.open).map(c=>c.cat.toLowerCase()));
@@ -4155,6 +4160,49 @@ async function acSyncTags(){
     if(d)d.innerHTML='<div class="tcx-err"><b>'+esc(String(e&&e.message||e))+'</b><br>'+t('tcx.deployhint')+'</div>';
   }
 }
+/* Unsichtbare Zeichen sichtbar machen. Wenn derselbe Tag-Text in ZWEI Eimern
+   auftaucht ("fehlt in AC" UND "Drift"), unterscheiden sich die Strings in
+   etwas, das man am Bildschirm nicht sieht — geschuetztes Leerzeichen,
+   Zero-Width-Zeichen, Doppel-Leerzeichen, En- vs. Em-Dash. Genau dafuer. */
+function tcxAuffaellig(s){
+  s=String(s||'');var f=[];
+  if(/\u00a0/.test(s))f.push('geschuetztes Leerzeichen (NBSP)');
+  if(/[\u200b-\u200f\u2028\u2029\ufeff]/.test(s))f.push('unsichtbares Steuerzeichen');
+  if(s!==s.trim())f.push('Leerzeichen am Rand');
+  if(/ {2,}/.test(s))f.push('mehrfaches Leerzeichen');
+  if(/\u2013/.test(s))f.push('En-Dash');
+  if(/\u2014/.test(s))f.push('Em-Dash');
+  return f.join(' \u00b7 ');
+}
+var TCX_DIFF=null;
+function tcxDownloadCsv(){
+  if(!TCX_DIFF)return;
+  var zeilen=[['Eimer','Tag','Kategorie','In AC','Abonnenten','AC-ID','Auffaellig','Laenge']];
+  var kat=function(tag){
+    var m=String(tag).match(/^([^:]+):/);return m?m[1]:'(ohne Kategorie)';
+  };
+  var add=function(eimer,x,inAc){
+    var tag=(x&&x.tag!==undefined)?x.tag:x;
+    zeilen.push([eimer,tag,kat(tag),inAc?'ja':'nein',
+      (x&&x.subscribers!==undefined)?x.subscribers:'',
+      (x&&x.id!==undefined)?x.id:'',
+      tcxAuffaellig(tag),String(tag).length]);
+  };
+  TCX_DIFF.known.forEach(function(x){add('deckungsgleich',x,true);});
+  TCX_DIFF.missing.forEach(function(x){add('fehlt in AC',x,false);});
+  TCX_DIFF.drift.forEach(function(x){add('Drift — passt nicht zur Konvention',x,true);});
+  TCX_DIFF.openVals.forEach(function(x){add('offene Kategorie',x,true);});
+  var csv=zeilen.map(function(r){
+    return r.map(function(c){return '"'+String(c==null?'':c).replace(/"/g,'""')+'"';}).join(';');
+  }).join('\r\n');
+  // BOM, damit Excel die Umlaute richtig liest; Semikolon als Trenner (DE-Excel).
+  var blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  var d=new Date(),p=function(n){return String(n).padStart(2,'0');};
+  var name='AC-Tag-Abgleich_'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'.csv';
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1000);
+}
 function renderTagDiff(){
   var host=$('tcxDiff');if(!host||!AC_TAGS)return;
   var acMap={};AC_TAGS.forEach(function(x){acMap[x.tag]=x;});
@@ -4162,12 +4210,14 @@ function renderTagDiff(){
   var missing=exp.filter(function(x){return !acMap[x];});
   var openPfx=TAG_CATALOG.filter(function(c){return c.open;}).map(function(c){return c.cat+': ';});
   var catPfx=TAG_CATALOG.map(function(c){return c.cat+': ';});
-  var known=0,openVals=[],drift=[];
+  var known=0,knownList=[],openVals=[],drift=[];
   AC_TAGS.forEach(function(x){
-    if(expSet[x.tag]){known++;return;}
+    if(expSet[x.tag]){known++;knownList.push(x);return;}
     if(openPfx.some(function(p){return x.tag.indexOf(p)===0;})){openVals.push(x);return;}
     drift.push(x); // unbekannter Wert in bekannter Kategorie ODER ganz fremd
   });
+  TCX_DIFF={known:knownList,missing:missing,drift:drift,openVals:openVals};
+  var csvBtn=$('tcxCsv');if(csvBtn)csvBtn.style.display='';
   var chip=function(x,btn){
     return '<span class="tcx-chip">'+esc(x.tag||x)
       +(x.subscribers?'<small>'+x.subscribers+'</small>':'')
