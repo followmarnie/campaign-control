@@ -581,6 +581,7 @@
   .lc-st:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
   .lc-st.built{color:var(--tn-success);border-color:rgba(74,222,128,.34);background:rgba(74,222,128,.09)}
   .lc-st.draft{color:#ffcf70;border-color:rgba(255,207,112,.32);background:rgba(255,207,112,.08)}
+  .lc-st.ended{color:#8a90c0;border-color:rgba(138,144,192,.3);background:rgba(138,144,192,.08)}
   .lc-lang{font-size:10.5px;font-weight:700;color:#b9bef0;background:var(--tn-surf-2);
     border:1px solid var(--tn-border);border-radius:5px;padding:2px 7px}
   .lc-guard{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:#ffb0bb;
@@ -612,21 +613,6 @@
   .lc-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 16px}
   .lc-ended{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#9aa0d0;cursor:pointer}
   /* ── Netz-Ansicht ── */
-  .lc-net{position:relative;overflow-x:auto;border:1px solid var(--tn-border);border-radius:var(--tn-r-l);background:var(--tn-surf-1);padding:10px}
-  .lc-net svg{display:block;min-width:760px}
-  .ln-tag rect{fill:rgba(23,248,224,.08);stroke:rgba(23,248,224,.35)}
-  .ln-tag text{fill:#8fe3c8;font:11px ui-monospace,Menlo,Consolas,monospace}
-  .ln-ser{cursor:pointer}
-  .ln-ser rect{fill:rgba(255,255,255,.045);stroke:rgba(255,255,255,.14)}
-  .ln-ser:hover rect{stroke:rgba(102,102,255,.65);fill:rgba(102,102,255,.08)}
-  .ln-ser .nm{fill:#eef0ff;font:600 12px Outfit,system-ui,sans-serif}
-  .ln-ser .mt{fill:#8a90c0;font:10px Outfit,system-ui,sans-serif}
-  .ln-ser .st-built{fill:#4ade80}.ln-ser .st-draft{fill:#ffcf70}.ln-ser .st-ended{fill:#6b70a0}
-  .ln-guard{fill:#ffb0bb;font:9.5px ui-monospace,Menlo,Consolas,monospace}
-  .ln-edge{fill:none;stroke:rgba(102,102,255,.55);stroke-width:1.5}
-  .ln-edge.set{stroke:rgba(150,57,243,.6);stroke-dasharray:5 4}
-  .ln-lg{display:flex;gap:16px;flex-wrap:wrap;padding:10px 8px 2px;font-size:11px;color:#9aa0d0}
-  .ln-lg i{display:inline-block;width:20px;height:2px;vertical-align:middle;margin-right:6px;border-radius:2px}
   /* ── AC-Tag-Abgleich (Settings) ── */
   .tcx-bar{display:flex;align-items:center;gap:12px;margin:10px 0 12px}
   .tcx-err{border:1px solid rgba(255,114,127,.3);background:rgba(255,114,127,.06);color:#ffc2c8;
@@ -1555,18 +1541,14 @@
   <div class="view" id="view-lifecycle">
     <div style="margin-bottom:16px">
       <h2 style="font-size:24px;margin:0 0 6px;color:#fff;font-weight:700" data-i18n="lc.title">Phase 3 · Lifecycle</h2>
-      <p class="sub" data-i18n="lc.sub">Das Netz Deiner Betreuung: welches Tag startet welche Strecke, welche Mail setzt das nächste Tag — und wo etwas gestoppt wird.</p>
+      <p class="sub" data-i18n="lc.sub">Dein Bau-Cockpit: Was ist entworfen, was ist in AC gebaut — mit Trigger, Kadenz und Guards als Bau-Vorlage. Die Live-Verbindungen zeigt AC selbst (Automations → Automations Map).</p>
     </div>
+    <div class="fctabs" id="lcTabs"></div>
     <div class="lc-bar">
-      <div class="cm-switch lc-switch">
-        <button data-lc="net" class="on" onclick="lcShow('net')" data-i18n="lc.v.net">Netz</button>
-        <button data-lc="list" onclick="lcShow('list')" data-i18n="lc.v.list">Liste</button>
-      </div>
       <div class="lc-sum" id="lcSum"></div>
       <label class="lc-ended"><input type="checkbox" id="lcEnded" onchange="renderLifecycle()"> <span data-i18n="lc.showended">Beendete Kampagnen-Strecken zeigen</span></label>
     </div>
-    <div id="lcNet" class="lc-net"></div>
-    <div id="lcSteps" class="lc-steps" style="display:none"></div>
+    <div id="lcSteps" class="lc-steps"></div>
   </div>
 
   <div class="view" id="view-settings">
@@ -1622,13 +1604,12 @@ const T={
   'navg.create':'Erstellen','navg.journey':'Die Reise','navg.adworld':'Kampagnen · Ad-Welt','navg.reference':'Referenz',
   'vs.title':'Verstehen · Die Reise in 3 Phasen','vs.sub':'Ankunft · On-Site · Lifecycle — mit Retargeting-Loop. Die ⓘ-Punkte antippen für Erklärungen.',
   'lk.title':'Die Lieferkette · Naming, UTM & Funnel','lk.sub':'Eine Lieferung, mehrere LKWs, viele Pakete — drei Sticker auf drei Ebenen. Wie Campaign-Name, utm_campaign/term/content und Funnel zusammenhängen.',
-  'lc.title':'Phase 3 · Lifecycle','lc.sub':'Das Netz Deiner Betreuung: welches Tag startet welche Strecke, welche Mail setzt das nächste Tag — und wo etwas gestoppt wird.',
+  'lc.title':'Phase 3 · Lifecycle','lc.sub':'Dein Bau-Cockpit: Was ist entworfen, was ist in AC gebaut — mit Trigger, Kadenz und Guards als Bau-Vorlage. Die Live-Verbindungen zeigt AC selbst (Automations → Automations Map).',
   'lc.card.h':'Die Naht ist überschritten','lc.card.p':'Phase 1 + 2 (Akquise) enden an der Conversion. Ab hier läuft die Betreuung — E-Mail-Strecken, Handouts, Angebote — <b style="color:#fff">über ActiveCampaign</b>, gesteuert durch das Signup-Tag. Praba trackt hier nicht mehr.',
   'lc.merk':'<b>Merksatz:</b> Haben wir schon seine E-Mail? <b>Nein</b> → Retargeting (Akquise). <b>Ja</b> → Lifecycle (hier).',
   'lc.m.total':'Serien','lc.m.built':'in AC gebaut','lc.m.open':'offen',
   'lc.st.built':'in AC gebaut','lc.st.draft':'Entwurf','lc.st.ended':'beendet',
-  'lc.v.net':'Netz','lc.v.list':'Liste','lc.showended':'Beendete Kampagnen-Strecken zeigen',
-  'lc.lg.trig':'Tag startet Serie','lc.lg.set':'Mail setzt Tag (Link-Aktion)','lc.lg.click':'Serie anklicken öffnet sie in Funnel & Tracking.',
+  'lc.all':'Alle','lc.glabel':'Serien','lc.showended':'Beendete Kampagnen-Strecken zeigen',
   'tcx.sync':'Mit AC abgleichen','tcx.known':'Tags deckungsgleich mit der Konvention','tcx.missing':'in der Konvention, fehlen in AC','tcx.drift':'in AC, passen nicht zur Konvention — prüfen','tcx.open':'Werte in offenen Kategorien (frei erlaubt)','tcx.create':'In AC anlegen','tcx.created':'Tag in AC angelegt.','tcx.deployhint':'Edge Function „ac-tags" nicht erreichbar? Deploy-Anleitung: edge/README.md im Repo — 5 Minuten, einmalig.',
   'lc.trigger':'Trigger','lc.guard':'Guard','lc.next':'Nächster Schritt',
   'lc.stepshead':'Deine Lifecycle-Serien','lc.stepshint':'ActiveCampaign-Strecken, gruppiert nach Produkt — getriggert vom Signup-Tag der jeweiligen Serie. Jeder Akquise-Funnel zeigt am Ende (Besitz-Naht) hierher.','lc.empty':'Noch keine Lifecycle-Serien — sie erscheinen, sobald ein Funnel als Lifecycle-Serie importiert ist (kind: lifecycle).',
@@ -1758,13 +1739,12 @@ const T={
   'navg.create':'Create','navg.journey':'The journey','navg.adworld':'Campaigns · Ad world','navg.reference':'Reference',
   'vs.title':'Understand · The journey in 3 phases','vs.sub':'Arrival · On-Site · Lifecycle — with a retargeting loop. Tap the ⓘ points for explanations.',
   'lk.title':'The supply chain · naming, UTM & funnel','lk.sub':'One shipment, several trucks, many packages — three stickers on three levels. How campaign name, utm_campaign/term/content and the funnel connect.',
-  'lc.title':'Phase 3 · Lifecycle','lc.sub':'The web of your nurturing: which tag starts which sequence, which email sets the next tag — and where something is stopped.',
+  'lc.title':'Phase 3 · Lifecycle','lc.sub':'Your build cockpit: what is drafted, what is built in AC — with trigger, cadence and guards as the build template. AC itself shows the live connections (Automations → Automations Map).',
   'lc.card.h':'The seam is crossed 🧵','lc.card.p':'Phase 1 + 2 (acquisition) end at the conversion. From here on, nurturing runs — email sequences, handouts, offers — <b style="color:#fff">via ActiveCampaign</b>, steered by the signup tag. Praba no longer tracks here.',
   'lc.merk':'<b>Rule of thumb:</b> Do we already have their email? <b>No</b> → retargeting (acquisition). <b>Yes</b> → lifecycle (here).',
   'lc.m.total':'series','lc.m.built':'built in AC','lc.m.open':'open',
   'lc.st.built':'built in AC','lc.st.draft':'draft','lc.st.ended':'ended',
-  'lc.v.net':'Network','lc.v.list':'List','lc.showended':'Show ended campaign sequences',
-  'lc.lg.trig':'tag starts series','lc.lg.set':'email sets tag (link action)','lc.lg.click':'Click a series to open it in Funnel & Tracking.',
+  'lc.all':'All','lc.glabel':'Series','lc.showended':'Show ended campaign sequences',
   'tcx.sync':'Sync with AC','tcx.known':'tags match the convention','tcx.missing':'in the convention, missing in AC','tcx.drift':'in AC, off-convention — review','tcx.open':'values in open categories (allowed)','tcx.create':'Create in AC','tcx.created':'Tag created in AC.','tcx.deployhint':'Edge function “ac-tags” unreachable? Deploy guide: edge/README.md in the repo — one-time, 5 minutes.',
   'lc.trigger':'Trigger','lc.guard':'Guard','lc.next':'Next step',
   'lc.stepshead':'Your lifecycle series','lc.stepshint':'ActiveCampaign flows, grouped by product — triggered by the signup tag of each series. Every acquisition funnel points here at its end (ownership seam).','lc.empty':'No lifecycle series yet — they appear as soon as a funnel is imported as a lifecycle series (kind: lifecycle).',
@@ -4034,6 +4014,8 @@ function lcTimeline(steps,de){
   return '<div class="lc-tl"><div class="lc-tl-inner">'+parts.join('')+'</div></div>';
 }
 function lcNext(f,steps,utmN,de){
+  if(f.status==='archived')
+    return {cls:' ok',txt:'<b>'+(de?'Beendet':'Ended')+'</b> — '+(de?'nichts mehr zu tun.':'nothing left to do.')};
   if(f.status!=='active'&&f.status!=='live')
     return {cls:'',txt:'<b>'+(de?'Noch nicht in AC gebaut':'Not built in AC yet')+'</b>'};
   if(!steps.length)
@@ -4047,15 +4029,6 @@ function lcNext(f,steps,utmN,de){
   return {cls:' ok',txt:'<b>'+(de?'Vollständig':'Complete')+'</b> — '
     +(de?'gebaut, getaktet, getrackt.':'built, timed, tracked.')};
 }
-function lcShow(mode){
-  if(mode!=='net'&&mode!=='list')mode='net';
-  state.lcDisplay=mode;
-  var net=document.getElementById('lcNet'),list=document.getElementById('lcSteps');
-  if(net)net.style.display=(mode==='net')?'':'none';
-  if(list)list.style.display=(mode==='list')?'':'none';
-  document.querySelectorAll('.lc-switch button').forEach(function(b){b.classList.toggle('on',b.dataset.lc===mode);});
-  renderLifecycle();
-}
 function lcSeriesList(){
   var showEnded=!!(document.getElementById('lcEnded')||{}).checked;
   return (state.funnels||[]).filter(function(f){
@@ -4064,76 +4037,32 @@ function lcSeriesList(){
     return true;
   });
 }
-/* Netz: Tags starten Serien (durchgezogen) · Mails setzen Tags (gestrichelt).
-   Beides wird aus steps abgeleitet: steps[0].ac_tag = Trigger, ac_tag auf
-   spaeteren Steps = Tags, die eine Link-Aktion setzt. Kein eigenes Feld. */
-function renderLcNet(lc){
-  var host=document.getElementById('lcNet');if(!host)return;
-  var de=LANG==='de';
-  var groups={};
-  lc.forEach(function(f){
-    var base=String(f.name||'').replace(/\s*\((DE|EN)\)\s*$/i,'');
-    (groups[base]=groups[base]||[]).push(f);
+function setLcTab(k){state.lcTab=k;renderLifecycle();}
+function renderLcTabs(lcAll){
+  var bar=document.getElementById('lcTabs');if(!bar)return;
+  var groups=[];lcAll.forEach(function(f){var g=f.product||'';if(groups.indexOf(g)<0)groups.push(g);});
+  if((state.lcTab||'all')!=='all'&&groups.indexOf(state.lcTab)<0)state.lcTab='all';
+  var cur=state.lcTab||'all';
+  var glabel=function(k){var m=FUNNEL_GROUPS.find(function(x){return x[0]===k;});return m?m[1].split(' · ')[0]:(k||'—');};
+  var h='<span class="fc-glabel">'+t('lc.glabel')+'</span>'
+    +'<button class="'+(cur==='all'?'on':'')+'" onclick="setLcTab(\'all\')">'+t('lc.all')+'<span class="n">'+lcAll.length+'</span></button>';
+  groups.forEach(function(g){
+    h+='<button class="'+(cur===g?'on':'')+'" onclick="setLcTab(\''+esc(g)+'\')">'+esc(glabel(g))
+      +'<span class="n">'+lcAll.filter(function(f){return (f.product||'')===g;}).length+'</span></button>';
   });
-  var sers=Object.keys(groups).map(function(base){
-    var vs=groups[base];
-    var steps=(vs[0].steps||[]);
-    var trig='';vs.forEach(function(v){if(!trig)trig=String(((v.steps||[])[0]||{}).ac_tag||'').trim();});
-    var made={},guard='';
-    vs.forEach(function(v){(v.steps||[]).forEach(function(s,i){
-      if(i>0)String(s.ac_tag||'').split(',').forEach(function(x){x=x.trim();if(x)made[x]=1;});
-      if(!guard&&s.guard)guard=String(s.guard).trim();
-    });});
-    var st=vs.some(function(v){return v.status==='active'||v.status==='live';})?'built'
-          :vs.every(function(v){return v.status==='archived';})?'ended':'draft';
-    return {base:base,vs:vs,trig:trig,made:Object.keys(made),guard:guard,st:st,
-            langs:vs.map(lcLang).filter(Boolean),
-            mails:Math.max.apply(null,vs.map(function(v){return (v.steps||[]).length;}))};
-  });
-  var trigs=[];sers.forEach(function(s){if(s.trig&&trigs.indexOf(s.trig)<0)trigs.push(s.trig);});
-  var TX=20,TW=200,SX=330,SW=400,SH=58,SR=76,TH=34,TR=64,top=16;
-  var H=Math.max(trigs.length*TR,sers.length*SR)+top+20;
-  var sy=function(i){return top+i*SR;},ty=function(j){return top+j*TR;};
-  var svg=['<svg viewBox="0 0 '+(SX+SW+30)+' '+H+'" width="100%" height="'+H+'">'];
-  // Kanten zuerst (unter den Knoten)
-  sers.forEach(function(s,i){
-    var j=trigs.indexOf(s.trig);
-    if(j>=0)svg.push('<path class="ln-edge" d="M'+(TX+TW)+' '+(ty(j)+TH/2)+' C '+(TX+TW+60)+' '+(ty(j)+TH/2)+', '+(SX-60)+' '+(sy(i)+SH/2)+', '+SX+' '+(sy(i)+SH/2)+'"/>');
-    s.made.forEach(function(m){
-      var k=trigs.indexOf(m);
-      if(k>=0)svg.push('<path class="ln-edge set" d="M'+SX+' '+(sy(i)+SH-10)+' C '+(SX-90)+' '+(sy(i)+SH+8)+', '+(TX+TW+90)+' '+(ty(k)+TH+6)+', '+(TX+TW)+' '+(ty(k)+TH-6)+'"/>');
-    });
-  });
-  trigs.forEach(function(tg,j){
-    svg.push('<g class="ln-tag"><rect x="'+TX+'" y="'+ty(j)+'" width="'+TW+'" height="'+TH+'" rx="8"/>'
-      +'<text x="'+(TX+10)+'" y="'+(ty(j)+21)+'">'+esc(tg.length>26?tg.slice(0,25)+'…':tg)+'</text></g>');
-  });
-  sers.forEach(function(s,i){
-    var y=sy(i);
-    svg.push('<g class="ln-ser" onclick="openFunnelFromOv('+s.vs[0].id+')"><rect x="'+SX+'" y="'+y+'" width="'+SW+'" height="'+SH+'" rx="10"/>'
-      +'<circle class="st-'+s.st+'" cx="'+(SX+14)+'" cy="'+(y+16)+'" r="4.5"/>'
-      +'<text class="nm" x="'+(SX+26)+'" y="'+(y+20)+'">'+esc(s.base.length>42?s.base.slice(0,41)+'…':s.base)+'</text>'
-      +'<text class="mt" x="'+(SX+26)+'" y="'+(y+36)+'">'+s.mails+' '+(de?'Mails':'emails')
-        +(s.langs.length?' · '+s.langs.join(' '):'')
-        +' · '+t(s.st==='built'?'lc.st.built':s.st==='ended'?'lc.st.ended':'lc.st.draft')+'</text>'
-      +(s.guard?'<text class="ln-guard" x="'+(SX+26)+'" y="'+(y+50)+'">'+(de?'Guard: ':'Guard: ')+esc(s.guard.length>48?s.guard.slice(0,47)+'…':s.guard)+'</text>':'')
-      +'</g>');
-  });
-  svg.push('</svg>');
-  host.innerHTML=svg.join('')
-    +'<div class="ln-lg"><span><i style="background:rgba(102,102,255,.8)"></i>'+t('lc.lg.trig')+'</span>'
-    +'<span><i style="background:rgba(150,57,243,.8);height:0;border-top:2px dashed rgba(150,57,243,.8)"></i>'+t('lc.lg.set')+'</span>'
-    +'<span>'+t('lc.lg.click')+'</span></div>';
+  bar.innerHTML=h;
 }
 function renderLifecycle(){
   var host=document.getElementById('lcSteps');if(!host)return;
   var de=LANG==='de';
-  var lc=lcSeriesList();
+  var lcAll=lcSeriesList();
+  renderLcTabs(lcAll);
+  var cur=state.lcTab||'all';
+  var lc=cur==='all'?lcAll:lcAll.filter(function(f){return (f.product||'')===cur;});
   var sum=document.getElementById('lcSum');
   if(!lc.length){
     if(sum)sum.innerHTML='';
     host.innerHTML='<div class="lc-empty">'+t('lc.empty')+'</div>';
-    var net=document.getElementById('lcNet');if(net)net.innerHTML='';
     renderTagCatalog();return;
   }
   var built=lc.filter(function(f){return f.status==='active'||f.status==='live';}).length;
@@ -4142,7 +4071,6 @@ function renderLifecycle(){
      '<div class="m"><strong>'+lc.length+'</strong><span>'+t('lc.m.total')+'</span></div>'
     +'<div class="m"><strong>'+built+'</strong><span>'+t('lc.m.built')+'</span></div>'
     +'<div class="m"><strong>'+open+'</strong><span>'+t('lc.m.open')+'</span></div>';
-  renderLcNet(lc);
   var glabel=function(k){var m=FUNNEL_GROUPS.find(function(x){return x[0]===k;});return m?m[1].split(' · ')[0]:(k||'—');};
   var groups={},order=[];
   lc.forEach(function(f){var g=f.product||'—';if(!groups[g]){groups[g]=[];order.push(g);}groups[g].push(f);});
@@ -4160,7 +4088,7 @@ function renderLifecycle(){
       out.push('<div class="lc-series" onclick="openFunnelFromOv('+f.id+')" title="'
           +esc(de?'Serie öffnen':'Open series')+'">'
         +'<div class="lc-series-h">'
-          +'<span class="lc-st '+(isBuilt?'built':'draft')+'">'+t(isBuilt?'lc.st.built':'lc.st.draft')+'</span>'
+          +'<span class="lc-st '+(isBuilt?'built':f.status==='archived'?'ended':'draft')+'">'+t(isBuilt?'lc.st.built':f.status==='archived'?'lc.st.ended':'lc.st.draft')+'</span>'
           +'<b>'+esc(f.name||f.slug||'—')+'</b>'
           +(lang?'<span class="lc-lang">'+lang+'</span>':'')
           +sysBadge(f.system)
