@@ -614,6 +614,7 @@
   .lc-ended{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#9aa0d0;cursor:pointer}
   /* ── Netz-Ansicht ── */
   /* ── AC-Tag-Abgleich (Settings) ── */
+  .tcx-chip small.zero{color:#ffb0bb;font-weight:700}
   .tcx-bar{display:flex;align-items:center;gap:12px;margin:10px 0 12px}
   .tcx-err{border:1px solid rgba(255,114,127,.3);background:rgba(255,114,127,.06);color:#ffc2c8;
     border-radius:10px;padding:10px 13px;font-size:12.5px;margin-bottom:12px}
@@ -1561,11 +1562,22 @@
       <p style="color:#aab0d6;font-size:13.5px;line-height:1.6;margin:0 0 4px" data-i18n="tc.p">Die bekannten AC-Tags (Soll-Konvention). Der <b style="color:#fff">Wächter</b> im Assistenten prüft jeden getippten Tag hiergegen: <span class="wiz-ok">grün = existiert</span> · <span class="wiz-new">gelb = neuer Wert</span> · <span style="color:#f0a0a0">rot = passt nicht</span>.</p>
       <div class="tcx-bar">
         <button class="btn sm" onclick="acSyncTags()" data-i18n="tcx.sync">Mit AC abgleichen</button>
+        <button class="btn sm ghost" id="tcxCount" onclick="acSyncTags(true)" style="display:none" data-i18n="tcx.count">Kontakte zählen</button>
         <button class="btn sm ghost" id="tcxCsv" onclick="tcxDownloadCsv()" style="display:none" data-i18n="tcx.csv">CSV herunterladen</button>
         <span id="tcxState" class="hint"></span>
       </div>
       <div id="tcxDiff"></div>
       <div id="tagCatalog" class="tc-wrap"></div>
+    </div>
+    <div class="lc-card" style="margin-bottom:14px;max-width:none">
+      <h2 data-i18n="snap.h">Briefing für Claude</h2>
+      <p style="color:#aab0d6;font-size:13.5px;line-height:1.6;margin:0 0 4px" data-i18n="snap.p">Ein kompakter Ist-Stand — Funnels, Serien, Conversions und die UTM-Verdrahtung. Claude sieht die Datenbank nicht; mit diesem Schnappschuss weiß er, <b style="color:#fff">was schon existiert</b>, statt zu raten. Enthält nur Kampagnen-Labels, keine Kontaktdaten.</p>
+      <div class="tcx-bar">
+        <button class="btn sm" onclick="ccCopySnapshot()" data-i18n="snap.copy">In Zwischenablage kopieren</button>
+        <button class="btn sm ghost" onclick="ccDownloadSnapshot()" data-i18n="snap.dl">Als _state-snapshot.json speichern</button>
+        <span id="snapState" class="hint"></span>
+      </div>
+      <p class="hint" style="margin-top:10px" data-i18n="snap.hint">Kopieren → Claude in den Chat. Oder speichern → ins Repo unter <code>marketing/tools/campaign-control/_state-snapshot.json</code>; dann liest der /campaign-control-Skill ihn von selbst. Stand vom Export-Zeitpunkt, nicht live — nach Änderungen neu ziehen.</p>
     </div>
     <div class="card">
       <h2>Plattform-Hierarchie (SOP_Platform_Naming)</h2>
@@ -1611,7 +1623,8 @@ const T={
   'lc.m.total':'Serien','lc.m.built':'in AC gebaut','lc.m.open':'offen',
   'lc.st.built':'in AC gebaut','lc.st.draft':'Entwurf','lc.st.ended':'beendet',
   'lc.all':'Alle','lc.glabel':'Serien','lc.showended':'Beendete Kampagnen-Strecken zeigen',
-  'tcx.sync':'Mit AC abgleichen','tcx.csv':'CSV herunterladen','tcx.known':'Tags deckungsgleich mit der Konvention','tcx.missing':'in der Konvention, fehlen in AC','tcx.drift':'in AC, passen nicht zur Konvention — prüfen','tcx.open':'Werte in offenen Kategorien (frei erlaubt)','tcx.create':'In AC anlegen','tcx.created':'Tag in AC angelegt.','tcx.deployhint':'Edge Function „ac-tags" nicht erreichbar? Deploy-Anleitung: edge/README.md im Repo — 5 Minuten, einmalig.',
+  'tcx.sync':'Mit AC abgleichen','tcx.csv':'CSV herunterladen','tcx.count':'Kontakte zählen','tcx.known':'Tags deckungsgleich mit der Konvention','tcx.missing':'in der Konvention, fehlen in AC','tcx.drift':'in AC, passen nicht zur Konvention — prüfen','tcx.open':'Werte in offenen Kategorien (frei erlaubt)','tcx.create':'In AC anlegen','tcx.created':'Tag in AC angelegt.','tcx.deployhint':'Edge Function „ac-tags" nicht erreichbar? Deploy-Anleitung: edge/README.md im Repo — 5 Minuten, einmalig.',
+  'snap.h':'Briefing für Claude','snap.p':'Ein kompakter Ist-Stand — Funnels, Serien, Conversions und die UTM-Verdrahtung. Claude sieht die Datenbank nicht; mit diesem Schnappschuss weiß er, was schon existiert, statt zu raten. Enthält nur Kampagnen-Labels, keine Kontaktdaten.','snap.copy':'In Zwischenablage kopieren','snap.dl':'Als _state-snapshot.json speichern','snap.hint':'Kopieren → Claude in den Chat. Oder speichern → ins Repo unter marketing/tools/campaign-control/_state-snapshot.json; dann liest der /campaign-control-Skill ihn von selbst. Stand vom Export-Zeitpunkt, nicht live — nach Änderungen neu ziehen.','snap.copied':'Briefing kopiert — in den Chat einfügen.','snap.saved':'Gespeichert. Ins Repo legen: marketing/tools/campaign-control/_state-snapshot.json','snap.empty':'Noch keine Daten geladen.',
   'lc.trigger':'Trigger','lc.guard':'Guard','lc.next':'Nächster Schritt',
   'lc.stepshead':'Deine Lifecycle-Serien','lc.stepshint':'ActiveCampaign-Strecken, gruppiert nach Produkt — getriggert vom Signup-Tag der jeweiligen Serie. Jeder Akquise-Funnel zeigt am Ende (Besitz-Naht) hierher.','lc.empty':'Noch keine Lifecycle-Serien — sie erscheinen, sobald ein Funnel als Lifecycle-Serie importiert ist (kind: lifecycle).',
   'nm.temp':'Temperatur','nm.temphint':'(Kalt / Warm / Heiß)','nm.templabel':'Temperatur:',
@@ -1746,7 +1759,7 @@ const T={
   'lc.m.total':'series','lc.m.built':'built in AC','lc.m.open':'open',
   'lc.st.built':'built in AC','lc.st.draft':'draft','lc.st.ended':'ended',
   'lc.all':'All','lc.glabel':'Series','lc.showended':'Show ended campaign sequences',
-  'tcx.sync':'Sync with AC','tcx.csv':'Download CSV','tcx.known':'tags match the convention','tcx.missing':'in the convention, missing in AC','tcx.drift':'in AC, off-convention — review','tcx.open':'values in open categories (allowed)','tcx.create':'Create in AC','tcx.created':'Tag created in AC.','tcx.deployhint':'Edge function “ac-tags” unreachable? Deploy guide: edge/README.md in the repo — one-time, 5 minutes.',
+  'tcx.sync':'Sync with AC','tcx.csv':'Download CSV','tcx.count':'Count contacts','tcx.known':'tags match the convention','tcx.missing':'in the convention, missing in AC','tcx.drift':'in AC, off-convention — review','tcx.open':'values in open categories (allowed)','tcx.create':'Create in AC','tcx.created':'Tag created in AC.','tcx.deployhint':'Edge function “ac-tags” unreachable? Deploy guide: edge/README.md in the repo — one-time, 5 minutes.',
   'lc.trigger':'Trigger','lc.guard':'Guard','lc.next':'Next step',
   'lc.stepshead':'Your lifecycle series','lc.stepshint':'ActiveCampaign flows, grouped by product — triggered by the signup tag of each series. Every acquisition funnel points here at its end (ownership seam).','lc.empty':'No lifecycle series yet — they appear as soon as a funnel is imported as a lifecycle series (kind: lifecycle).',
   'nm.temp':'Temperature','nm.temphint':'(Cold / Warm / Hot)','nm.templabel':'Temperature:',
@@ -2466,11 +2479,22 @@ function refreshFilters(){
   $('fFunnel').innerHTML=`<option value="">${t('r.funAll')}</option>`+funs.map(s=>`<option${s===ff?' selected':''}>${esc(s)}</option>`).join('');
 }
 function paramsOnly(u){if(!u)return '';const q=String(u).split('#')[0];const i=q.indexOf('?');return i>=0?q.slice(i+1):'';}
-// Sprache aus dem Pfad (/de/ vs /en/) ableiten — kein eigenes Feld noetig, steht schon in der URL
+// Sprache ableiten — zwei Quellen, in dieser Reihenfolge:
+//   1. Pfad-Praefix /de/ bzw. /en/ (tradeneon.com + account.tradeneon.com sind zweisprachig)
+//   2. Fallback: der Sprach-Klammerzusatz im funnel_ref, z. B. "0B-FI-Paid · Onboarding (DE)"
+// WARUM der Fallback (2026-07-22, Marnie an utm_id 133/134): tradeneon-academy.com ist
+// eine reine DE-Domain und traegt DESHALB kein /de/ im Pfad. Die beiden Academy-Links aus
+// 0B-FI-Paid Mail 4 standen dadurch ohne Sprach-Chip da, obwohl ihr funnel_ref sauber
+// "(DE)" sagt. Das war eine Luecke in DIESER Ableitung, kein Datenfehler in der Registry.
 function langChip(r){
+  let l='';
   const m=String(r.full_url||r.target_url||'').match(/\/(de|en)\//i);
-  if(!m)return '';
-  const l=m[1].toLowerCase();
+  if(m){ l=m[1].toLowerCase(); }
+  else {
+    const f=String(r.funnel_ref||'').match(/\((DE|EN)\)\s*$/i);
+    if(f) l=f[1].toLowerCase();
+  }
+  if(!l)return '';
   return `<span class="langchip ${l}">${l.toUpperCase()}</span>`;
 }
 // Zeilen-Auswahl im UTM-Grid (Marnie 2026-07-21): Klick markiert eine Zeile
@@ -2562,6 +2586,53 @@ function startEdit(id){
   const c=tr.querySelector('td[data-col="utm_campaign"]');if(c)c.focus();
 }
 function cancelEdit(){editing=null;renderRegistry()}
+
+// ---- Briefing für Claude: kompakter Ist-Stand-Schnappschuss ----
+// Read-only. Nur Kampagnen-Labels, KEINE Kontaktdaten. Loest das Problem,
+// dass Claude die Datenbank nicht sieht — er weiss damit, was schon existiert.
+function buildSnapshot(){
+  const isLc=f=>String(f.kind||'').toLowerCase()==='lifecycle';
+  const funnels=state.funnels.filter(f=>!isLc(f)).map(f=>({
+    name:f.name, product:f.product||'', status:f.status||'', slug:f.slug||''
+  }));
+  const series=state.funnels.filter(isLc).map(f=>({
+    name:f.name, product:f.product||'', status:f.status||'', system:f.system||'ActiveCampaign'
+  }));
+  const conversions=state.convs.map(c=>({key:c.key, name:c.name||''}));
+  // Die Verdrahtung: welche UTM-Zeile zeigt auf welchen Funnel. Das ist,
+  // was Claude wissen muss, um nichts doppelt zu minten / Namen zu treffen.
+  const utms=state.rows.map(r=>({
+    utm_id:r.utm_id, utm_campaign:r.utm_campaign||'', utm_content:r.utm_content||'',
+    funnel_ref:r.funnel_ref||'', target_url:r.target_url||''
+  }));
+  return {
+    _type:'campaign-control-snapshot',
+    generatedAt:new Date().toISOString(),
+    note:'Stand vom Export-Zeitpunkt, nicht live. Nur Kampagnen-Labels, keine PII. Fuer Kritisches (exakte Namen, ob eine Zeile existiert) bleibt die Rueckspiegelung die Wahrheit.',
+    counts:{funnels:funnels.length, series:series.length, conversions:conversions.length, utms:utms.length},
+    funnels, series, conversions, utms
+  };
+}
+function ccCopySnapshot(){
+  if(!state.funnels.length && !state.rows.length){$('snapState').textContent=t('snap.empty');return}
+  const txt=JSON.stringify(buildSnapshot(),null,2);
+  navigator.clipboard.writeText(txt).then(()=>{
+    $('snapState').textContent=t('snap.copied');toast(t('snap.copied'));
+  }).catch(()=>{
+    // Fallback: in ein Textfeld legen, falls Clipboard-API blockt
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy')}catch(e){}
+    ta.remove();$('snapState').textContent=t('snap.copied');
+  });
+}
+function ccDownloadSnapshot(){
+  if(!state.funnels.length && !state.rows.length){$('snapState').textContent=t('snap.empty');return}
+  const txt=JSON.stringify(buildSnapshot(),null,2);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));
+  a.download='_state-snapshot.json';document.body.appendChild(a);a.click();a.remove();
+  $('snapState').textContent=t('snap.saved');toast(t('snap.saved'));
+}
 async function commitEdit(id){
   const tr=$('tbl').querySelector(`tr[data-id="${CSS.escape(id)}"]`);if(!tr){editing=null;return}
   const patch={};tr.querySelectorAll('td[data-col]').forEach(td=>{if(EDITABLE.includes(td.dataset.col)){let v=td.textContent.trim();patch[td.dataset.col]=v==='—'?'':v}});
@@ -4133,10 +4204,10 @@ function renderTagCatalog(){
    "ac-tags" (Key-Proxy — der AC-Key liegt als Supabase-Secret, nie hier).
    Deploy-Anleitung: marketing/tools/campaign-control/edge/README.md      */
 var AC_TAGS=null;
-async function acFn(method,body){
+async function acFn(method,body,query){
   await ensureToken();
   var tok=(session&&session.access_token)||SB_KEY;
-  var r=await fetch(SB_URL+'/functions/v1/ac-tags',{method:method,
+  var r=await fetch(SB_URL+'/functions/v1/ac-tags'+(query||''),{method:method,
     headers:{apikey:SB_KEY,Authorization:'Bearer '+tok,'Content-Type':'application/json'},
     body:body?JSON.stringify(body):undefined});
   var txt=await r.text();var j=null;try{j=txt?JSON.parse(txt):null}catch(e){}
@@ -4147,13 +4218,17 @@ function tcExpected(){
   var out=[];TAG_CATALOG.forEach(function(c){(c.values||[]).forEach(function(v){out.push(v?(c.cat+': '+v):c.cat);});});
   return out;
 }
-async function acSyncTags(){
+async function acSyncTags(mitZahlen){
   var st=$('tcxState');var de=LANG==='de';
-  if(st)st.textContent=de?'lade …':'loading …';
+  if(st)st.textContent=mitZahlen
+    ?(de?'zähle Kontakte je Tag — das dauert etwa eine halbe Minute …':'counting contacts per tag — about half a minute …')
+    :(de?'lade …':'loading …');
   try{
-    var res=await acFn('GET');AC_TAGS=(res&&res.tags)||[];
+    var res=await acFn('GET',null,mitZahlen?'?counts=1':'');AC_TAGS=(res&&res.tags)||[];
     renderTagDiff();
-    if(st)st.textContent=(de?'Ist-Stand aus AC: ':'Live from AC: ')+AC_TAGS.length+' Tags · '+new Date().toLocaleTimeString();
+    if(st)st.textContent=(de?'Ist-Stand aus AC: ':'Live from AC: ')+AC_TAGS.length+' Tags'
+      +(mitZahlen?(de?' · mit Kontaktzahlen':' · with contact counts'):'')
+      +' · '+new Date().toLocaleTimeString();
   }catch(e){
     if(st)st.textContent='';
     var d=$('tcxDiff');
@@ -4184,7 +4259,7 @@ function tcxDownloadCsv(){
   var add=function(eimer,x,inAc){
     var tag=(x&&x.tag!==undefined)?x.tag:x;
     zeilen.push([eimer,tag,kat(tag),inAc?'ja':'nein',
-      (x&&x.subscribers!==undefined)?x.subscribers:'',
+      (x&&x.subscribers!==undefined&&x.subscribers!==null)?x.subscribers:'nicht gezaehlt',
       (x&&x.id!==undefined)?x.id:'',
       tcxAuffaellig(tag),String(tag).length]);
   };
@@ -4218,9 +4293,10 @@ function renderTagDiff(){
   });
   TCX_DIFF={known:knownList,missing:missing,drift:drift,openVals:openVals};
   var csvBtn=$('tcxCsv');if(csvBtn)csvBtn.style.display='';
+  var cntBtn=$('tcxCount');if(cntBtn)cntBtn.style.display='';
   var chip=function(x,btn){
     return '<span class="tcx-chip">'+esc(x.tag||x)
-      +(x.subscribers?'<small>'+x.subscribers+'</small>':'')
+      +(x.subscribers===0?'<small class="zero">0 Kontakte</small>':(x.subscribers?'<small>'+x.subscribers+'</small>':''))
       +(btn?'<button data-tag="'+esc(x)+'">'+t('tcx.create')+'</button>':'')+'</span>';
   };
   host.innerHTML=
