@@ -778,6 +778,20 @@
   .lcm-hub:hover circle{stroke:#8f8cff}
   .lcm-hub text{fill:#bfc5ff;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
   .lcm-hub .hn{fill:#6b7099;font-weight:400;font-size:9px;letter-spacing:0;text-transform:none}
+  .lcm-node text.stn{fill:#8e94c0;font-size:8.5px}
+  .lcm-edge{cursor:help}
+  .lcm-edge:hover .ep{stroke:rgba(217,224,140,.95);stroke-width:2.2}
+  .lcm-edge:hover .ep.epv{stroke:rgba(143,140,255,.9)}
+  /* Stationen-Abdeckung unter der Karte */
+  .lcm-cov{padding:0 14px 14px}
+  .lcm-cov-h{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8e94c0;margin:6px 0 8px;font-weight:700}
+  .lcm-cov table{border-collapse:collapse;font-size:12px}
+  .lcm-cov th{color:#9aa0d0;font-weight:600;text-align:left;padding:4px 16px 4px 0;font-size:11px}
+  .lcm-cov td{padding:4px 16px 4px 0;color:#c9cdf5}
+  .lcm-cov td.pn{color:#bfc5ff;font-weight:700}
+  .lcm-cov td.on span{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:50%;background:rgba(217,224,140,.16);border:1px solid rgba(217,224,140,.45);color:#e4ea9a;font-size:11px;cursor:default;padding:0 5px}
+  .lcm-cov td.on.rt span{background:rgba(255,60,141,.12);border-color:rgba(255,60,141,.4);color:#ff9dc4}
+  .lcm-cov td.off span{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:50%;border:1px dashed #3a3f78;color:#6b7099;font-size:11px;cursor:default}
   .dstat.attn{border-color:rgba(255,132,106,.42);background:rgba(255,132,106,.08);color:#ffb39f}
   .dstat.attn b{color:#ffb39f}
   .dstat.clear{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08);color:#8ff0b0}
@@ -4177,6 +4191,19 @@ function renderLcTabs(lcAll){
   bar.innerHTML=h;
 }
 function setLcView(v){state.lcView=v;renderLifecycle();}
+// P3-Stationen (Taxonomie Marnie 2026-08-01): Warm-up · Onboarding · Vertiefung · Follow-up · Upsell.
+// Aus dem Serien-NAMEN abgeleitet — keine neue Datenspalte, die Namen tragen die Station bereits.
+function lcStation(f){
+  var n=String(f.name||'');
+  if(/warm.?up|pre.?launch|reminder/i.test(n))return 'Warm-up';
+  if(/upsell/i.test(n))return 'Upsell';
+  if(/follow.?up|winback|ausbildungsende/i.test(n))return 'Follow-up';
+  if(/vertiefung|deep.?dive/i.test(n))return 'Vertiefung';
+  if(/onboarding/i.test(n))return 'Onboarding';
+  return '';
+}
+var LC_STATIONS=['Warm-up','Onboarding','Vertiefung','Follow-up','Upsell'];
+var LC_ST_RANK={'Warm-up':1,'Onboarding':2,'Vertiefung':3,'Follow-up':4,'Upsell':5,'':6};
 // ── Journey-Map V1 · „Karte" (Entscheid Marnie 2026-08-01) ─────────────────────
 // Produkte als Zentren, Funnels (violett) + Serien (lindgrün) als Satelliten,
 // Tag-Übergaben als Kanten: ein gesetztes ac_tag, das den Trigger (steps[0].ac_tag)
@@ -4211,8 +4238,11 @@ function renderLcMap(){
     r.forEach(function(c){
       var cx=x+c.w/2,cy=y+rh/2;
       hubs.push({g:c.g,x:cx,y:cy,n:c.items.length});
-      // Funnels zuerst, dann Serien — so mischen sich die Farben am Ring nicht wild
-      var items=c.items.slice().sort(function(a,b){return (isLifecycle(a)?1:0)-(isLifecycle(b)?1:0)||String(a.name||'').localeCompare(String(b.name||''));});
+      // Funnels zuerst, dann Serien in Stations-Reihenfolge (Warm-up → Onboarding → Vertiefung → Follow-up → Upsell)
+      var items=c.items.slice().sort(function(a,b){
+        var la=isLifecycle(a)?1:0,lb=isLifecycle(b)?1:0;if(la!==lb)return la-lb;
+        if(la){var ra=LC_ST_RANK[lcStation(a)]||9,rb=LC_ST_RANK[lcStation(b)]||9;if(ra!==rb)return ra-rb;}
+        return String(a.name||'').localeCompare(String(b.name||''));});
       items.forEach(function(f,i){
         var a=-Math.PI/2+i*2*Math.PI/items.length;
         nodes.push({f:f,x:cx+c.r*Math.cos(a),y:cy+c.r*Math.sin(a),ang:a,hx:cx,hy:cy});
@@ -4240,11 +4270,41 @@ function renderLcMap(){
   var sv=['<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Journey-Map">'];
   sv.push('<defs><marker id="lcmArw" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="rgba(217,224,140,.75)"/></marker></defs>');
   nodes.forEach(function(n){sv.push('<line x1="'+n.hx+'" y1="'+n.hy+'" x2="'+n.x.toFixed(1)+'" y2="'+n.y.toFixed(1)+'" stroke="rgba(150,155,220,.13)" stroke-width="1"/>');});
+  var qpath=function(ax,ay,bx,by,k){
+    var mx=(ax+bx)/2,my=(ay+by)/2;
+    var dx=bx-ax,dy=by-ay,L=Math.sqrt(dx*dx+dy*dy)||1;
+    var ox=-dy/L*Math.min(70,L*k),oy=dx/L*Math.min(70,L*k);
+    return 'M'+ax.toFixed(1)+' '+ay.toFixed(1)+' Q'+(mx+ox).toFixed(1)+' '+(my+oy).toFixed(1)+' '+bx.toFixed(1)+' '+by.toFixed(1);};
+  // Link-Brücken: Mail-CTAs aus der UTM-Registry, die aus einer Serie in eine ANDERE Produkt-Welt
+  // führen (z. B. 0B-FI-Paid → /swingtrading-termin). Ziel-Produkt per URL-Heuristik.
+  var urlProduct=function(u){u=String(u||'').toLowerCase();
+    if(u.indexOf('daytrading')>-1)return 'DAY';
+    if(u.indexOf('swingtrading')>-1||u.indexOf('boersenampel')>-1)return 'SWG';
+    if(u.indexOf('level-of-interest')>-1)return 'LOI';
+    if(u.indexOf('futures-insights')>-1)return 'FI';
+    if(u.indexOf('webinar')>-1)return 'ACA';
+    if(u.indexOf('account.tradeneon.com')>-1||u.indexOf('signup')>-1)return 'Free Plan';
+    return '';};
+  var hubByG={};hubs.forEach(function(h){hubByG[h.g]=h;});
+  var nodeByName={};nodes.forEach(function(n){nodeByName[n.f.name]=n;});
+  var bridgeMap={},bridges=[];
+  (state.rows||[]).forEach(function(r){
+    var src=nodeByName[r.funnel_ref||''];if(!src||!isLifecycle(src.f))return;
+    var p=urlProduct(r.target_url);if(!p||p===(src.f.product||''))return;
+    var hub=hubByG[p];if(!hub)return;
+    var k=src.f.id+'>'+p;
+    if(!bridgeMap[k]){bridgeMap[k]={a:src,h:hub,p:p,cs:[]};bridges.push(bridgeMap[k]);}
+    if(r.utm_content&&bridgeMap[k].cs.indexOf(r.utm_content)<0)bridgeMap[k].cs.push(r.utm_content);
+  });
+  bridges.forEach(function(e){
+    var d=qpath(e.a.x,e.a.y,e.h.x,e.h.y,.18);
+    var tip=(de?'Link-Brücke: ':'Link bridge: ')+(e.a.f.name||'')+' → '+e.p+' · '+e.cs.slice(0,4).join(', ')+(e.cs.length>4?' …':'');
+    sv.push('<g class="lcm-edge"><path class="ep epv" d="'+d+'" fill="none" stroke="rgba(143,140,255,.42)" stroke-width="1.1" stroke-dasharray="2 4"/><path d="'+d+'" fill="none" stroke="rgba(0,0,0,0)" stroke-width="12"/><title>'+esc(tip)+'</title></g>');
+  });
   edges.forEach(function(e){
-    var mx=(e.a.x+e.b.x)/2,my=(e.a.y+e.b.y)/2;
-    var dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,L=Math.sqrt(dx*dx+dy*dy)||1;
-    var ox=-dy/L*Math.min(70,L*.25),oy=dx/L*Math.min(70,L*.25);
-    sv.push('<path d="M'+e.a.x.toFixed(1)+' '+e.a.y.toFixed(1)+' Q'+(mx+ox).toFixed(1)+' '+(my+oy).toFixed(1)+' '+e.b.x.toFixed(1)+' '+e.b.y.toFixed(1)+'" fill="none" stroke="rgba(217,224,140,.55)" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#lcmArw)"><title>'+esc(e.tag)+'</title></path>');
+    var d=qpath(e.a.x,e.a.y,e.b.x,e.b.y,.25);
+    var tip=(de?'Tag-Übergabe: ':'Tag hand-off: ')+e.tag+' · '+(e.a.f.name||'')+' → '+(e.b.f.name||'');
+    sv.push('<g class="lcm-edge"><path class="ep" d="'+d+'" fill="none" stroke="rgba(217,224,140,.55)" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#lcmArw)"/><path d="'+d+'" fill="none" stroke="rgba(0,0,0,0)" stroke-width="12"/><title>'+esc(tip)+'</title></g>');
   });
   hubs.forEach(function(h){
     sv.push('<g class="lcm-hub" onclick="setLcTab(\''+esc(h.g==='—'?'all':h.g)+'\')"><circle cx="'+h.x+'" cy="'+h.y+'" r="21" stroke-width="1.5"/><text x="'+h.x+'" y="'+(h.y-1)+'" text-anchor="middle">'+esc(glabel(h.g))+'</text><text class="hn" x="'+h.x+'" y="'+(h.y+11)+'" text-anchor="middle">'+h.n+'</text><title>'+esc(glabel(h.g))+' · '+h.n+' '+(de?'Objekte':'objects')+'</title></g>');
@@ -4256,22 +4316,51 @@ function renderLcMap(){
     var fill=ended?'rgba(110,115,150,.25)':draft?'rgba(20,21,48,.9)':col;
     var stroke=ended?'#6e7396':col;
     var lbl=String(f.name||f.slug||'—');if(lbl.length>26)lbl=lbl.slice(0,25)+'…';
-    var cosr=Math.cos(n.ang);
+    var stn=lc?lcStation(f):'';
+    var cosr=Math.cos(n.ang),top=Math.sin(n.ang)<=0;
     var anch=cosr>0.35?'start':cosr<-0.35?'end':'middle';
     var tx=n.x+(anch==='start'?11:anch==='end'?-11:0);
-    var ty=n.y+(anch==='middle'?(Math.sin(n.ang)>0?20:-13):4);
+    var ty=anch==='middle'?(top?(stn?n.y-22:n.y-13):n.y+20):(n.y+(stn?0:4));
+    var sy=anch==='middle'?(top?n.y-12:n.y+30):n.y+10;
     var st=de?(ended?'beendet':draft?'Entwurf':'aktiv'):(ended?'ended':draft?'draft':'active');
-    sv.push('<g class="lcm-node" onclick="openFunnelFromOv('+f.id+')"><circle class="nd" cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="6.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.6"'+(draft?' stroke-dasharray="3 2.4"':'')+'/><text x="'+tx.toFixed(1)+'" y="'+ty.toFixed(1)+'" text-anchor="'+anch+'">'+esc(lbl)+'</text><title>'+esc(f.name||'')+' · '+(lc?(de?'Serie':'Series'):'Funnel')+' · '+st+'</title></g>');
+    var tip=(f.name||'')+' · '+(lc?(de?'Serie':'Series'):'Funnel')+(stn?' · '+stn:'')+' · '+st;
+    sv.push('<g class="lcm-node" onclick="openFunnelFromOv('+f.id+')"><circle class="nd" cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="6.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.6"'+(draft?' stroke-dasharray="3 2.4"':'')+'/><text x="'+tx.toFixed(1)+'" y="'+ty.toFixed(1)+'" text-anchor="'+anch+'">'+esc(lbl)+'</text>'+(stn?'<text class="stn" x="'+tx.toFixed(1)+'" y="'+sy.toFixed(1)+'" text-anchor="'+anch+'">'+esc(stn)+'</text>':'')+'<title>'+esc(tip)+'</title></g>');
   });
   sv.push('</svg>');
   var leg='<div class="lcm-legend">'
     +'<span><span class="sw" style="background:#8f8cff"></span>'+(de?'Funnel (Akquise)':'Funnel (acquisition)')+'</span>'
     +'<span><span class="sw" style="background:#d9e08c"></span>'+(de?'Lifecycle-Serie':'Lifecycle series')+'</span>'
     +'<span><span class="sw" style="background:transparent;border:1.6px dashed #8f8cff"></span>'+(de?'Entwurf':'Draft')+'</span>'
-    +'<span style="color:#d9e08c">'+(de?'gestrichelte Kante = Tag-Übergabe (Mail/Formular setzt den Trigger einer Serie)':'dashed edge = tag hand-off (mail/form sets a series trigger)')+'</span>'
+    +'<span style="color:#d9e08c">'+(de?'gelb gestrichelt = Tag-Übergabe (Hover zeigt das Tag)':'yellow dashed = tag hand-off (hover shows the tag)')+'</span>'
+    +'<span style="color:#a9a6ff">'+(de?'violett gepunktet = Link-Brücke (Mail-CTA in eine andere Produkt-Welt)':'violet dotted = link bridge (mail CTA into another product world)')+'</span>'
     +'<span style="margin-left:auto;color:#6b7099">'+(de?'Klick auf Knoten = lineare Detail-Ansicht · Klick aufs Zentrum = filtern':'Click node = linear detail view · click hub = filter')+'</span>'
     +'</div>';
-  host.innerHTML=leg+'<div style="padding:6px 10px 12px">'+sv.join('')+'</div>';
+  // Stationen-Abdeckung (Marnie 2026-08-01): pro Produkt — welche Station existiert, welche fehlt?
+  // Das ist die "Was bräuchte dieser Funnel noch?"-Sicht: Lücken werden sichtbar statt vermutet.
+  var covRows=[];
+  order.forEach(function(g){
+    var ser=groups[g].filter(function(f){return isLifecycle(f);});
+    var acq=groups[g].filter(function(f){return !isLifecycle(f);}).map(function(f){return f.name;});
+    var by={};ser.forEach(function(f){var s=lcStation(f);if(!by[s])by[s]=[];by[s].push(f.name);});
+    var rts=[];(state.rows||[]).forEach(function(r){
+      if(acq.indexOf(r.funnel_ref||'')<0)return;
+      if(/(^|[_-])rt([_-]|$)|retarget/i.test(String(r.utm_content||'')))rts.push(r.utm_content);
+    });
+    var cells=LC_STATIONS.map(function(st){
+      var xs=by[st]||[];
+      return xs.length
+        ?'<td class="on"><span title="'+esc(xs.join(' · '))+'">'+xs.length+'</span></td>'
+        :'<td class="off"><span title="'+esc((de?'fehlt — hier könnte eine ':'missing — room for a ')+st+(de?'-Serie für ':' series for ')+glabel(g)+(de?' entstehen':''))+'">–</span></td>';
+    }).join('');
+    var rtc=rts.length
+      ?'<td class="on rt"><span title="'+esc(rts.join(' · '))+'">'+rts.length+'</span></td>'
+      :'<td class="off"><span title="'+esc(de?'kein Retargeting-Zulauf (P1) verdrahtet':'no retargeting arrival (P1) wired')+'">–</span></td>';
+    covRows.push('<tr><td class="pn">'+esc(glabel(g))+'</td>'+cells+rtc+'</tr>');
+  });
+  var cov='<div class="lcm-cov"><div class="lcm-cov-h">'+(de?'Stationen-Abdeckung — was existiert, was fehlt':'Station coverage — what exists, what is missing')+'</div>'
+    +'<table><tr><th></th>'+LC_STATIONS.map(function(s){return '<th>'+s+'</th>';}).join('')+'<th>Retargeting (P1)</th></tr>'+covRows.join('')+'</table>'
+    +'<div class="hint" style="margin-top:6px">'+(de?'Zahl = vorhandene Serien (Hover zeigt Namen) · Strich = offene Station · Retargeting zählt rt-Zuläufe in Phase 1.':'Number = existing series (hover shows names) · dash = open station · retargeting counts rt arrivals in phase 1.')+'</div></div>';
+  host.innerHTML=leg+'<div style="padding:6px 10px 12px">'+sv.join('')+'</div>'+cov;
 }
 function renderLifecycle(){
   var host=document.getElementById('lcSteps');if(!host)return;
