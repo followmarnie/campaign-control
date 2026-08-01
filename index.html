@@ -744,18 +744,40 @@
   table.reg .zstart-track{border-left:2px dashed rgba(23,248,224,.5)}
   table.reg th.col-p1,table.reg th.col-p3,table.reg th.col-p2sum,table.reg th.col-tracksum{background:#191a3a;color:#bfc5ff}
   table.reg td.col-p1{background:rgba(143,140,255,.05);min-width:150px}
-  table.reg td.col-p3{background:rgba(217,224,140,.05);min-width:150px}
+  table.reg td.col-p3{background:rgba(217,224,140,.05);min-width:240px}
   table.reg td.col-p2sum{background:rgba(150,57,243,.05);white-space:nowrap;color:#d7c3ff}
   table.reg td.col-tracksum{background:rgba(70,120,245,.06);white-space:nowrap;color:#c9cdf5;min-width:210px}
   table.reg td.col-tracksum b{color:#fff}
   table.reg td.col-p2sum b{color:#e4d3ff}
-  .rchips{display:flex;flex-wrap:wrap;gap:4px;max-width:340px}
-  .rchip{font-size:10.5px;padding:2px 7px;border-radius:6px;border:1px solid var(--tn-border);background:var(--tn-surf-2);color:#c9cdf5;white-space:nowrap}
+  /* Spalten folgen der Inhaltslänge (Marnie 2026-08-01): Container darf breit werden,
+     und ein einzelner Chip läuft NIE mehr in die Nachbarspalte (Ellipsis statt Overlap). */
+  .rchips{display:flex;flex-wrap:wrap;gap:4px;max-width:560px}
+  .rchip{font-size:10.5px;padding:2px 7px;border-radius:6px;border:1px solid var(--tn-border);background:var(--tn-surf-2);color:#c9cdf5;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
   .rchip i{font-style:normal;color:#8fe3c8;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:9px;margin-left:4px}
   .rchip.cp1{border-color:rgba(143,140,255,.32);color:#c3c1ff}
   .rchip.cp3{border-color:rgba(217,224,140,.32);color:#e4ea9a}
   .rchip.more{color:#8e94c0}
   .rmuted{color:#6b7099;font-size:11px}
+  /* Dashboard-Aufgabe → Zielsprung: kurzes Aufleuchten der Ziel-Karte */
+  .otflash{animation:otflash 1.7s ease-out}
+  @keyframes otflash{0%{box-shadow:0 0 0 3px rgba(23,248,224,.75)}100%{box-shadow:0 0 0 3px rgba(23,248,224,0)}}
+  /* ── Lifecycle · Karten-Ansicht (Journey-Map V1, Marnie 2026-08-01) ── */
+  .lcv-sw{display:inline-flex;border:1px solid var(--tn-border);border-radius:9px;overflow:hidden;margin-right:12px;flex:none}
+  .lcv-sw button{all:unset;cursor:pointer;padding:5px 13px;font-size:12px;color:#9aa0d0}
+  .lcv-sw button.on{background:rgba(150,57,243,.25);color:#fff}
+  .lcv-sw button:hover:not(.on){background:rgba(255,255,255,.04)}
+  .lc-map{border:1px solid var(--tn-border);border-radius:var(--tn-r-m);background:var(--tn-surf-1);overflow:auto;margin-bottom:14px}
+  .lcm-legend{display:flex;flex-wrap:wrap;gap:14px;padding:10px 14px 0;font-size:11px;color:#9aa0d0;align-items:center}
+  .lcm-legend .sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+  .lcm-node{cursor:pointer}
+  .lcm-node text{fill:#c9cdf5;font-size:10px}
+  .lcm-node:hover text{fill:#fff}
+  .lcm-node:hover .nd{stroke-width:2.6}
+  .lcm-hub{cursor:pointer}
+  .lcm-hub circle{fill:#191a3a;stroke:#3a3f78}
+  .lcm-hub:hover circle{stroke:#8f8cff}
+  .lcm-hub text{fill:#bfc5ff;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  .lcm-hub .hn{fill:#6b7099;font-weight:400;font-size:9px;letter-spacing:0;text-transform:none}
   .dstat.attn{border-color:rgba(255,132,106,.42);background:rgba(255,132,106,.08);color:#ffb39f}
   .dstat.attn b{color:#ffb39f}
   .dstat.clear{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08);color:#8ff0b0}
@@ -1546,9 +1568,11 @@
     </div>
     <div class="fctabs" id="lcTabs"></div>
     <div class="lc-bar">
+      <div class="lcv-sw"><button id="lcvMap" onclick="setLcView('map')">Karte</button><button id="lcvBoard" onclick="setLcView('board')">Board</button></div>
       <div class="lc-sum" id="lcSum"></div>
       <label class="lc-ended"><input type="checkbox" id="lcEnded" onchange="renderLifecycle()"> <span data-i18n="lc.showended">Beendete Kampagnen-Strecken zeigen</span></label>
     </div>
+    <div id="lcMap" class="lc-map" style="display:none"></div>
     <div id="lcSteps" class="lc-steps"></div>
   </div>
 
@@ -3245,7 +3269,7 @@ function renderFunnelRegistry(){
     else p2cells=`<td class="col-p2sum zstart-p2">${(f.steps||[]).length} ${de?'Steps':'steps'}${goalKey?` · Goal <b>${esc(goalKey)}</b>`:''}</td>`;
     // Phase 3 · Lifecycle — verknüpfte Serien (Match über Produkt-Gruppe)
     const hand=fcLifecycleHandoff(f);
-    const p3cell=hand.length?`<div class="rchips">${hand.map(x=>{const trig=(x.steps||[]).map(s=>s.ac_tag).filter(Boolean)[0]||'';return `<span class="rchip cp3">${esc(x.name||x.slug||'—')}${trig?` <i>${esc(trig)}</i>`:''}</span>`;}).join('')}</div>`:`<span class="rmuted">—</span>`;
+    const p3cell=hand.length?`<div class="rchips">${hand.map(x=>{const trig=(x.steps||[]).map(s=>s.ac_tag).filter(Boolean)[0]||'';return `<span class="rchip cp3" title="${esc(x.name||x.slug||'—')}${trig?' · '+esc(trig):''}">${esc(x.name||x.slug||'—')}${trig?` <i>${esc(trig)}</i>`:''}</span>`;}).join('')}</div>`:`<span class="rmuted">—</span>`;
     // Tracking · Praba — die Felder (aufgeklappt) oder eine Status-Zelle (eingeklappt)
     let tcells='';
     if(Z.track){tcells=`<td class="col-praba rmono zstart-track">${cv?(esc(cv.ga4_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.ga4_status):'—'}</td><td class="col-praba rmono">${cv?esc(cv.ga4_trigger||''):''}</td>`
@@ -3597,14 +3621,18 @@ function openTasks(){
     if(isOpen(c.ga4_status))o.push('GA4');
     if(isOpen(c.ads_status))o.push('Google Ads');
     if(isOpen(c.meta_status))o.push('Meta');
-    if(o.length)praba.push({label:c.name||c.key,detail:o.join(' · ')+(de?' offen':' open'),view:'fc'});
+    if(!o.length)return;
+    // Sprungziel (Marnie 2026-08-01): der Funnel, dessen Goal auf diese Conversion zeigt —
+    // dort lebt Prabas Editier-Karte. Ohne Host-Funnel: Conversions-Katalog mit offenem Editor.
+    const host=state.funnels.find(f=>f.status!=='archived'&&(f.steps||[]).some(s=>s.conversion_key===c.key));
+    praba.push({label:c.name||c.key,detail:o.join(' · ')+(de?' offen':' open'),view:'fc',fid:host?host.id:null,cid:c.id,ckey:c.key});
   });
   state.funnels.filter(f=>f.status!=='archived').forEach(f=>{
     const steps=f.steps||[];
-    if(!steps.some(s=>s.conversion_key))mine.push({label:f.name,detail:de?'kein Goal verknüpft':'no goal linked',view:'fc'});
+    if(!steps.some(s=>s.conversion_key))mine.push({label:f.name,detail:de?'kein Goal verknüpft':'no goal linked',view:'fc',fid:f.id});
     const noUrl=steps.filter(s=>stepHasUrl(s.type)&&!String(s.url||'').trim()&&!((s.variants||[]).some(v=>String(v.url||'').trim()))).length;
-    if(noUrl)mine.push({label:f.name,detail:noUrl+(de?' Step(s) ohne URL':' step(s) without URL'),view:'fc'});
-    if(f.status==='draft')mine.push({label:f.name,detail:de?'noch Entwurf':'still draft',view:'fc'});
+    if(noUrl)mine.push({label:f.name,detail:noUrl+(de?' Step(s) ohne URL':' step(s) without URL'),view:'fc',fid:f.id});
+    if(f.status==='draft')mine.push({label:f.name,detail:de?'noch Entwurf':'still draft',view:'fc',fid:f.id});
     steps.forEach(s=>{(s.variants||[]).forEach(v=>{if(utmKeyword(v.quelle)&&!v.utm_done&&String(v.url||'').trim())mine.push({label:f.name,detail:(de?'UTM fehlt · ':'UTM missing · ')+(v.quelle||'Tür'),view:'utm'});});});
   });
   const unlinked=state.naming.filter(n=>!namingLinked(n.id)).length;
@@ -3616,13 +3644,31 @@ function renderOpenTasks(){
   const de=LANG==='de';
   const tasks=openTasks();
   const col=(cls,title,owner,items)=>`<div class="ot-col ${cls}"><div class="ot-h"><b>${esc(title)}</b><span class="pill">${items.length}</span><span class="ot-own">${esc(owner)}</span></div>`
-    +(items.length?items.map(i=>`<div class="ot-item" onclick="switchView('${i.view}')" title="${esc(i.label)}"><b>${esc(i.label)}</b><span class="ot-d">${esc(i.detail)}</span><span class="ot-go">↗</span></div>`).join('')
+    +(items.length?items.map(i=>`<div class="ot-item" onclick="otGo('${i.view}',${i.fid!=null?i.fid:'null'},${i.cid!=null?i.cid:'null'},'${esc(i.ckey||'')}')" title="${esc(i.label)}"><b>${esc(i.label)}</b><span class="ot-d">${esc(i.detail)}</span><span class="ot-go">↗</span></div>`).join('')
       :`<div class="ot-ok">✓ ${de?'alles erledigt':'all done'}</div>`)+`</div>`;
   box.innerHTML=`<div class="ot-grid">
     ${col('mine',de?'Marketing':'Marketing',de?'Marnie':'Marnie',tasks.mine)}
     ${col('praba',de?'Tracking':'Tracking',de?'Praba':'Praba',tasks.praba)}
   </div>`;
   return tasks;
+}
+// Dashboard-Aufgabe → exakt an die Stelle springen, nicht nur in den Tab (Marnie 2026-08-01).
+// Praba-Aufgabe: Host-Funnel öffnen + zur Tracking-Karte der Conversion scrollen (Flash);
+// ohne Host-Funnel in den Conversions-Katalog mit geöffnetem Editor.
+function otGo(view,fid,cid,ckey){
+  switchView(view);
+  if(view!=='fc')return;
+  if(fid!=null){
+    if(state.fcTab==='conv')setFcTab('all'); // Funnel-Sicht sicherstellen (conv blendet sie aus)
+    selectFunnel(fid);
+    if(ckey)setTimeout(function(){
+      var el=document.querySelector('#fnPraba .pcard[data-key="'+CSS.escape(ckey)+'"]');
+      if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('otflash');setTimeout(function(){el.classList.remove('otflash');},1700);}
+    },140);
+  }else if(cid!=null){
+    setFcTab('conv');
+    editConv(cid);
+  }
 }
 function renderDashboard(){
   const s=$('dashStats'); if(!s)return;
@@ -4130,6 +4176,103 @@ function renderLcTabs(lcAll){
   });
   bar.innerHTML=h;
 }
+function setLcView(v){state.lcView=v;renderLifecycle();}
+// ── Journey-Map V1 · „Karte" (Entscheid Marnie 2026-08-01) ─────────────────────
+// Produkte als Zentren, Funnels (violett) + Serien (lindgrün) als Satelliten,
+// Tag-Übergaben als Kanten: ein gesetztes ac_tag, das den Trigger (steps[0].ac_tag)
+// einer Serie trifft, zeichnet eine Kante — z. B. ATAS Mail 4 → Newsletter-Einladung.
+// Klick auf einen Knoten öffnet die bestehende lineare Detail-Ansicht (Reise/Mail-Kette).
+function renderLcMap(){
+  var host=$('lcMap');if(!host)return;
+  var de=LANG==='de';
+  var cur=state.lcTab||'all';
+  var showEnded=!!(($('lcEnded'))||{}).checked;
+  var all=(state.funnels||[]).filter(function(f){
+    return (showEnded||f.status!=='archived')&&(cur==='all'||(f.product||'—')===cur);
+  });
+  if(!all.length){host.innerHTML='<div class="lc-empty">'+t('lc.empty')+'</div>';return;}
+  var glabel=function(k){var m=FUNNEL_GROUPS.find(function(x){return x[0]===k;});return m?m[1].split(' · ')[0]:(k||'—');};
+  // Cluster je Produkt-Gruppe
+  var groups={},order=[];
+  all.forEach(function(f){var g=f.product||'—';if(!groups[g]){groups[g]=[];order.push(g);}groups[g].push(f);});
+  order.sort(function(a,b){return groups[b].length-groups[a].length||String(a).localeCompare(String(b));});
+  var PAD=26,LBLX=170;
+  var cells=order.map(function(g){
+    var n=groups[g].length,r=Math.max(74,Math.round(n*30/(2*Math.PI)));
+    return {g:g,items:groups[g],r:r,w:2*r+2*LBLX,h:2*r+130};
+  });
+  var MAXW=1560,rows=[],row=[],w=0;
+  cells.forEach(function(c){if(w+c.w>MAXW&&row.length){rows.push(row);row=[];w=0;}row.push(c);w+=c.w;});
+  if(row.length)rows.push(row);
+  var nodes=[],hubs=[],y=PAD,W=0;
+  rows.forEach(function(r){
+    var rh=0;r.forEach(function(c){rh=Math.max(rh,c.h);});
+    var x=PAD;
+    r.forEach(function(c){
+      var cx=x+c.w/2,cy=y+rh/2;
+      hubs.push({g:c.g,x:cx,y:cy,n:c.items.length});
+      // Funnels zuerst, dann Serien — so mischen sich die Farben am Ring nicht wild
+      var items=c.items.slice().sort(function(a,b){return (isLifecycle(a)?1:0)-(isLifecycle(b)?1:0)||String(a.name||'').localeCompare(String(b.name||''));});
+      items.forEach(function(f,i){
+        var a=-Math.PI/2+i*2*Math.PI/items.length;
+        nodes.push({f:f,x:cx+c.r*Math.cos(a),y:cy+c.r*Math.sin(a),ang:a,hx:cx,hy:cy});
+      });
+      x+=c.w;
+    });
+    W=Math.max(W,x+PAD);y+=rh;
+  });
+  var H=y+PAD;
+  // Kanten: Tag-Ketten (Serie-Trigger = steps[0].ac_tag — CC-Konvention)
+  var trigMap={};
+  nodes.forEach(function(n){if(!isLifecycle(n.f))return;var t0=(((n.f.steps||[])[0]||{}).ac_tag)||'';if(t0&&!trigMap[t0])trigMap[t0]=n;});
+  var edges=[],seenE={};
+  nodes.forEach(function(n){
+    (n.f.steps||[]).forEach(function(s,idx){
+      if(!s.ac_tag)return;
+      if(isLifecycle(n.f)&&idx===0)return; // der eigene Trigger ist keine Übergabe
+      var tgt=trigMap[s.ac_tag];
+      if(!tgt||tgt.f.id===n.f.id)return;
+      var k=n.f.id+'>'+tgt.f.id;if(seenE[k])return;seenE[k]=1;
+      edges.push({a:n,b:tgt,tag:s.ac_tag});
+    });
+  });
+  // SVG
+  var sv=['<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Journey-Map">'];
+  sv.push('<defs><marker id="lcmArw" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="rgba(217,224,140,.75)"/></marker></defs>');
+  nodes.forEach(function(n){sv.push('<line x1="'+n.hx+'" y1="'+n.hy+'" x2="'+n.x.toFixed(1)+'" y2="'+n.y.toFixed(1)+'" stroke="rgba(150,155,220,.13)" stroke-width="1"/>');});
+  edges.forEach(function(e){
+    var mx=(e.a.x+e.b.x)/2,my=(e.a.y+e.b.y)/2;
+    var dx=e.b.x-e.a.x,dy=e.b.y-e.a.y,L=Math.sqrt(dx*dx+dy*dy)||1;
+    var ox=-dy/L*Math.min(70,L*.25),oy=dx/L*Math.min(70,L*.25);
+    sv.push('<path d="M'+e.a.x.toFixed(1)+' '+e.a.y.toFixed(1)+' Q'+(mx+ox).toFixed(1)+' '+(my+oy).toFixed(1)+' '+e.b.x.toFixed(1)+' '+e.b.y.toFixed(1)+'" fill="none" stroke="rgba(217,224,140,.55)" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#lcmArw)"><title>'+esc(e.tag)+'</title></path>');
+  });
+  hubs.forEach(function(h){
+    sv.push('<g class="lcm-hub" onclick="setLcTab(\''+esc(h.g==='—'?'all':h.g)+'\')"><circle cx="'+h.x+'" cy="'+h.y+'" r="21" stroke-width="1.5"/><text x="'+h.x+'" y="'+(h.y-1)+'" text-anchor="middle">'+esc(glabel(h.g))+'</text><text class="hn" x="'+h.x+'" y="'+(h.y+11)+'" text-anchor="middle">'+h.n+'</text><title>'+esc(glabel(h.g))+' · '+h.n+' '+(de?'Objekte':'objects')+'</title></g>');
+  });
+  nodes.forEach(function(n){
+    var f=n.f,lc=isLifecycle(f);
+    var col=lc?'#d9e08c':'#8f8cff';
+    var draft=f.status==='draft',ended=f.status==='archived';
+    var fill=ended?'rgba(110,115,150,.25)':draft?'rgba(20,21,48,.9)':col;
+    var stroke=ended?'#6e7396':col;
+    var lbl=String(f.name||f.slug||'—');if(lbl.length>26)lbl=lbl.slice(0,25)+'…';
+    var cosr=Math.cos(n.ang);
+    var anch=cosr>0.35?'start':cosr<-0.35?'end':'middle';
+    var tx=n.x+(anch==='start'?11:anch==='end'?-11:0);
+    var ty=n.y+(anch==='middle'?(Math.sin(n.ang)>0?20:-13):4);
+    var st=de?(ended?'beendet':draft?'Entwurf':'aktiv'):(ended?'ended':draft?'draft':'active');
+    sv.push('<g class="lcm-node" onclick="openFunnelFromOv('+f.id+')"><circle class="nd" cx="'+n.x.toFixed(1)+'" cy="'+n.y.toFixed(1)+'" r="6.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.6"'+(draft?' stroke-dasharray="3 2.4"':'')+'/><text x="'+tx.toFixed(1)+'" y="'+ty.toFixed(1)+'" text-anchor="'+anch+'">'+esc(lbl)+'</text><title>'+esc(f.name||'')+' · '+(lc?(de?'Serie':'Series'):'Funnel')+' · '+st+'</title></g>');
+  });
+  sv.push('</svg>');
+  var leg='<div class="lcm-legend">'
+    +'<span><span class="sw" style="background:#8f8cff"></span>'+(de?'Funnel (Akquise)':'Funnel (acquisition)')+'</span>'
+    +'<span><span class="sw" style="background:#d9e08c"></span>'+(de?'Lifecycle-Serie':'Lifecycle series')+'</span>'
+    +'<span><span class="sw" style="background:transparent;border:1.6px dashed #8f8cff"></span>'+(de?'Entwurf':'Draft')+'</span>'
+    +'<span style="color:#d9e08c">'+(de?'gestrichelte Kante = Tag-Übergabe (Mail/Formular setzt den Trigger einer Serie)':'dashed edge = tag hand-off (mail/form sets a series trigger)')+'</span>'
+    +'<span style="margin-left:auto;color:#6b7099">'+(de?'Klick auf Knoten = lineare Detail-Ansicht · Klick aufs Zentrum = filtern':'Click node = linear detail view · click hub = filter')+'</span>'
+    +'</div>';
+  host.innerHTML=leg+'<div style="padding:6px 10px 12px">'+sv.join('')+'</div>';
+}
 function renderLifecycle(){
   var host=document.getElementById('lcSteps');if(!host)return;
   var de=LANG==='de';
@@ -4138,17 +4281,27 @@ function renderLifecycle(){
   var cur=state.lcTab||'all';
   var lc=cur==='all'?lcAll:lcAll.filter(function(f){return (f.product||'')===cur;});
   var sum=document.getElementById('lcSum');
+  var built=lc.filter(function(f){return f.status==='active'||f.status==='live';}).length;
+  var open=lc.filter(function(f){return f.status!=='archived';}).length-built;
+  if(sum)sum.innerHTML=lc.length?(
+     '<div class="m"><strong>'+lc.length+'</strong><span>'+t('lc.m.total')+'</span></div>'
+    +'<div class="m"><strong>'+built+'</strong><span>'+t('lc.m.built')+'</span></div>'
+    +'<div class="m"><strong>'+open+'</strong><span>'+t('lc.m.open')+'</span></div>'):'';
+  // Karte vs. Board (Entscheid Marnie 2026-08-01: die Karte ist der Einstieg,
+  // das Board bleibt die Bau-Arbeitsliste — ein Klick daneben).
+  var mapOn=(state.lcView||'map')==='map';
+  var mBtn=$('lcvMap'),bBtn=$('lcvBoard');
+  if(mBtn){mBtn.textContent=de?'Karte':'Map';mBtn.classList.toggle('on',mapOn);}
+  if(bBtn){bBtn.textContent='Board';bBtn.classList.toggle('on',!mapOn);}
+  var mhost=$('lcMap');
+  if(mhost)mhost.style.display=mapOn?'':'none';
+  host.style.display=mapOn?'none':'';
+  if(mapOn){renderLcMap();renderTagCatalog();return;}
   if(!lc.length){
     if(sum)sum.innerHTML='';
     host.innerHTML='<div class="lc-empty">'+t('lc.empty')+'</div>';
     renderTagCatalog();return;
   }
-  var built=lc.filter(function(f){return f.status==='active'||f.status==='live';}).length;
-  var open=lc.filter(function(f){return f.status!=='archived';}).length-built;
-  if(sum)sum.innerHTML=
-     '<div class="m"><strong>'+lc.length+'</strong><span>'+t('lc.m.total')+'</span></div>'
-    +'<div class="m"><strong>'+built+'</strong><span>'+t('lc.m.built')+'</span></div>'
-    +'<div class="m"><strong>'+open+'</strong><span>'+t('lc.m.open')+'</span></div>';
   var glabel=function(k){var m=FUNNEL_GROUPS.find(function(x){return x[0]===k;});return m?m[1].split(' · ')[0]:(k||'—');};
   var groups={},order=[];
   lc.forEach(function(f){var g=f.product||'—';if(!groups[g]){groups[g]=[];order.push(g);}groups[g].push(f);});
