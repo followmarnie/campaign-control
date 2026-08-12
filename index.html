@@ -123,6 +123,19 @@
   .tag.paid{background:rgba(102,102,255,.18);color:#aab0ff}
   .tag.email{background:rgba(23,248,224,.15);color:#7df3e6}
   .tag.organic{background:rgba(237,251,140,.15);color:#d9e08c}
+  /* Statusleiste je UTM-Zeile. Drei Zustaende, weil es zwei verschiedene
+     Nicht-Verwendungen gibt: "noch nicht" (geplant) und "nie wieder" (stillgelegt).
+     Als <select> und nicht als Klick-Zyklus — ein Fehlklick soll keinen Status kippen. */
+  select.stsel{appearance:none;-webkit-appearance:none;border-radius:6px;padding:2px 18px 2px 8px;
+    font-size:10px;font-weight:700;letter-spacing:.02em;cursor:pointer;border:1px solid transparent;
+    background-repeat:no-repeat;background-position:right 5px center;
+    background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+    background-size:4px 4px,4px 4px;background-origin:content-box}
+  select.stsel:focus{outline:2px solid rgba(102,102,255,.5);outline-offset:1px}
+  select.stsel option{background:#15173a;color:#eceefc;font-weight:500}
+  select.stsel.aktiv{background-color:rgba(74,222,128,.14);color:#7ee0a0;border-color:rgba(74,222,128,.22)}
+  select.stsel.geplant{background-color:rgba(237,251,140,.14);color:#d9e08c;border-color:rgba(237,251,140,.22)}
+  select.stsel.stillgelegt{background-color:rgba(255,255,255,.05);color:#7c82ad;border-color:rgba(255,255,255,.09)}
 .langchip{display:inline-block;border-radius:5px;padding:0 5px;font-size:9px;font-weight:700;letter-spacing:.04em;margin-right:6px;vertical-align:middle}
 .langchip.de{background:rgba(150,57,243,.18);color:#c9a3ff}
 .langchip.en{background:rgba(255,189,102,.18);color:#ffce88}
@@ -1309,6 +1322,7 @@
         <select id="fChannel"></select>
         <select id="fSource"></select>
         <select id="fFunnel"></select>
+        <select id="fStatus"></select>
         <button class="btn sm ghost" onclick="clearRegFilters()" data-i18n="r.clear">✕ Filter leeren</button>
         <span style="flex:1"></span>
         <label style="margin:0 6px 0 0;color:#b9bee6" data-i18n="r.override">utm_id-Override</label>
@@ -1317,10 +1331,12 @@
         <button class="btn sm ghost" onclick="exportCSV()">CSV ⬇</button>
         <label class="btn sm ghost" style="margin:0">CSV ⬆<input type="file" id="imp" accept=".csv" hidden></label>
       </div>
+      <p class="hint" style="margin:2px 0 10px" data-i18n="r.statushint"></p>
       <div class="tblwrap">
         <table id="tbl">
           <thead><tr>
             <th class="sortable" data-sk="utm_id" onclick="setSort('utm','utm_id')">utm_id<span class="sarr">⇅</span></th>
+            <th class="sortable" data-sk="status" onclick="setSort('utm','status')"><span data-i18n="r.status">Status</span><span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="platform_type" onclick="setSort('utm','platform_type')"><span data-i18n="r.type">Typ</span><span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="utm_campaign" onclick="setSort('utm','utm_campaign')">utm_campaign<span class="sarr">⇅</span></th>
             <th class="sortable" data-sk="asset_identifier" onclick="setSort('utm','asset_identifier')"><span data-i18n="nm.ident">Identifier</span><span class="sarr">⇅</span></th>
@@ -1747,6 +1763,9 @@ const T={
   'o.params':'Nur URL-Parameter','o.url':'Volle UTM-URL','o.copyParams':'Parameter kopieren','o.copyUrl':'Volle URL kopieren',
   'o.idhint':'Die <code>utm_id</code> wird beim Speichern von der Datenbank vergeben (atomar). Override oben in der Registry-Leiste.',
   'r.fYear':'Jahr filtern','r.fCampaign':'Kampagne filtern','r.chAll':'Channel: alle','r.srcAll':'Source: alle','r.funAll':'Funnel: alle',
+  'r.stAll':'Status: alle','r.status':'Status','st.aktiv':'aktiv','st.geplant':'geplant','st.stillgelegt':'stillgelegt',
+  'r.statushint':'<b>Status</b> — <b style="color:#7ee0a0">aktiv</b>: im Asset verbaut, keine Zahlen wären ein Fehler · <b style="color:#d9e08c">geplant</b>: gemintet, Asset noch nicht live, keine Zahlen sind normal · <b style="color:#7c82ad">stillgelegt</b>: Ziel geändert oder abgeschaltet, die ID wird nie wiederverwendet. Änderung speichert sofort.',
+  'r.statusmiss':'Falls die Spalte fehlt: one-shot_utm-status.sql im Supabase-Editor laufen lassen.',
   'r.fAll':'Suchen: alle Spalten …','r.clear':'✕ Filter leeren','r.of':'von',
   'r.override':'utm_id-Override','r.reload':'↻ Neu laden','r.type':'Typ','r.fullurl':'Volle URL','r.idpending':'wird beim Speichern vergeben',
   'tbl.empty':'Noch keine Zeilen — oben bauen und „In Registry speichern".',
@@ -1880,6 +1899,9 @@ const T={
   'o.params':'URL parameters only','o.url':'Full UTM URL','o.copyParams':'Copy parameters','o.copyUrl':'Copy full URL',
   'o.idhint':'The <code>utm_id</code> is assigned by the database on save (atomic). Override in the registry toolbar above.',
   'r.fYear':'Filter year','r.fCampaign':'Filter campaign','r.chAll':'Channel: all','r.srcAll':'Source: all','r.funAll':'Funnel: all',
+  'r.stAll':'Status: all','r.status':'Status','st.aktiv':'active','st.geplant':'planned','st.stillgelegt':'retired',
+  'r.statushint':'<b>Status</b> — <b style="color:#7ee0a0">active</b>: built into the asset, missing numbers would be a bug · <b style="color:#d9e08c">planned</b>: minted, asset not live yet, missing numbers are normal · <b style="color:#7c82ad">retired</b>: target changed or switched off, the ID is never reused. Changes save immediately.',
+  'r.statusmiss':'If the column is missing: run one-shot_utm-status.sql in the Supabase editor.',
   'r.fAll':'Search: every column …','r.clear':'✕ Clear filters','r.of':'of',
   'r.override':'utm_id override','r.reload':'↻ Reload','r.type':'Type','r.fullurl':'Full URL','r.idpending':'assigned on save',
   'tbl.empty':'No rows yet — build above and “Save to registry”.',
@@ -2511,11 +2533,18 @@ function refreshFilters(){
   const srcs=[...new Set(state.rows.map(r=>r.utm_source).filter(Boolean))].sort();
   const funs=[...new Set(state.rows.map(r=>r.funnel_ref||r.funnel_type).filter(Boolean))].sort();
   const chs=[...new Set(state.rows.map(r=>r.channel).filter(Boolean))].sort();
-  const fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
+  const fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value, fst=$('fStatus').value;
   $('fChannel').innerHTML=`<option value="">${t('r.chAll')}</option>`+chs.map(s=>`<option${s===fch?' selected':''}>${esc(s)}</option>`).join('');
   $('fSource').innerHTML=`<option value="">${t('r.srcAll')}</option>`+srcs.map(s=>`<option${s===fs?' selected':''}>${esc(s)}</option>`).join('');
   $('fFunnel').innerHTML=`<option value="">${t('r.funAll')}</option>`+funs.map(s=>`<option${s===ff?' selected':''}>${esc(s)}</option>`).join('');
+  // Feste Liste, nicht aus den Daten abgeleitet: 'stillgelegt' muss auch dann
+  // waehlbar sein, wenn (noch) keine Zeile stillgelegt ist.
+  $('fStatus').innerHTML=`<option value="">${t('r.stAll')}</option>`
+    +STATI.map(s=>`<option value="${s}"${s===fst?' selected':''}>${t('st.'+s)}</option>`).join('');
 }
+// Die drei erlaubten Zustaende. Spiegelt den CHECK-Constraint in Supabase --
+// wer hier etwas ergaenzt, muss ihn dort mit aendern, sonst schlaegt das PATCH fehl.
+const STATI=['aktiv','geplant','stillgelegt'];
 function paramsOnly(u){if(!u)return '';const q=String(u).split('#')[0];const i=q.indexOf('?');return i>=0?q.slice(i+1):'';}
 // Sprache ableiten — zwei Quellen, in dieser Reihenfolge:
 //   1. Pfad-Praefix /de/ bzw. /en/ (tradeneon.com + account.tradeneon.com sind zweisprachig)
@@ -2573,19 +2602,45 @@ function hiEsc(s,terms){
   }
   return out+esc(s.slice(last));
 }
+/* ── Statusleiste je UTM-Zeile ──────────────────────────────────────────────
+   Beantwortet die eine Frage, die eine Registry-Zeile sonst offen laesst:
+   Sind fehlende Zahlen in GA4 ein Fehler oder normal?
+     aktiv        im Asset verbaut      -> keine Daten = Fehler, nachsehen
+     geplant      Asset noch nicht live -> keine Daten = normal, warten
+     stillgelegt  Ziel weg/ersetzt      -> ID nie wiederverwenden
+   Faellt auf 'aktiv' zurueck, solange die Spalte in Supabase fehlt (Migration
+   one-shot_utm-status.sql) — dann schlaegt erst das Speichern fehl, nicht die Anzeige. */
+function rowStatus(r){return STATI.includes(r.status)?r.status:'aktiv'}
+function statusSelect(r){
+  const cur=rowStatus(r);
+  return `<select class="stsel ${cur}" onchange="setUtmStatus('${esc(r.utm_id)}',this.value)" title="${esc(t('r.statushint').replace(/<[^>]+>/g,''))}">`
+    +STATI.map(s=>`<option value="${s}"${s===cur?' selected':''}>${t('st.'+s)}</option>`).join('')+'</select>';
+}
+async function setUtmStatus(id,val){
+  if(!STATI.includes(val))return;
+  try{
+    await sb(`utm_registry?utm_id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:JSON.stringify({status:val})});
+    const r=state.rows.find(x=>x.utm_id===id); if(r)r.status=val;
+    renderRegistry(); toast(id+' → '+t('st.'+val));
+  }catch(e){
+    // Haeufigster Fall: die Spalte gibt es noch nicht. Das soll dastehen, nicht "unbekannter Fehler".
+    toast(t('ct.updfail')+': '+e.message+' · '+t('r.statusmiss'),true); renderRegistry();
+  }
+}
 function clearRegFilters(){
   ['fAll','fYear','fCampaign'].forEach(id=>$(id).value='');
-  ['fChannel','fSource','fFunnel'].forEach(id=>$(id).value='');
+  ['fChannel','fSource','fFunnel','fStatus'].forEach(id=>$(id).value='');
   renderRegistry();$('fAll').focus();
 }
 function renderRegistry(){
-  const fy=$('fYear').value.trim(), fc=$('fCampaign').value.trim().toLowerCase(), fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value;
+  const fy=$('fYear').value.trim(), fc=$('fCampaign').value.trim().toLowerCase(), fs=$('fSource').value, ff=$('fFunnel').value, fch=$('fChannel').value, fst=$('fStatus').value;
   const terms=$('fAll').value.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const flt=state.rows.filter(r=>(!fy||(r.period||'').includes(fy)||(r.utm_campaign||'').includes(fy))&&(!fc||(r.utm_campaign||'').toLowerCase().includes(fc))
-    &&(!fs||r.utm_source===fs)&&(!ff||(r.funnel_ref||r.funnel_type)===ff)&&(!fch||r.channel===fch)
+    &&(!fs||r.utm_source===fs)&&(!ff||(r.funnel_ref||r.funnel_type)===ff)&&(!fch||r.channel===fch)&&(!fst||rowStatus(r)===fst)
     &&(!terms.length||(h=>terms.every(w=>h.includes(w)))(rowHay(r))));
   $('tbl').querySelector('tbody').innerHTML=sortList(flt,'utm').map(r=>`<tr data-id="${esc(r.utm_id)}">
     <td class="mono counter">${hiEsc(r.utm_id,terms)}</td>
+    <td>${statusSelect(r)}</td>
     <td><span class="tag ${esc(r.platform_type)}">${esc(r.platform_type)}</span></td>
     <td class="mono" data-col="utm_campaign">${langChip(r)}${hiEsc(r.utm_campaign,terms)||'—'}</td>
     <td class="mono ident" data-col="asset_identifier">${hiEsc(r.asset_identifier,terms)||'—'}</td>
@@ -2599,7 +2654,7 @@ function renderRegistry(){
       <span class="minicopy" title="${t('o.copyUrl')}" onclick="copyText(${esc(JSON.stringify(String(r.full_url||'')))})">⧉URL</span>
       <span class="minicopy" title="${t('o.copyParams')}" onclick="copyText(${esc(JSON.stringify(paramsOnly(r.full_url)))})">⧉?=</span>
       <span class="act del" title="Delete" onclick="delRow('${esc(r.utm_id)}')">✕</span>
-    </td></tr>`).join('')||`<tr><td colspan="10" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
+    </td></tr>`).join('')||`<tr><td colspan="11" style="color:#5b6090;padding:20px">${t('tbl.empty')}</td></tr>`;
   const unit=(n)=>n===1?(LANG==='de'?'Zeile':'row'):(LANG==='de'?'Zeilen':'rows');
   $('rowCount').textContent=(flt.length===state.rows.length)
     ? state.rows.length+' '+unit(state.rows.length)
@@ -2679,7 +2734,7 @@ async function commitEdit(id){
 }
 const COLS=['utm_id','platform_type','channel','function_tag','funnel_type','funnel_ref','topic_slug','period','variant','campaign_name',
   'adset_or_automation','asset_identifier','utm_source','utm_medium','utm_campaign','utm_content','utm_term','audience_suffix',
-  'target_url','anchor','full_url','notes','naming_id','created_by','created_at'];
+  'target_url','anchor','full_url','status','notes','naming_id','created_by','created_at'];
 function exportCSV(){
   if(!state.rows.length){toast(t('ct.noexport'),true);return}
   const q=v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`;
@@ -3724,15 +3779,15 @@ const WIZ_NAMESPACES=['Lead','Source','Stage','Customer','Interest','Goal','Funn
 const TAG_CATALOG=[
   {cat:'Stage', who:'auto', note:'Lifecycle-Temperatur — automation-getrieben, NICHT pro Kampagne stempeln.', values:['Cold','Warm','Hot']},
   {cat:'Lead', who:'du', note:'Aktiver Lead-Magnet (eigener Funnel + Nachfass-Strecke).', values:['Prop-Report','Börsenampel','Webinar KI im Trading','ATAS Template']},
-  {cat:'Source', who:'du', note:'Passive Fläche ohne Magnet-Funnel.', values:['Blog-Artikel-Seite','Trading Crash Course','Daytrading Brochure Download','Swing Trading Brochure Download','Options Trading Brochure Download','LOT Coming Soon']},
+  {cat:'Source', who:'du', note:'Passive Fläche ohne Magnet-Funnel.', values:['Blog-Artikel-Seite','Trading Crash Course','Daytrading Brochure Download','Swing Trading Brochure Download','Options Trading Brochure Download','LOT Coming Soon','Aktienhandel Relaunch']},
   {cat:'Interest', who:'du', note:'Evergreen-Thema (optional) — Newsletter-Themensegment, gesetzt am Funnel-/Serien-Eingang, nicht pro Mail.', values:['Prop Trading','Daytrading','Swingtrading','FI','LOI','LOT','Psychologie']},
-  {cat:'Newsletter', who:'du', note:'Newsletter-Berechtigung (Sende-Marker). Bestand = Alt-/Bestandskunden-Basis (Migration). Opt-in = frisches Haekchen (Website/Tool). Versand filtert auf beide Werte; das Feld Marketing-Einwilligung am bleibt Datums-Nachweis nur bei Opt-in. Kein Double-Opt-in.', values:['Bestand','Opt-in']},
+  {cat:'Newsletter', who:'du', note:'Newsletter-Berechtigung (Sende-Marker). Bestand = Alt-/Bestandskunden-Basis (Migration). Opt-in = frisches Haekchen (Website/Tool). Versand filtert auf beide Werte; das Feld Marketing-Einwilligung am bleibt Datums-Nachweis nur bei Opt-in. Double-Opt-in NUR bei oeffentlichen Website-Formularen (Fluent Forms -> AC-Formular); Mail-Klick und eingeloggtes Haekchen bestaetigen nicht erneut. Nie auf Listen-Ebene aktivieren.', values:['Bestand','Opt-in']},
   {cat:'Goal', who:'du', note:'Funnel-Ziel erreicht.', values:['Consultation Booked – Daytrading']},
   {cat:'Funnel', who:'du', note:'Aktive Funnel-Zuordnung.', values:['Daytrading Consultation']},
   {cat:'Status', who:'du', note:'Temporärer/Event-Zustand — datiert, je Event 4 Stufen (Eingeladen/Registriert/Teilgenommen/Aufzeichnung gesehen).', values:[], open:true},
   {cat:'Customer', who:'portal', note:'NUR bezahlte Käufer (bloßes „Customer" = hat gekauft).', values:['','ETF','Aktienhandel','Swingtrading','Daytrading','Daytrading Club','Optionshandel','Dealer Hedging','LOI','FI','DHD','Alumni']},
   {cat:'Subscription', who:'portal', note:'Aktives Abo-Produkt.', values:['LOI','FI','DHD','Daytrading Add-On']},
-  {cat:'Language', who:'portal', note:'Sprache.', values:['DE','EN']},
+  {cat:'Language', who:'portal', note:'Sprache — der Sprach-Schalter jeder Serie, nicht nur eine Eigenschaft. Muss an JEDEM Eingang gesetzt werden, auch dort, wo kein Portal beteiligt ist (Fluent-Forms-Feeds, Webinar-Anbindung, Importe). Fehlt der Tag, enden beide Sprachvarianten einer Serie ohne Mail und ohne Fehlermeldung.', values:['DE','EN']},
   {cat:'LOI Status', who:'portal', note:'LOI-Subscription-Status. Kein „Free" — frei wird abgeleitet (kein Active/Lifetime).', values:['Active','Cancelled','Lifetime']},
   {cat:'LOI Market', who:'portal', note:'Gehandelter LOI-Markt.', values:['ES','NQ','GC','CL']},
   {cat:'LOI Platform', who:'portal', note:'Heruntergeladene Plattform.', values:['TradingView','ATAS','Bookmap','NinjaTrader','MetaTrader 5','Quantower']},
@@ -4609,7 +4664,7 @@ $('tbl').querySelector('tbody').addEventListener('click',e=>{
   if(e.target.closest('.act,.minicopy'))return;
   toggleUtmRow(e.target.closest('tr'));
 });
-['fAll','fYear','fCampaign','fSource','fFunnel','fChannel'].forEach(id=>$(id).addEventListener('input',renderRegistry));
+['fAll','fYear','fCampaign','fSource','fFunnel','fChannel','fStatus'].forEach(id=>$(id).addEventListener('input',renderRegistry));
 $('fAll').addEventListener('keydown',e=>{if(e.key==='Escape'){e.target.value='';renderRegistry()}});
 $('showArch').addEventListener('change',()=>{renderFcTabs();renderFunnelList();renderFunnelRegistry();});
 $('uOnlyOpen').addEventListener('change',refreshDynamic);
