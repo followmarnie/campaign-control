@@ -1398,7 +1398,7 @@
       <main class="fc-work card" id="fnDetail" style="display:none;margin-top:20px">
         <div class="fc-work-head">
           <div class="crumb">TradeNeon / Funnel Architecture</div>
-          <div class="fc-work-title"><span id="fnTitleView">…</span> <span class="pill" id="fnStatusPill"></span></div>
+          <div class="fc-work-title"><span id="fnTitleView">…</span> <span class="pill" id="fnStatusPill"></span> <button type="button" class="btn sm ghost" id="fnPlink" style="display:none" onclick="copyPrabaLink()"></button></div>
           <p class="fc-work-sub" data-i18n="fc.worksub">Website-/App-Conversion-Pfade bauen: Step-Kette → Goal (Conversion) setzen → Prabas Tracking klappt darunter auf → unten die Excel-Registry prüfen.</p>
         </div>
 
@@ -2128,7 +2128,7 @@ async function loadAll(){
     state.rows=rows||[];state.naming=naming||[];state.funnels=funnels||[];state.convs=convs||[];
     setConn('ok');
     refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderFunnelRegistry();renderCampaigns();renderDashboard();renderStructure();
-    if(!state.editF)newFunnel(false); // Default: leeren Funnel offen halten, kein großer leerer Bereich
+    if(!applyDeepLink()&&!state.editF)newFunnel(false); // Deep-Link (?funnel=…) geht vor; sonst Default: leeren Funnel offen halten, kein großer leerer Bereich
   }catch(e){setConn('err');toast(t('ct.loadfail')+': '+e.message,true)}
 }
 // Dropdowns, die von geladenen Daten abhängen (Naming-Picker, Funnel-Referenzen)
@@ -2950,6 +2950,32 @@ function selectFunnel(id,keepRet,scrollTo){
   const tgt=(scrollTo==='ctx'&&$('fnEditCtx'))?$('fnEditCtx'):$('fnDetail');
   tgt.scrollIntoView({behavior:'smooth',block:scrollTo==='ctx'?'center':'nearest'});
 }
+// ── Deep-Link (2026-09-29): ?funnel=<#> öffnet einen Funnel direkt nach dem Laden —
+// gebaut für Prabas Arbeitsweg („hier ist der Funnel, dort trägst Du das Tracking ein").
+// &tracking=1 klappt zusätzlich das Tracking-Band auf und scrollt dorthin. Die URL
+// übersteht das Login-Overlay (kein Redirect); läuft genau einmal je Seitenaufruf,
+// nach dem ersten erfolgreichen loadAll, denn vorher gibt es keine Funnels im State.
+let deepLinkDone=false;
+function applyDeepLink(){
+  if(deepLinkDone)return false;
+  let q;try{q=new URLSearchParams(location.search)}catch(e){return false}
+  const id=parseInt(q.get('funnel')||'',10);
+  if(!id)return false;
+  deepLinkDone=true;
+  const f=state.funnels.find(x=>x.id===id);
+  if(!f){toast('Funnel #'+id+(LANG==='de'?' nicht gefunden':' not found'),true);return false}
+  state.fcTab='all';
+  switchView('fc');
+  if(q.get('tracking')){if(!state.jband)state.jband={p1:true,p2:true,p3:true,track:false};state.jband.track=true}
+  selectFunnel(id);
+  if(q.get('tracking'))setTimeout(function(){var el=document.querySelector('#fnJourney .jband.jtrack');if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},250);
+  return true;
+}
+function copyPrabaLink(){
+  const f=state.editF;if(!f||f.id==null)return;
+  copyText(location.origin+location.pathname+'?funnel='+f.id+'&tracking=1',true);
+  toast(LANG==='de'?'Link kopiert — öffnet Funnel #'+f.id+' direkt mit Tracking-Band':'Link copied — opens funnel #'+f.id+' with the tracking band expanded');
+}
 // Funnel-first-Einstieg vom Dashboard: in die Reise-Ansicht, leeren Funnel öffnen und
 // direkt zur Phase-2-Bühne (Haus bauen) scrollen — nicht oben bei Phase 1 landen.
 function dashNewFunnel(){switchView('fc');newFunnel(false);
@@ -2973,6 +2999,14 @@ function renderFunnelDetail(){
   $('fnStatusPill').innerHTML=idpill+(f.slug?' · '+esc(f.slug):'');
   if($('fnTitleView'))$('fnTitleView').textContent=f.name||(LANG==='de'?'Neuer Funnel':'New funnel');
   $('fnArchive').style.display=(f.id!=null&&f.status!=='archived')?'':'none';
+  // Direktlink-Knopf: nur bei gespeicherten Akquise-Funnels (Serien tragen keine # und
+  // sind nicht Prabas Welt). Kopiert ?funnel=<#>&tracking=1 — siehe applyDeepLink().
+  const pl=$('fnPlink');
+  if(pl){const showPl=f.id!=null&&!isLifecycle(f);pl.style.display=showPl?'':'none';
+    if(showPl){pl.textContent=LANG==='de'?'Link kopieren (Praba)':'Copy link (Praba)';
+      pl.title=LANG==='de'
+        ?'Direktlink zu diesem Funnel kopieren. Wer ihn öffnet (nach Login), landet direkt hier — mit aufgeklapptem Tracking-Band. Zum Verschicken an Praba: „Hier trägst Du das Tracking ein."'
+        :'Copy a direct link to this funnel. Whoever opens it (after login) lands right here — with the tracking band expanded. Meant for sending to Praba: "this is where you enter the tracking."';}}
   const allSteps=f.steps||[];
   // Reise-Bänder zuerst rendern — sie enthalten den #fnSteps-Rahmen, der gleich gefüllt wird.
   renderFcJourney(f);
