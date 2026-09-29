@@ -823,6 +823,18 @@
   .ot-item .ot-d{font-size:11px;color:#ffb39f;margin-left:auto;flex:none;text-align:right}
   .ot-item .ot-go{color:#8e94c0;font-size:12px;flex:none}
   .ot-ok{display:flex;align-items:center;gap:8px;color:#8ff0b0;font-size:12.5px;padding:12px 4px}
+  .dbadge{display:inline-block;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;padding:1px 5px;border-radius:5px;margin-right:7px;border:1px solid;vertical-align:1px}
+  .dbadge.dfae{color:#ffb39f;border-color:rgba(255,120,90,.45);background:rgba(255,120,90,.10)}
+  .dbadge.dvor{color:#d9e08c;border-color:rgba(217,224,140,.38);background:rgba(217,224,140,.08)}
+  .dbadge.dkein{color:#8e94c0;border-color:var(--tn-border);background:rgba(255,255,255,.02)}
+  .ot-sub{margin-top:8px;border-top:1px solid var(--tn-border);padding-top:8px}
+  .ot-subh{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;padding:4px 2px;cursor:pointer;color:#8e94c0;font-size:11.5px;text-align:left;font-family:inherit}
+  .ot-subh:hover{color:#c6cbf0}
+  .ot-subh .pill{margin-left:auto}
+  .ot-car{font-size:10px;width:10px;flex:none}
+  .ot-subb{margin-top:6px}
+  .ot-item.muted{opacity:.62}
+  .ot-item.muted .ot-d{color:#8e94c0}
   @media(max-width:900px){.ot-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.app-shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:grid;grid-template-columns:repeat(2,1fr)}.dashgrid{grid-template-columns:1fr}}
   /* ═══ Campaign Overview (Swimlanes) ═══ */
@@ -3390,7 +3402,7 @@ function renderFunnelRegistry(){
     if(Z.track){tcells=`<td class="col-praba rmono zstart-track">${cv?(esc(cv.ga4_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.ga4_status):'—'}</td><td class="col-praba rmono">${cv?esc(cv.ga4_trigger||''):''}</td>`
       +`<td class="col-praba rmono">${cv?esc(cv.ads_conversion_id||''):''}</td><td class="col-praba rmono">${cv?esc(cv.ads_label||''):''}</td><td class="col-praba">${cv?esc(cv.ads_value||''):''}</td><td class="col-praba">${cv?yn(cv.ads_status):'—'}</td>`
       +`<td class="col-praba rmono">${cv?(esc(cv.meta_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.meta_status):'—'}</td><td class="col-praba">${cv?esc(cv.notes||''):''}</td>`;}
-    else tcells=`<td class="col-tracksum zstart-track">${cv?`${dot}GA4 ${sm(cv.ga4_status)} · Ads ${sm(cv.ads_status)} · Meta ${sm(cv.meta_status)} · ${convPct(cv)}%`:`<span class="rmuted">${de?'kein Goal':'no goal'}</span>`}</td>`;
+    else tcells=`<td class="col-tracksum zstart-track">${dutyBadge(funnelDuty(f))}${cv?`${dot}GA4 ${sm(cv.ga4_status)} · Ads ${sm(cv.ads_status)} · Meta ${sm(cv.meta_status)} · ${convPct(cv)}%`:`<span class="rmuted">${de?'kein Goal':'no goal'}</span>`}</td>`;
     return `<tr class="reg-row" onclick="selectFunnel(${f.id})"><td class="col-mine rid">${f.id!=null?`#${esc(f.id)}`:'—'}</td><td class="col-mine">${esc(glabel(f.product))}</td><td class="col-mine rfunnel">${dot}<span class="fname" onclick="selectFunnel(${f.id})">${esc(f.name)}</span></td><td class="col-mine">${esc(f.purpose||'')}</td>`
       +`<td class="col-p1 zstart-p1">${p1cell}</td>`+p2cells+`<td class="col-p3 zstart-p3">${p3cell}</td>`+tcells
       +`<td class="col-edit"><button class="reg-edit" title="${t('fc.open')}" onclick="selectFunnel(${f.id})">✎</button></td></tr>`;
@@ -3727,20 +3739,58 @@ function setConn(s){connState=s;const d=$('connDot'),l=$('connLabel');if(!d)retu
   d.className='dot'+(s==='ok'?' ok':s==='err'?' err':'');l.textContent=t('conn.'+s);}
 function toggleHowto(show){$('howtoOverlay').classList.toggle('hidden',!show)}
 /* ── Offene Aufgaben: aus den Daten abgeleitet, nach Zuständigkeit getrennt ── */
+// Drei Eimer statt zwei (Regel Marnie 2026-09-29, CLAUDE.md §2b): Praba schuldet kein Tracking
+// fuer einen Funnel, auf den keine Werbung laeuft, und nichts fuer einen abgelaufenen Termin.
+// Rein abgeleitet, kein neues Feld: nicht archiviert + traffic paid|both + mindestens eine
+// UTM-Zeile dieses funnel_ref auf 'aktiv' = faellig. Nur 'geplant' = vorgemerkt. Sonst kein Bedarf.
+const DUTY_RANK={'kein-bedarf':0,'vorgemerkt':1,'faellig':2};
+function funnelDuty(f){
+  if(!f||f.status==='archived')return {duty:'kein-bedarf',why:LANG==='de'?'archiviert':'archived'};
+  const tr=f.traffic||'';
+  if(tr!=='paid'&&tr!=='both')return {duty:'kein-bedarf',why:tr==='organic'?(LANG==='de'?'organisch':'organic'):(LANG==='de'?'traffic offen':'traffic unset')};
+  const rows=(state.rows||[]).filter(r=>(r.funnel_ref||'')===f.name);
+  if(rows.some(r=>rowStatus(r)==='aktiv'))return {duty:'faellig',why:''};
+  return {duty:'vorgemerkt',why:rows.length?(LANG==='de'?'Anzeigen nur geplant':'ads only planned'):(LANG==='de'?'noch keine UTM-Zeile':'no UTM row yet')};
+}
+// Common Conversions haengen an mehreren Funnels (tuer-agnostisch) — der dringendste Funnel
+// entscheidet, und er wird auch das Sprungziel.
+function convDuty(c){
+  let best={duty:'kein-bedarf',why:LANG==='de'?'kein Funnel zeigt darauf':'no funnel points here'},host=null;
+  (state.funnels||[]).forEach(f=>{
+    if(!(f.steps||[]).some(s=>s.conversion_key===c.key))return;
+    const d=funnelDuty(f);
+    if(host===null||DUTY_RANK[d.duty]>DUTY_RANK[best.duty]){best=d;host=f;}
+  });
+  return {duty:best.duty,why:best.why,host:host};
+}
+// Kleines Schild fuer die Registry-Zeile: sagt, ob der Prozentwert daneben ueberhaupt eine
+// Bringschuld beschreibt. 45 % auf einem organischen Funnel ist kein Rueckstand.
+function dutyBadge(d){
+  const de=LANG==='de';
+  if(!d)return '';
+  if(d.duty==='faellig')return `<span class="dbadge dfae" title="${de?'Werbung laeuft — die fehlenden Haekchen sind echte Arbeit':'ads live — missing checks are real work'}">${de?'fällig':'due'}</span>`;
+  if(d.duty==='vorgemerkt')return `<span class="dbadge dvor" title="${esc(d.why||'')}">${de?'vorgemerkt':'planned'}</span>`;
+  return `<span class="dbadge dkein" title="${esc(d.why||'')}">${de?'kein Bedarf':'not needed'}</span>`;
+}
 function openTasks(){
   const de=LANG==='de';
   const mine=[],praba=[];
   const isOpen=s=>s!=='done'&&s!=='-';
   state.convs.forEach(c=>{
+    const d=convDuty(c);
     const o=[];
     if(isOpen(c.ga4_status))o.push('GA4');
-    if(isOpen(c.ads_status))o.push('Google Ads');
-    if(isOpen(c.meta_status))o.push('Meta');
+    // Bei organisch/archiviert braucht es kein Ads- und kein Meta-Tag — §2b Punkt 2.
+    if(d.duty!=='kein-bedarf'){
+      if(isOpen(c.ads_status))o.push('Google Ads');
+      if(isOpen(c.meta_status))o.push('Meta');
+    }
     if(!o.length)return;
     // Sprungziel (Marnie 2026-08-01): der Funnel, dessen Goal auf diese Conversion zeigt —
     // dort lebt Prabas Editier-Karte. Ohne Host-Funnel: Conversions-Katalog mit offenem Editor.
-    const host=state.funnels.find(f=>f.status!=='archived'&&(f.steps||[]).some(s=>s.conversion_key===c.key));
-    praba.push({label:c.name||c.key,detail:o.join(' · ')+(de?' offen':' open'),view:'fc',fid:host?host.id:null,cid:c.id,ckey:c.key});
+    const host=d.host&&d.host.status!=='archived'?d.host:state.funnels.find(f=>f.status!=='archived'&&(f.steps||[]).some(s=>s.conversion_key===c.key));
+    praba.push({label:c.name||c.key,detail:o.join(' · ')+(de?' offen':' open'),duty:d.duty,why:d.why,
+      view:'fc',fid:host?host.id:null,cid:c.id,ckey:c.key});
   });
   state.funnels.filter(f=>f.status!=='archived').forEach(f=>{
     const steps=f.steps||[];
@@ -3763,10 +3813,30 @@ function renderOpenTasks(){
       :`<div class="ot-ok">✓ ${de?'alles erledigt':'all done'}</div>`)+`</div>`;
   box.innerHTML=`<div class="ot-grid">
     ${col('mine',de?'Marketing':'Marketing',de?'Marnie':'Marnie',tasks.mine)}
-    ${col('praba',de?'Tracking':'Tracking',de?'Praba':'Praba',tasks.praba)}
+    ${prabaCol(tasks.praba)}
   </div>`;
   return tasks;
 }
+// Prabas Spalte in drei Eimern (§2b): oben die echten Aufgaben, darunter aufklappbar,
+// was wartet und was nie faellig wird. Die Zahl im Kopf ist bewusst nur 'faellig' —
+// alles andere waere erfundene Arbeit, die die echte verdeckt.
+function prabaCol(items){
+  const de=LANG==='de';
+  const f=items.filter(i=>i.duty==='faellig'),v=items.filter(i=>i.duty==='vorgemerkt'),k=items.filter(i=>i.duty==='kein-bedarf');
+  const open=state.otDuty||'';
+  const item=i=>`<div class="ot-item" onclick="otGo('${i.view}',${i.fid!=null?i.fid:'null'},${i.cid!=null?i.cid:'null'},'${esc(i.ckey||'')}')" title="${esc(i.label)}"><b>${esc(i.label)}</b><span class="ot-d">${esc(i.detail)}</span><span class="ot-go">↗</span></div>`;
+  const sub=(key,label,list,cls)=>!list.length?'':`<div class="ot-sub ${cls}">`
+    +`<button class="ot-subh" type="button" onclick="otDuty('${key}')"><span class="ot-car">${open===key?'▾':'▸'}</span>${esc(label)}<span class="pill">${list.length}</span></button>`
+    +(open===key?`<div class="ot-subb">${list.map(i=>`<div class="ot-item muted" onclick="otGo('${i.view}',${i.fid!=null?i.fid:'null'},${i.cid!=null?i.cid:'null'},'${esc(i.ckey||'')}')" title="${esc(i.label)}"><b>${esc(i.label)}</b><span class="ot-d">${esc(i.why||i.detail)}</span><span class="ot-go">↗</span></div>`).join('')}</div>`:'')
+    +`</div>`;
+  return `<div class="ot-col praba">`
+    +`<div class="ot-h"><b>${de?'Tracking':'Tracking'}</b><span class="pill">${f.length}</span><span class="ot-own">${de?'Praba · fällig':'Praba · due'}</span></div>`
+    +(f.length?f.map(item).join(''):`<div class="ot-ok">✓ ${de?'nichts fällig':'nothing due'}</div>`)
+    +sub('vorgemerkt',de?'vorgemerkt · Werbung nur geplant':'planned · ads not live yet',v,'vorg')
+    +sub('kein-bedarf',de?'kein Bedarf · organisch oder archiviert':'not needed · organic or archived',k,'kbed')
+    +`</div>`;
+}
+function otDuty(k){state.otDuty=(state.otDuty===k?'':k);renderOpenTasks();}
 // Dashboard-Aufgabe → exakt an die Stelle springen, nicht nur in den Tab (Marnie 2026-08-01).
 // Praba-Aufgabe: Host-Funnel öffnen + zur Tracking-Karte der Conversion scrollen (Flash);
 // ohne Host-Funnel in den Conversions-Katalog mit geöffnetem Editor.
@@ -3788,7 +3858,8 @@ function otGo(view,fid,cid,ckey){
 function renderDashboard(){
   const s=$('dashStats'); if(!s)return;
   const tasks=renderOpenTasks();
-  const openCount=tasks.mine.length+tasks.praba.length;
+  // Nur faellige Praba-Aufgaben zaehlen (§2b) — vorgemerkt/kein Bedarf ist keine Bringschuld.
+  const openCount=tasks.mine.length+tasks.praba.filter(i=>i.duty==='faellig').length;
   const items=[[state.funnels.length,'Funnels'],[state.convs.length,'Conversions'],[state.rows.length,'UTM-Links'],[state.naming.length,LANG==='de'?'Namen':'Names']];
   s.innerHTML=items.map(([n,l])=>`<span class="dstat"><b>${n}</b> ${esc(l)}</span>`).join('')
     +`<span class="dstat ${openCount?'attn':'clear'}"><b>${openCount}</b> ${LANG==='de'?'offen':'open'}</span>`;
