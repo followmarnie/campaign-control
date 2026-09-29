@@ -3823,7 +3823,9 @@ function openTasks(){
     const noUrl=steps.filter(s=>stepHasUrl(s.type)&&!String(s.url||'').trim()&&!((s.variants||[]).some(v=>String(v.url||'').trim()))).length;
     if(noUrl)mine.push({label:f.name,detail:noUrl+(de?' Step(s) ohne URL':' step(s) without URL'),view:'fc',fid:f.id});
     if(f.status==='draft')(lc?draftLc:draftFn).push({label:f.name,detail:de?'noch Entwurf':'still draft',bucket:'zustand',view:lc?'lifecycle':'fc',fid:lc?null:f.id});
-    steps.forEach(s=>{(s.variants||[]).forEach(v=>{if(utmKeyword(v.quelle)&&!v.utm_done&&String(v.url||'').trim())mine.push({label:f.name,detail:(de?'UTM fehlt · ':'UTM missing · ')+(v.quelle||'Tür'),view:'utm'});});});
+    // fid mitgeben, damit diese Punkte zu ihrem Funnel gruppieren — gesprungen wird trotzdem
+    // in den UTM-Builder (otGo steigt bei view!=='fc' vorher aus).
+    steps.forEach(s=>{(s.variants||[]).forEach(v=>{if(utmKeyword(v.quelle)&&!v.utm_done&&String(v.url||'').trim())mine.push({label:f.name,detail:(de?'UTM fehlt · ':'UTM missing · ')+(v.quelle||'Tür'),view:'utm',fid:f.id});});});
   });
   // Der blinde Fleck der Drei-Eimer-Regel, sichtbar gemacht (gemessen 29.09.: 20 Zeilen).
   // Eine bezahlte, aktive Zeile ohne funnel_ref kann keinen Funnel faellig machen — das Dashboard
@@ -3869,7 +3871,9 @@ function otSubHtml(key,label,list,cls){
 function otGroup(items){
   const out=[],by=new Map();
   items.forEach(i=>{
-    const k=i.fid!=null?'f'+i.fid:'x'+out.length+'-'+i.label;
+    // Schluessel: die Funnel-ID, wenn es eine gibt (Funnel-Namen sind NICHT eindeutig — #12 und
+    // #25 heissen beide „Email-Opt-in (Guide)"), sonst der Text der Sammelzeile.
+    const k=i.fid!=null?'f'+i.fid:'l'+i.label;
     if(!by.has(k)){by.set(k,{key:k,label:i.label,fid:i.fid,view:i.view,items:[]});out.push(by.get(k));}
     by.get(k).items.push(i);
   });
