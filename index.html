@@ -503,6 +503,8 @@
   table.reg th.col-mine{background:#241a44;color:#d7c3ff}
   table.reg th.col-praba{background:#16234e;color:#a9c2ff}
   table.reg td.col-mine{background:rgba(150,57,243,.05)}
+  table.reg td.rnote{max-width:280px;font-size:11px;line-height:1.45;color:#b9bfe4;white-space:normal}
+  table.reg td.rnote .rnote-ask{color:#d9e08c;font-style:italic}
   table.reg td.col-praba{background:rgba(70,120,245,.06)}
   table.reg .pcol-first{border-left:2px solid rgba(102,102,255,.45)}
   table.reg th.col-edit,table.reg td.col-edit{background:#16234e;text-align:center;min-width:48px}
@@ -2035,8 +2037,13 @@ const STEP_TYPES=['lp','form','email','asset','page','call','purchase'];
 // asset = heruntergeladenes Wert-Asset (PDF/Handout); die URL ist das Ziel des enthaltenen CTAs.
 const STEP_URL_TYPES=['lp','page','purchase','asset'];
 const stepHasUrl=ty=>STEP_URL_TYPES.includes(String(ty||'').toLowerCase());
-const FUNNEL_GROUPS=[['','— (keine)'],['DAY','DAY · Daytrading'],['SWG','SWG · Swingtrading'],['LOI','LOI'],['FI','FI'],
-  ['ACA','ACA · Academy'],['PSY','PSY · Psychologie'],['SWA','SWA · Software'],['LOT','LOT'],['BRAND','Brand'],['COMMON','Common · Conversions']];
+// LOI heisst Level of Interest — der Kuerzel-Eintrag ist der einzige, „Level of Interest" als
+// Produktwert ist ein Zwilling und wurde am 29.09. eingesammelt (Marnie).
+// WEB war am 29.09. in der CLAUDE.md entschieden, aber nie hier eingetragen; vier Webinar-Funnels
+// liefen dadurch unter einer Gruppe, die die Liste nicht kennt.
+const FUNNEL_GROUPS=[['','— (keine)'],['DAY','DAY · Daytrading'],['SWG','SWG · Swingtrading'],['LOI','LOI · Level of Interest'],['FI','FI · Futures Insights'],
+  ['ACA','ACA · Academy'],['WEB','WEB · Webinare & Termine'],['PSY','PSY · Psychologie'],['SWA','SWA · Software'],['LOT','LOT'],
+  ['Free Plan','Free Plan · Lifecycle'],['BRAND','Brand'],['COMMON','Common · Conversions']];
 
 /* ─────────────── Helpers ─────────────── */
 const $=id=>document.getElementById(id);
@@ -2413,7 +2420,9 @@ const SORT_ACC={naming:{id:n=>Number(n.id)||0,linked:n=>namingLinked(n.id)?1:0,t
   reg:{id:f=>Number(f.id)||0,
        product:f=>{const i=FUNNEL_GROUPS.map(x=>x[0]).indexOf(f.product);return i<0?999:i;},
        funnel:f=>f.name||'',
-       purpose:f=>f.purpose||''}};
+       purpose:f=>f.purpose||'',
+       // Sortiert Entwuerfe ohne Begruendung nach oben — das ist die Arbeit an dieser Spalte.
+       note:f=>(String(f.description||'').trim()?'1'+f.description:(f.status==='draft'?'0':'2'))}};
 function sortList(arr,tbl){
   const s=sortState[tbl];
   const acc=(SORT_ACC[tbl]||{})[s.k]||(r=>r[s.k]);
@@ -3023,7 +3032,17 @@ function renderFunnelDetail(){
   const f=state.editF; const card=$('fnDetail'); if(!card)return;
   if(!f){card.style.display='none';return}
   card.style.display='';
-  $('fnName').value=f.name||'';$('fnStatus').value=f.status||'draft';$('fnProduct').value=f.product||'';
+  // Schutz gegen stilles Zuruecksetzen: kennt das Dropdown den Status nicht (Altbestand 'active',
+  // oder ein Wert aus einem Import), waere selectedIndex=-1 und Speichern wuerde ihn verlieren.
+  // 'active' ist der Zwilling von 'live'; alles andere Unbekannte wird als Option angehaengt,
+  // damit es sichtbar bleibt statt zu verschwinden.
+  $('fnName').value=f.name||'';
+  (function(){var sel=$('fnStatus'),v=f.status||'draft';
+    if(v==='active')v='live';
+    if(![...sel.options].some(function(o){return o.value===v})){
+      var o=document.createElement('option');o.value=v;o.textContent=v+' (?)';sel.appendChild(o);}
+    sel.value=v;})();
+  $('fnProduct').value=f.product||'';
   $('fnPurpose').value=f.purpose||'';$('fnDesc').value=f.description||'';$('fnTraffic').value=f.traffic||'';
   if($('fnSystem'))$('fnSystem').value=f.system||''; // Absender-System nur bei Lifecycle-Serien
   if($('fnSystemRow'))$('fnSystemRow').style.display=isLifecycle(f)?'':'none';
@@ -3374,7 +3393,7 @@ function renderFunnelRegistry(){
   const car=k=>`<span class="zcar${Z[k]?'':' cl'}">▾</span> `;
   // ── Kopf-Zeile 1: die Phasen-Zonen (farbig, P2/Tracking klickbar zum Einklappen) ──
   let zrow='<tr class="reg-zones">'
-    +`<th class="zfix rid-col" colspan="4">Funnel</th>`
+    +`<th class="zfix rid-col" colspan="5">Funnel</th>`
     +`<th class="zone zp1" colspan="1">${de?'Phase 1 · Ankunft':'Phase 1 · Arrival'}</th>`
     +`<th class="zone zp2 ztog" colspan="${p2span}" onclick="toggleRegZone('p2')" title="${de?'Phase 2 ein-/ausklappen':'Collapse/expand Phase 2'}">${car('p2')}Phase 2 · On-Site</th>`
     +`<th class="zone zp3" colspan="1">Phase 3 · Lifecycle</th>`
@@ -3382,6 +3401,9 @@ function renderFunnelRegistry(){
     +`<th class="zedit"></th></tr>`;
   // ── Kopf-Zeile 2: die Spalten ──
   let crow='<tr class="reg-cols">'+sth('id','#',' rid-col')+sth('product',esc(t('fn.product')))+sth('funnel','Funnel')+sth('purpose',esc(t('fn.purpose')))
+    // Stand/Notiz (Marnie 29.09.): damit ein Mensch im Ueberblick sieht, wie es um einen Funnel
+    // steht — und warum einer auf Entwurf liegt — ohne jeden einzeln aufzuklappen.
+    +sth('note',de?'Stand · Notiz':'Status · note')
     +`<th class="col-p1 zstart-p1">${de?'Ankunfts-Links':'Arrival links'}</th>`;
   if(Z.p2){for(let i=0;i<maxSteps;i++)crow+=`<th class="col-mine${i===0?' zstart-p2':''}">${t('reg.step')} ${String(i+1).padStart(2,'0')}</th>`;}
   else crow+=`<th class="col-p2sum zstart-p2">On-Site</th>`;
@@ -3413,6 +3435,7 @@ function renderFunnelRegistry(){
       +`<td class="col-praba rmono">${cv?(esc(cv.meta_event)||'—'):'—'}</td><td class="col-praba">${cv?yn(cv.meta_status):'—'}</td><td class="col-praba">${cv?esc(cv.notes||''):''}</td>`;}
     else tcells=`<td class="col-tracksum zstart-track">${dutyBadge(funnelDuty(f))}${cv?`${dot}GA4 ${sm(cv.ga4_status)} · Ads ${sm(cv.ads_status)} · Meta ${sm(cv.meta_status)} · ${convPct(cv)}%`:`<span class="rmuted">${de?'kein Goal':'no goal'}</span>`}</td>`;
     return `<tr class="reg-row" onclick="selectFunnel(${f.id})"><td class="col-mine rid">${f.id!=null?`#${esc(f.id)}`:'—'}</td><td class="col-mine">${esc(glabel(f.product))}</td><td class="col-mine rfunnel">${dot}<span class="fname" onclick="selectFunnel(${f.id})">${esc(f.name)}</span></td><td class="col-mine">${esc(f.purpose||'')}</td>`
+      +`<td class="col-mine rnote">${noteCell(f)}</td>`
       +`<td class="col-p1 zstart-p1">${p1cell}</td>`+p2cells+`<td class="col-p3 zstart-p3">${p3cell}</td>`+tcells
       +`<td class="col-edit"><button class="reg-edit" title="${t('fc.open')}" onclick="selectFunnel(${f.id})">✎</button></td></tr>`;
   }).join('')||`<tr><td colspan="99" style="color:#5b6090;padding:20px">${fltr==='all'?t('fn.emptylist'):t('reg.f.empty')}</td></tr>`;
@@ -3775,6 +3798,18 @@ function convDuty(c){
   });
   return {duty:best.duty,why:best.why,host:host};
 }
+// Die Notiz-Zelle (Marnie 29.09.: „ein sichtbares Kommentarfeld, damit auch ein Mensch kurz sehen
+// kann, was der Stand der Dinge ist und warum etwas auf Draft ist"). Quelle ist das vorhandene Feld
+// `description` — kein neues Feld. Bei einem Entwurf OHNE Begruendung steht das ausdruecklich da,
+// statt einer leeren Zelle: eine Leerstelle sieht wie ein Datenfehler aus, ein Hinweis wie eine Bitte.
+function noteCell(f){
+  const de=LANG==='de',d=String(f&&f.description||'').trim();
+  if(!d)return f&&f.status==='draft'
+    ? `<span class="rnote-ask">${de?'Entwurf — keine Begründung hinterlegt':'draft — no reason recorded'}</span>`
+    : `<span class="rmuted">—</span>`;
+  const kurz=d.length>150?d.slice(0,150)+'…':d;
+  return `<span title="${esc(d)}">${esc(kurz)}</span>`;
+}
 // Kleines Schild fuer die Registry-Zeile: sagt, ob der Prozentwert daneben ueberhaupt eine
 // Bringschuld beschreibt. 45 % auf einem organischen Funnel ist kein Rueckstand.
 function dutyBadge(d){
@@ -3822,7 +3857,13 @@ function openTasks(){
     }
     const noUrl=steps.filter(s=>stepHasUrl(s.type)&&!String(s.url||'').trim()&&!((s.variants||[]).some(v=>String(v.url||'').trim()))).length;
     if(noUrl)mine.push({label:f.name,detail:noUrl+(de?' Step(s) ohne URL':' step(s) without URL'),view:'fc',fid:f.id});
-    if(f.status==='draft')(lc?draftLc:draftFn).push({label:f.name,detail:de?'noch Entwurf':'still draft',bucket:'zustand',view:lc?'lifecycle':'fc',fid:lc?null:f.id});
+    // Im Entwurfs-Eimer steht als Detail die Begruendung aus `description`, nicht nur „noch Entwurf" —
+    // genau die Frage, die man beim Draufsehen hat (Marnie 29.09.).
+    if(f.status==='draft'){
+      const d=String(f.description||'').trim();
+      const kurz=d?(d.length>90?d.slice(0,90)+'…':d):(de?'keine Begründung hinterlegt':'no reason recorded');
+      (lc?draftLc:draftFn).push({label:f.name,detail:kurz,bucket:'zustand',view:lc?'lifecycle':'fc',fid:lc?null:f.id});
+    }
     // fid mitgeben, damit diese Punkte zu ihrem Funnel gruppieren — gesprungen wird trotzdem
     // in den UTM-Builder (otGo steigt bei view!=='fc' vorher aus).
     steps.forEach(s=>{(s.variants||[]).forEach(v=>{if(utmKeyword(v.quelle)&&!v.utm_done&&String(v.url||'').trim())mine.push({label:f.name,detail:(de?'UTM fehlt · ':'UTM missing · ')+(v.quelle||'Tür'),view:'utm',fid:f.id});});});
@@ -3836,9 +3877,18 @@ function openTasks(){
   const blind=(state.rows||[]).filter(r=>(r.platform_type||'')==='paid'&&rowStatus(r)==='aktiv'&&!String(r.funnel_ref||'').trim()).length;
   if(blind)mine.push({label:blind+(de?' bezahlte UTM-Zeilen aktiv, ohne funnel_ref':' paid UTM rows active, without funnel_ref'),
     detail:de?'die Tracking-Regel ist dafür blind':'the tracking rule cannot see these',view:'utm'});
-  const unlinked=state.naming.filter(n=>!namingLinked(n.id)).length;
-  if(unlinked)mine.push({label:unlinked+(de?' Namen ohne UTM-Link':' names without UTM link'),detail:de?'im UTM-Builder verknüpfen':'link in UTM builder',view:'utm'});
-  return {mine,praba,draftFn,draftLc};
+  // „Name ohne UTM-Link" heisst: ein Kampagnen-/Asset-Name wurde nach SOP gemintet, aber daraus
+  // wurde nie ein getaggter Link. Bei einer Anzeige, die laufen soll, ist das echte Arbeit — bei
+  // einer Kampagne, deren Zeitraum vorbei ist, ist es Geschichte. Dieselbe Trennung wie bei §2b,
+  // und sie steht schon in den Daten: `period` (YYYY-MM). Ein Name ohne `period` gilt als aktuell.
+  const jetzt=new Date().toISOString().slice(0,7);
+  const unlinked=state.naming.filter(n=>!namingLinked(n.id));
+  const nAlt=unlinked.filter(n=>/^\d{4}-\d{2}$/.test(String(n.period||''))&&String(n.period)<jetzt);
+  const nJetzt=unlinked.filter(n=>nAlt.indexOf(n)<0);
+  if(nJetzt.length)mine.push({label:nJetzt.length+(de?' Namen ohne UTM-Link':' names without UTM link'),detail:de?'im UTM-Builder verknüpfen':'link in UTM builder',view:'utm'});
+  const namesOld=nAlt.map(n=>({label:n.campaign_name||('#'+n.id),
+    detail:(de?'Zeitraum ':'period ')+(n.period||'')+' '+(de?'ist vorbei':'is over'),bucket:'zustand',view:'utm'}));
+  return {mine,praba,draftFn,draftLc,namesOld};
 }
 function renderOpenTasks(){
   const box=$('otBox');if(!box)return {mine:[],praba:[]};
@@ -3899,6 +3949,7 @@ function mineCol(tasks){
     +(grps.length?grps.map(otGroupHtml).join(''):`<div class="ot-ok">✓ ${de?'alles erledigt':'all done'}</div>`)
     +otSubHtml('entwuerfe',de?'Funnels im Entwurf · noch nicht scharf':'funnels in draft · not live yet',tasks.draftFn||[],'vorg')
     +otSubHtml('serien',de?'Lifecycle-Serien im Bau · Liste im Lifecycle-Tab':'lifecycle series in build · list in the lifecycle tab',tasks.draftLc||[],'kbed')
+    +otSubHtml('namenAlt',de?'Namen aus vergangenen Kampagnen · nichts mehr zu verlinken':'names from past campaigns · nothing left to link',tasks.namesOld||[],'kbed')
     +`</div>`;
 }
 // Prabas Spalte in drei Eimern (§2b): oben die echten Aufgaben, darunter aufklappbar,
@@ -4192,7 +4243,10 @@ function wizBuildPlan(){
   steps.push({type:'page',title:'Danke',url:wiz.dankeUrl.trim(),conversion_key:convKey||''});
   const acTags=(wiz.acTags||[]).map(x=>x.trim()).filter(Boolean);
   if(acTags.length)steps.push({type:'email',title:wiz.seqName.trim()||'Lifecycle',ac_tag:acTags.join(', ')});
-  const funnel={name:fn,slug:kebab(fn),product:wiz.channel,purpose:t('wz.funpurpose',{c:base}),status:'active',traffic:null,steps};
+  // 'live', nicht 'active' (29.09.): Der Assistent hat bis dahin 'active' gemintet — ein Wert, den
+  // das Status-Dropdown im Editor nicht kennt. Ein solcher Funnel zeigte dort ein LEERES Status-Feld,
+  // und Speichern hat ihn stillschweigend auf Entwurf zurueckgesetzt. Acht Funnels waren betroffen.
+  const funnel={name:fn,slug:kebab(fn),product:wiz.channel,purpose:t('wz.funpurpose',{c:base}),status:'live',traffic:null,steps};
   // Conversion
   let newConv=null;
   if(wiz.convMode==='new'&&convKey&&!state.convs.some(c=>c.key===convKey)){
