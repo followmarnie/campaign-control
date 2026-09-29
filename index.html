@@ -2685,13 +2685,25 @@ function cancelEdit(){editing=null;renderRegistry()}
 // dass Claude die Datenbank nicht sieht — er weiss damit, was schon existiert.
 function buildSnapshot(){
   const isLc=f=>String(f.kind||'').toLowerCase()==='lifecycle';
+  const base=location.origin+location.pathname;
+  // id + deep_link seit 2026-09-29: ohne die Nummer liess sich aus dem Briefing
+  // kein Direktlink bauen (Marnies Wunsch). traffic + goals, damit aus dem
+  // Schnappschuss hervorgeht, was bezahlt laeuft und welche Conversion daran haengt.
   const funnels=state.funnels.filter(f=>!isLc(f)).map(f=>({
-    name:f.name, product:f.product||'', status:f.status||'', slug:f.slug||''
+    id:f.id, name:f.name, product:f.product||'', status:f.status||'', slug:f.slug||'',
+    traffic:f.traffic||'', goals:[...new Set((f.steps||[]).map(s=>s.conversion_key).filter(Boolean))],
+    deep_link:f.id==null?'':base+'?funnel='+f.id+'&tracking=1'
   }));
   const series=state.funnels.filter(isLc).map(f=>({
-    name:f.name, product:f.product||'', status:f.status||'', system:f.system||'ActiveCampaign'
+    id:f.id, name:f.name, product:f.product||'', status:f.status||'', system:f.system||'ActiveCampaign'
   }));
-  const conversions=state.convs.map(c=>({key:c.key, name:c.name||''}));
+  // Prabas Felder mit ausgeben: nur so ist im Briefing sichtbar, welche Conversion
+  // wirklich verdrahtet ist und auf welchem Pfad sie zaehlt.
+  const conversions=state.convs.map(c=>({
+    key:c.key, name:c.name||'', ga4_event:c.ga4_event||'', ga4_trigger:c.ga4_trigger||'',
+    ads_label:c.ads_label||'', ads_value:c.ads_value||'',
+    status:{ga4:c.ga4_status||'open', ads:c.ads_status||'open', meta:c.meta_status||'open'}
+  }));
   // Die Verdrahtung: welche UTM-Zeile zeigt auf welchen Funnel. Das ist,
   // was Claude wissen muss, um nichts doppelt zu minten / Namen zu treffen.
   const utms=state.rows.map(r=>({
