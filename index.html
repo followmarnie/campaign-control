@@ -2043,7 +2043,7 @@ const stepHasUrl=ty=>STEP_URL_TYPES.includes(String(ty||'').toLowerCase());
 // liefen dadurch unter einer Gruppe, die die Liste nicht kennt.
 const FUNNEL_GROUPS=[['','— (keine)'],['DAY','DAY · Daytrading'],['SWG','SWG · Swingtrading'],['LOI','LOI · Level of Interest'],['FI','FI · Futures Insights'],
   ['ACA','ACA · Academy'],['WEB','WEB · Webinare & Termine'],['PSY','PSY · Psychologie'],['SWA','SWA · Software'],['LOT','LOT'],
-  ['Free Plan','Free Plan · Lifecycle'],['BRAND','Brand'],['COMMON','Common · Conversions']];
+  ['FREE','FREE · Free Plan (Lifecycle)'],['BRAND','Brand'],['COMMON','Common · Conversions']];
 
 /* ─────────────── Helpers ─────────────── */
 const $=id=>document.getElementById(id);
@@ -4592,7 +4592,7 @@ function renderLcMap(){
     if(u.indexOf('level-of-interest')>-1)return 'LOI';
     if(u.indexOf('futures-insights')>-1)return 'FI';
     if(u.indexOf('webinar')>-1)return 'ACA';
-    if(u.indexOf('account.tradeneon.com')>-1||u.indexOf('signup')>-1)return 'Free Plan';
+    if(u.indexOf('account.tradeneon.com')>-1||u.indexOf('signup')>-1)return 'FREE';
     return '';};
   var hubByG={};hubs.forEach(function(h){hubByG[h.g]=h;});
   var nodeByName={};nodes.forEach(function(n){nodeByName[n.f.name]=n;});
