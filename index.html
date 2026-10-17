@@ -892,9 +892,12 @@
   .ovc-st{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--tn-border);white-space:nowrap}
   .ovc-st.ovcs-ok{color:#7ee6a6;border-color:rgba(126,230,166,.35);background:rgba(126,230,166,.08)}
   .ovc-st.ovcs-warn{color:#ffce7a;border-color:rgba(255,206,122,.35);background:rgba(255,206,122,.07)}
+  .ovc-st.ovcs-info{color:#9cc4ff;border-color:rgba(156,196,255,.35);background:rgba(156,196,255,.08);white-space:normal}
+  .ovc-lcrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px}
   .ovc-st.ovcs-bad{color:#ff8f8f;border-color:rgba(255,143,143,.35);background:rgba(255,143,143,.07)}
   .ovc-arrow{display:flex;align-items:center;justify-content:center;color:#4a4f7a;font-size:18px;padding:0 2px}
   .ovc-camp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 16px;border-bottom:1px solid var(--tn-border);background:rgba(9,12,35,.35);font-size:12px}
+  .ovc-art{font-size:11px;padding:2px 8px;border-radius:6px;background:rgba(150,57,243,.18);color:#d9c2ff;border:1px solid rgba(150,57,243,.4)}
   .ovc-cinfo{color:#aab0d6;font-size:11.5px}
   .ovc-links{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .ovc-links a{color:#c9a6ff;font-size:12px;text-decoration:none;border-bottom:1px dotted rgba(201,166,255,.5)}
@@ -1562,6 +1565,14 @@
       <div class="ov-tabs" id="ovTabs"></div>
       <span style="flex:1"></span>
       <input id="cmFilter" data-i18n-ph="cm.filter" style="min-width:180px;max-width:220px">
+      <select id="ovArt" style="width:auto" title="Art der Kampagne">
+        <option value="all">Art: alle</option>
+        <option value="dauerlaeufer">Dauerläufer</option>
+        <option value="saisonal">Saisonal</option>
+        <option value="launch">Launch</option>
+        <option value="termin">Webinar / Termin</option>
+        <option value="none">ohne Art</option>
+      </select>
       <select id="ovSrc" style="width:auto">
         <option value="all" data-i18n="ov.src.all">Quelle: alle</option>
         <option value="paid" data-i18n="ov.src.paid">Paid</option>
@@ -3754,15 +3765,35 @@ function ovCampaignCard(cn,rows,seg){
   }else{chainH=`<div class="ovc-chain empty">${t('ovc.funnel.none')}</div>`;funnelSt=ovStatusPill('bad',t('ovc.funnel.none'));}
   // ③ Lifecycle
   const fnAll=multiFn?frs.map(ovFunnelFor).filter(Boolean):(funnel?[funnel]:[]);
-  const acTags=[...new Set(fnAll.flatMap(f=>(f.steps||[]).filter(s=>s.ac_tag).map(s=>s.ac_tag)))];
+  // Lifecycle je Ziel (Marnie 17.10.2026): Was nach der Conversion passiert, haengt davon ab, was die
+  // Person getan hat — Broschuere startet eine Serie, Strategiegespraech geht an den Vertrieb. Der Weg
+  // ist abgeleitet: Goal-Step setzt `ac_tag` → Serie mit diesem Trigger (`steps[0].ac_tag`). Ohne Serie
+  // zeigt `handover` am Goal-Step eine bewusste Uebergabe statt eines Fehlers.
+  const lcBr=[],lcSeen=new Set(),de3=LANG==='de';
+  fnAll.forEach(f=>(f.steps||[]).forEach(st=>{
+    if(!st.conversion_key)return;
+    const k=st.conversion_key+'|'+(st.ac_tag||'');if(lcSeen.has(k))return;lcSeen.add(k);
+    const c=state.convs.find(x=>x.key===st.conversion_key);
+    const tags=String(st.ac_tag||'').split(',').map(x=>x.trim()).filter(Boolean);
+    const ser=tags.length?(state.funnels||[]).filter(x=>isLifecycle(x)&&x.status!=='archived'&&String(((x.steps||[])[0]||{}).ac_tag||'').split(',').map(y=>y.trim()).some(y=>tags.includes(y))):[];
+    lcBr.push({label:c?(c.name||st.conversion_key):st.conversion_key,ser,handover:st.handover||'',tag:tags[0]||''});
+  }));
   const lcBits=[];
   if(mails.length)lcBits.push(`<span class="ovc-asset">AC · ${mails.length} ${t('ovc.autos')}</span>`);
-  acTags.slice(0,3).forEach(tg=>lcBits.push(`<span class="ovc-tag">${esc(tg)}</span>`));
+  let lcMiss=0;
+  lcBr.forEach(b=>{
+    let st;
+    if(b.ser.length)st=b.ser.map(x=>ovStatusPill(x.status==='live'?'ok':'warn',(x.status==='live'?(de3?'Serie läuft: ':'series live: '):(de3?'Serie im Bau: ':'series in build: '))+x.name)).join('');
+    else if(b.handover)st=ovStatusPill('info',(de3?'Übergabe: ':'handover: ')+b.handover.split(',')[0]);
+    else{lcMiss++;st=ovStatusPill('bad',de3?'✗ keine Strecke':'✗ no sequence');}
+    lcBits.push(`<div class="ovc-lcrow" title="${esc(b.tag)}"><span class="ovc-node">${esc(b.label)}</span><span class="ovc-sep">→</span>${st}</div>`);
+  });
+  if(!lcBr.length){const acTags=[...new Set(fnAll.flatMap(f=>(f.steps||[]).filter(s=>s.ac_tag).map(s=>s.ac_tag)))];acTags.slice(0,3).forEach(tg=>lcBits.push(`<span class="ovc-tag">${esc(tg)}</span>`));}
   const lcH=lcBits.length?lcBits.join(''):`<div class="ovc-chain empty">${t('ovc.ac.none')}</div>`;
-  const lcSt=(mails.length||acTags.length)?ovStatusPill('ok',t('ovc.ac.ok')):ovStatusPill('warn',t('ovc.ac.none'));
+  const lcSt=lcBr.length?(lcMiss?ovStatusPill('warn',(de3?'⚠ ':'⚠ ')+lcMiss+(de3?' Ziel(e) ohne Strecke':' target(s) without sequence')):ovStatusPill('ok',de3?'✓ jedes Ziel hat einen Weg':'✓ every target has a path')):(mails.length?ovStatusPill('ok',t('ovc.ac.ok')):ovStatusPill('warn',t('ovc.ac.none')));
   return `<div class="ovc seg-${esc(seg)}">
     <div class="ovc-head">${tempH}<b title="${esc(cn)}">${esc(campaignShort(any))}</b>${prodLbl?`<span class="ovc-prod">${esc(prodLbl)}</span>`:''}<span class="mono ovc-full">${esc(cn)}</span></div>
-    ${campBarHtml(cn,rows.some(n=>(n.platform_type||'paid')==='paid'&&(state.rows||[]).some(r=>r.naming_id===n.id&&rowStatus(r)==='aktiv')))}
+    ${campBarHtml(cn,rows.some(n=>(n.platform_type||'paid')==='paid'&&(state.rows||[]).some(r=>r.naming_id===n.id&&rowStatus(r)==='aktiv')),rows)}
     <div class="ovc-phases">
       <div class="ovc-ph p1"><div class="ovc-ph-h"><em>${t('ovc.p1')}</em></div><div class="ovc-body">${assetsH}</div><div class="ovc-sts">${utmSt}</div></div>
       <div class="ovc-arrow">→</div>
@@ -3784,8 +3815,11 @@ function renderCampaigns(){
   nm.forEach(n=>{const c=n.campaign_name||'—';if(!camps.has(c))camps.set(c,[]);camps.get(c).push(n);});
   if($('cmCount'))$('cmCount').textContent=camps.size+' '+(LANG==='de'?'Kampagnen':'campaigns');
   inner.classList.add('cards');
+  const art=state.ovArt||'all';
+  if(art!=='all')for(const [cn,rows] of [...camps]){const k=campArt(cn,rows).k;if(art==='none'?!!k:k!==art)camps.delete(cn);}
+  if($('cmCount'))$('cmCount').textContent=camps.size+' '+(LANG==='de'?'Kampagnen':'campaigns');
   let h='';for(const [cn,rows] of camps)h+=ovCampaignCard(cn,rows,seg);
-  if(grp==='all'&&(src==='all'||src==='paid'))h+=campOrphanCards(q);
+  if(grp==='all'&&art==='all'&&(src==='all'||src==='paid'))h+=campOrphanCards(q);
   inner.innerHTML=h||`<div class="ov-empty" style="padding:26px">${t('ovc.empty')}</div>`;
 }
 /* ── Kampagnen-Steckbrief (Tabelle `campaigns`, seit 17.10.2026) ──
@@ -3794,16 +3828,26 @@ function renderCampaigns(){
    campaign_name aus dem Naming). Die Links zeigen auf die Drive — die Vorschau wird nicht
    eingebettet, damit es sie nur an einer Stelle gibt (Marnie 17.10.: „wenn zu pflegebeduerftig, nicht"). */
 const CAMP_ST=['geplant','aktiv','pausiert','beendet'];
-const CAMP_FIELDS=[['status','Status'],['start_date','Start'],['end_date','Ende'],['platform','Plattform'],['account_id','Konto'],['platform_campaign_id','Kampagnen-ID'],['budget','Budget'],['bogen_path','Bau-Bogen im Repo'],['drive_url','Drive-Ordner (Bau-Bogen)'],['preview_url','Anzeigen-Vorschau'],['notes','Notiz']];
+const CAMP_FIELDS=[['status','Status'],['art','Art'],['start_date','Start'],['end_date','Ende'],['platform','Plattform'],['account_id','Konto'],['platform_campaign_id','Kampagnen-ID'],['budget','Budget'],['bogen_path','Bau-Bogen im Repo'],['drive_url','Drive-Ordner (Bau-Bogen)'],['preview_url','Anzeigen-Vorschau'],['notes','Notiz']];
+// Art der Kampagne (Marnie 17.10.2026): zweite Achse neben der Produktgruppe. Die Gruppe sagt, WAS die
+// Kampagne fuettert (DAY, SWG, WEB …), die Art, WIE sie laeuft. Saisonal = Anlass-Kampagne (Halloween,
+// Black Friday, Weihnachten), passt zum Kampagnenkalender.
+const CAMP_ART=[['dauerlaeufer','Dauerläufer'],['saisonal','Saisonal'],['launch','Launch'],['termin','Webinar / Termin']];
+function campArtLbl(k){const a=CAMP_ART.find(x=>x[0]===k);return a?a[1]:'';}
+// Ohne Steckbrief wird die Art nur dort abgeleitet, wo das Naming sie eindeutig sagt (Webinar/EVT).
+function campArt(cn,rows){const m=campMeta(cn);if(m&&m.art)return {k:m.art,derived:false};
+  if((rows||[]).some(n=>/webinar/i.test(n.funnel_type||'')||String(n.function_tag||'')==='EVT'))return {k:'termin',derived:true};
+  return {k:'',derived:false};}
 const REPO_BLOB='https://github.com/followmarnie/TradeNeon_Architecture/blob/main/';
 function campMeta(cn){return (state.camps||[]).find(c=>c.campaign_name===cn)||null;}
 function fmtDay(d){if(!d)return '';const p=String(d).slice(0,10).split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:String(d);}
 function campToday(){return new Date().toISOString().slice(0,10);}
-function campBarHtml(cn,isPaid){
+function campBarHtml(cn,isPaid,rows){
   const de=LANG==='de',m=campMeta(cn);
+  const ar=campArt(cn,rows);const artH=ar.k?`<span class="ovc-art"${ar.derived?` title="${de?'aus dem Naming abgeleitet':'derived from naming'}"`:''}>${esc(campArtLbl(ar.k))}${ar.derived?' *':''}</span>`:'';
   if(state.campEdit===cn)return campEditorHtml(cn,m);
   const btn=`<button class="ovc-cbtn" type="button" data-cn="${esc(cn)}" onclick="campEdit(this.dataset.cn)">${m?(de?'Steckbrief bearbeiten':'edit profile'):(de?'Steckbrief anlegen':'add profile')}</button>`;
-  if(!m)return `<div class="ovc-camp">${isPaid?ovStatusPill('warn',de?'⚠ Steckbrief fehlt: Status, Laufzeit, Drive-Link':'⚠ profile missing: status, dates, Drive link'):''}<span style="flex:1"></span>${btn}</div>`;
+  if(!m)return `<div class="ovc-camp">${artH}${isPaid?ovStatusPill('warn',de?'⚠ Steckbrief fehlt: Status, Laufzeit, Drive-Link':'⚠ profile missing: status, dates, Drive link'):''}<span style="flex:1"></span>${btn}</div>`;
   const ended=m.status==='aktiv'&&m.end_date&&String(m.end_date)<campToday();
   const stK=ended?'bad':m.status==='aktiv'?'ok':m.status==='beendet'?'':'warn';
   const run=(m.start_date||m.end_date)?`<span class="ovc-cinfo">${fmtDay(m.start_date)||'?'} – ${fmtDay(m.end_date)||(de?'offen':'open')}</span>`:'';
@@ -3811,7 +3855,7 @@ function campBarHtml(cn,isPaid){
   if(m.drive_url)links.push(`<a href="${esc(m.drive_url)}" target="_blank" rel="noopener">${de?'Bau-Bogen (Drive)':'Build sheet (Drive)'}</a>`);
   if(m.preview_url)links.push(`<a href="${esc(m.preview_url)}" target="_blank" rel="noopener">${de?'Anzeigen-Vorschau':'Ad preview'}</a>`);
   if(m.bogen_path)links.push(`<a href="${esc(/^https?:/.test(m.bogen_path)?m.bogen_path:REPO_BLOB+m.bogen_path)}" target="_blank" rel="noopener" title="${esc(m.bogen_path)}">${de?'Quelle im Repo':'Source in repo'}</a>`);
-  return `<div class="ovc-camp">${ovStatusPill(stK,(ended?(de?'Laufzeit vorbei · ':'ended · '):'')+m.status)}${run}`
+  return `<div class="ovc-camp">${artH}${ovStatusPill(stK,(ended?(de?'Laufzeit vorbei · ':'ended · '):'')+m.status)}${run}`
     +`${m.platform?`<span class="ovc-cinfo">${esc(m.platform)}${m.platform_campaign_id?' · '+esc(m.platform_campaign_id):''}</span>`:''}`
     +`${m.budget?`<span class="ovc-cinfo" title="${esc(m.budget)}">${esc(m.budget.length>48?m.budget.slice(0,47)+'…':m.budget)}</span>`:''}`
     +`<span class="ovc-links">${links.join('')}${!m.drive_url?ovStatusPill('warn',de?'⚠ Drive-Link fehlt':'⚠ Drive link missing'):''}</span><span style="flex:1"></span>${btn}</div>`
@@ -3822,6 +3866,7 @@ function campEditorHtml(cn,m){
   const f=CAMP_FIELDS.map(([k,l])=>{const v=m[k]==null?'':String(m[k]).slice(0,k.endsWith('_date')?10:9999);
     let inp;
     if(k==='status')inp=`<select id="ce_${k}">${CAMP_ST.map(x=>`<option${(v||'geplant')===x?' selected':''}>${x}</option>`).join('')}</select>`;
+    else if(k==='art')inp=`<select id="ce_${k}"><option value="">—</option>${CAMP_ART.map(([a,l])=>`<option value="${a}"${v===a?' selected':''}>${l}</option>`).join('')}</select>`;
     else if(k.endsWith('_date'))inp=`<input id="ce_${k}" type="date" value="${esc(v)}">`;
     else inp=`<input id="ce_${k}" value="${esc(v||(k==='platform'&&!m.campaign_name?'Google Ads':''))}">`;
     return `<label class="ovc-cf${['notes','budget','drive_url','preview_url','bogen_path'].includes(k)?' wide':''}"><span>${l}</span>${inp}</label>`;}).join('');
@@ -5051,6 +5096,7 @@ $('showArch').addEventListener('change',()=>{renderFcTabs();renderFunnelList();r
 $('uOnlyOpen').addEventListener('change',refreshDynamic);
 $('cmFilter').addEventListener('input',renderCampaigns);
 $('ovSrc').addEventListener('change',()=>{state.ovSrc=$('ovSrc').value;renderCampaigns();});
+$('ovArt').addEventListener('change',()=>{state.ovArt=$('ovArt').value;renderCampaigns();});
 document.querySelectorAll('#ovSeg button').forEach(b=>b.onclick=()=>setOvSeg(b.dataset.seg));
 $('who').value=localStorage.getItem('tn_cockpit_who')||'';
 $('who').addEventListener('input',()=>localStorage.setItem('tn_cockpit_who',$('who').value));
