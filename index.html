@@ -894,7 +894,24 @@
   .ovc-st.ovcs-warn{color:#ffce7a;border-color:rgba(255,206,122,.35);background:rgba(255,206,122,.07)}
   .ovc-st.ovcs-bad{color:#ff8f8f;border-color:rgba(255,143,143,.35);background:rgba(255,143,143,.07)}
   .ovc-arrow{display:flex;align-items:center;justify-content:center;color:#4a4f7a;font-size:18px;padding:0 2px}
-  @media(max-width:820px){.ovc-phases{grid-template-columns:1fr}.ovc-arrow{display:none}.ovc-ph{border-top:2px solid var(--tn-border)}.ovc-full{max-width:100%;margin-left:0}}
+  .ovc-camp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 16px;border-bottom:1px solid var(--tn-border);background:rgba(9,12,35,.35);font-size:12px}
+  .ovc-cinfo{color:#aab0d6;font-size:11.5px}
+  .ovc-links{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .ovc-links a{color:#c9a6ff;font-size:12px;text-decoration:none;border-bottom:1px dotted rgba(201,166,255,.5)}
+  .ovc-links a:hover{color:#fff}
+  .ovc-cbtn{font-size:11.5px;padding:3px 10px;border-radius:8px;border:1px solid var(--tn-border);background:transparent;color:#aab0d6;cursor:pointer}
+  .ovc-cbtn:hover{color:#fff;border-color:#9639f3}
+  .ovc-cnote{padding:6px 16px 8px;font-size:11.5px;color:#8a8fb8;border-bottom:1px solid var(--tn-border)}
+  .ovc-camp.edit{display:block}
+  .ovc-cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
+  .ovc-cf{display:flex;flex-direction:column;gap:3px;font-size:11px;color:#8a8fb8}
+  .ovc-cf.wide{grid-column:span 3}
+  .ovc-cf input,.ovc-cf select{width:100%}
+  .ovc-cact{display:flex;gap:8px;margin-top:10px}
+  .ovc-fnrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;cursor:pointer;margin-bottom:4px}
+  .ovc-fnrow:hover .ovc-fnname{color:#fff}
+  .ovc-fnname{font-size:12px;color:#c9c6ef}
+  @media(max-width:820px){.ovc-cgrid{grid-template-columns:1fr}.ovc-cf.wide{grid-column:auto}.ovc-phases{grid-template-columns:1fr}.ovc-arrow{display:none}.ovc-ph{border-top:2px solid var(--tn-border)}.ovc-full{max-width:100%;margin-left:0}}
   /* Kampagnen-Assistent (Wizard) */
   .nav-accent{position:relative}
   .nav-accent .ic{color:#c9a6ff}
@@ -2085,7 +2102,7 @@ function fillMed(id){$(id).innerHTML=MEDIUM_OPTS.map(m=>`<option>${m}</option>`)
 
 let nameMode='paid';
 let currentNamingId=null; // im UTM-Builder gewählter Naming-Eintrag
-const state={rows:[],naming:[],funnels:[],convs:[],editN:null,editF:null,editCvId:null,fcTab:'all',stepSel:0,regFilter:'all',smView:'tree'};
+const state={rows:[],naming:[],funnels:[],convs:[],camps:[],campEdit:null,editN:null,editF:null,editCvId:null,fcTab:'all',stepSel:0,regFilter:'all',smView:'tree'};
 // Ist ein Naming-Eintrag schon mit einer UTM-Zeile verknüpft? (= „Übertragen"-Häkchen)
 function namingLinked(id){return state.rows.some(r=>r.naming_id===id)}
 function whoami(){return ($('who').value||'').trim()}
@@ -2147,13 +2164,14 @@ async function sb(path,opts={},_retried){
 async function loadAll(){
   try{
     setConn('load');
-    const [rows,naming,funnels,convs]=await Promise.all([
+    const [rows,naming,funnels,convs,camps]=await Promise.all([
       sb('utm_registry?select=*&order=created_at.desc'),
       sb('naming_registry?select=*&order=created_at.desc').catch(()=>[]),
       sb('funnels?select=*&order=id.asc').catch(()=>[]),
-      sb('conversions?select=*&order=id.asc').catch(()=>[])
+      sb('conversions?select=*&order=id.asc').catch(()=>[]),
+      sb('campaigns?select=*&order=campaign_name.asc').catch(()=>[])
     ]);
-    state.rows=rows||[];state.naming=naming||[];state.funnels=funnels||[];state.convs=convs||[];
+    state.rows=rows||[];state.naming=naming||[];state.funnels=funnels||[];state.convs=convs||[];state.camps=camps||[];
     setConn('ok');
     refreshDynamic();refreshFilters();renderRegistry();renderNamingList();renderFcTabs();renderFunnelList();renderFunnelDetail();renderConversions();renderFunnelRegistry();renderCampaigns();renderDashboard();renderStructure();
     if(!applyDeepLink()&&!state.editF)newFunnel(false); // Deep-Link (?funnel=…) geht vor; sonst Default: leeren Funnel offen halten, kein großer leerer Bereich
@@ -3695,7 +3713,9 @@ function ovCampaignCard(cn,rows,seg){
   const any=rows[0];
   const temp=rows.map(r=>r.temperature).find(Boolean)||'';
   const tempH=temp?`<span class="temp-chip ${esc(temp)}">${tempLbl(temp)}</span>`:`<span class="temp-chip none">—</span>`;
-  const prod=ovGroup(any);const prodLbl=prod&&prod!=='—'?groupLabel(prod).split(' · ')[0]:'';
+  const multiFn=new Set(rows.map(n=>n.funnel_reference).filter(Boolean)).size>1;
+  // Mehrere Ziele (Suchkampagne): das Produkt des ersten Funnels waere falsch — dann zaehlt der Channel.
+  const prod=multiFn?(any.channel||'—'):ovGroup(any);const prodLbl=prod&&prod!=='—'?groupLabel(prod).split(' · ')[0]:'';
   // ① Ankunft
   const paid=rows.filter(n=>(n.platform_type||'paid')==='paid');
   const mails=rows.filter(n=>n.platform_type==='email');
@@ -3712,8 +3732,19 @@ function ovCampaignCard(cn,rows,seg){
   const utmSt=linked===rows.length?ovStatusPill('ok',t('ovc.utm.ok')):(linked>0?ovStatusPill('warn',t('ovc.utm.part',{n:rows.length-linked})):ovStatusPill('bad',t('ovc.utm.none')));
   // ② On-Site
   const fr=funnelRefOf(rows);const funnel=fr?ovFunnelFor(fr):null;
+  // Eine Suchkampagne fuehrt je Anzeigengruppe auf ein eigenes Ziel (SOP_Platform_Naming, Google-Suche
+  // 17.10.2026) — die Karte zeigte bis dahin nur den haeufigsten Funnel und verschwieg die anderen.
+  const frs=[...new Set(rows.map(n=>n.funnel_reference).filter(Boolean))];
   let chainH,funnelSt,convSt='';
-  if(funnel&&(funnel.steps||[]).length){
+  if(frs.length>1){
+    const de=LANG==='de';let miss=0;const keys=new Set();
+    chainH=frs.map(r=>{const f=ovFunnelFor(r);if(!f)miss++;else (f.steps||[]).forEach(s=>{if(s.conversion_key)keys.add(s.conversion_key);});
+      const grp=rows.filter(n=>n.funnel_reference===r).map(n=>String(n.adset_or_automation||'—').replace(/_/g,' ')).join(', ');
+      return `<div class="ovc-fnrow"${f?` onclick="openFunnelFromOv(${f.id})"`:''} title="${esc(f?f.name:r)}"><span class="ovc-node">${esc(grp)}</span><span class="ovc-sep">→</span><span class="ovc-fnname">${esc(f?f.name:r)}</span></div>`;}).join('');
+    funnelSt=miss?ovStatusPill('bad',(de?'✗ ':'✗ ')+miss+(de?' Ziel(e) ohne Funnel':' target(s) without funnel')):ovStatusPill('ok','✓ '+frs.length+' Funnels');
+    const ks=[...keys];const ok=ks.filter(k=>{const c=state.convs.find(x=>x.key===k);return c&&c.ga4_status==='done'&&c.ads_status==='done';}).length;
+    convSt=ks.length?ovStatusPill(ok===ks.length?'ok':'warn',(ok===ks.length?'● ':'○ ')+ok+'/'+ks.length+(de?' Conversions (GA4 + Ads)':' conversions (GA4 + Ads)')):ovStatusPill('warn',t('ovc.conv.none'));
+  }else if(funnel&&(funnel.steps||[]).length){
     const steps=funnel.steps||[];
     chainH=`<div class="ovc-chain" onclick="openFunnelFromOv(${funnel.id})" title="${esc(funnel.name)}">`+steps.slice(0,5).map(s=>`<span class="ovc-node">${esc(stepShort(s))}</span>`).join('<span class="ovc-sep">→</span>')+(steps.length>5?`<span class="ovc-sep">→ +${steps.length-5}</span>`:'')+`</div>`;
     funnelSt=ovStatusPill('ok',t('ovc.funnel.ok'));
@@ -3722,7 +3753,8 @@ function ovCampaignCard(cn,rows,seg){
     else convSt=ovStatusPill('warn',t('ovc.conv.none'));
   }else{chainH=`<div class="ovc-chain empty">${t('ovc.funnel.none')}</div>`;funnelSt=ovStatusPill('bad',t('ovc.funnel.none'));}
   // ③ Lifecycle
-  const acTags=[...new Set((funnel?funnel.steps||[]:[]).filter(s=>s.ac_tag).map(s=>s.ac_tag))];
+  const fnAll=multiFn?frs.map(ovFunnelFor).filter(Boolean):(funnel?[funnel]:[]);
+  const acTags=[...new Set(fnAll.flatMap(f=>(f.steps||[]).filter(s=>s.ac_tag).map(s=>s.ac_tag)))];
   const lcBits=[];
   if(mails.length)lcBits.push(`<span class="ovc-asset">AC · ${mails.length} ${t('ovc.autos')}</span>`);
   acTags.slice(0,3).forEach(tg=>lcBits.push(`<span class="ovc-tag">${esc(tg)}</span>`));
@@ -3730,6 +3762,7 @@ function ovCampaignCard(cn,rows,seg){
   const lcSt=(mails.length||acTags.length)?ovStatusPill('ok',t('ovc.ac.ok')):ovStatusPill('warn',t('ovc.ac.none'));
   return `<div class="ovc seg-${esc(seg)}">
     <div class="ovc-head">${tempH}<b title="${esc(cn)}">${esc(campaignShort(any))}</b>${prodLbl?`<span class="ovc-prod">${esc(prodLbl)}</span>`:''}<span class="mono ovc-full">${esc(cn)}</span></div>
+    ${campBarHtml(cn,rows.some(n=>(n.platform_type||'paid')==='paid'&&(state.rows||[]).some(r=>r.naming_id===n.id&&rowStatus(r)==='aktiv')))}
     <div class="ovc-phases">
       <div class="ovc-ph p1"><div class="ovc-ph-h"><em>${t('ovc.p1')}</em></div><div class="ovc-body">${assetsH}</div><div class="ovc-sts">${utmSt}</div></div>
       <div class="ovc-arrow">→</div>
@@ -3751,9 +3784,75 @@ function renderCampaigns(){
   nm.forEach(n=>{const c=n.campaign_name||'—';if(!camps.has(c))camps.set(c,[]);camps.get(c).push(n);});
   if($('cmCount'))$('cmCount').textContent=camps.size+' '+(LANG==='de'?'Kampagnen':'campaigns');
   inner.classList.add('cards');
-  if(!camps.size){inner.innerHTML=`<div class="ov-empty" style="padding:26px">${t('ovc.empty')}</div>`;return;}
   let h='';for(const [cn,rows] of camps)h+=ovCampaignCard(cn,rows,seg);
-  inner.innerHTML=h;
+  if(grp==='all'&&(src==='all'||src==='paid'))h+=campOrphanCards(q);
+  inner.innerHTML=h||`<div class="ov-empty" style="padding:26px">${t('ovc.empty')}</div>`;
+}
+/* ── Kampagnen-Steckbrief (Tabelle `campaigns`, seit 17.10.2026) ──
+   Was die Naming- und UTM-Zeilen nicht wissen: laeuft die Kampagne, von wann bis wann, mit welchem
+   Budget, und wo liegen Bau-Bogen und Anzeigen-Vorschau. Ein Datensatz je Kampagne (Schluessel =
+   campaign_name aus dem Naming). Die Links zeigen auf die Drive — die Vorschau wird nicht
+   eingebettet, damit es sie nur an einer Stelle gibt (Marnie 17.10.: „wenn zu pflegebeduerftig, nicht"). */
+const CAMP_ST=['geplant','aktiv','pausiert','beendet'];
+const CAMP_FIELDS=[['status','Status'],['start_date','Start'],['end_date','Ende'],['platform','Plattform'],['account_id','Konto'],['platform_campaign_id','Kampagnen-ID'],['budget','Budget'],['bogen_path','Bau-Bogen im Repo'],['drive_url','Drive-Ordner (Bau-Bogen)'],['preview_url','Anzeigen-Vorschau'],['notes','Notiz']];
+const REPO_BLOB='https://github.com/followmarnie/TradeNeon_Architecture/blob/main/';
+function campMeta(cn){return (state.camps||[]).find(c=>c.campaign_name===cn)||null;}
+function fmtDay(d){if(!d)return '';const p=String(d).slice(0,10).split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:String(d);}
+function campToday(){return new Date().toISOString().slice(0,10);}
+function campBarHtml(cn,isPaid){
+  const de=LANG==='de',m=campMeta(cn);
+  if(state.campEdit===cn)return campEditorHtml(cn,m);
+  const btn=`<button class="ovc-cbtn" type="button" data-cn="${esc(cn)}" onclick="campEdit(this.dataset.cn)">${m?(de?'Steckbrief bearbeiten':'edit profile'):(de?'Steckbrief anlegen':'add profile')}</button>`;
+  if(!m)return `<div class="ovc-camp">${isPaid?ovStatusPill('warn',de?'⚠ Steckbrief fehlt: Status, Laufzeit, Drive-Link':'⚠ profile missing: status, dates, Drive link'):''}<span style="flex:1"></span>${btn}</div>`;
+  const ended=m.status==='aktiv'&&m.end_date&&String(m.end_date)<campToday();
+  const stK=ended?'bad':m.status==='aktiv'?'ok':m.status==='beendet'?'':'warn';
+  const run=(m.start_date||m.end_date)?`<span class="ovc-cinfo">${fmtDay(m.start_date)||'?'} – ${fmtDay(m.end_date)||(de?'offen':'open')}</span>`:'';
+  const links=[];
+  if(m.drive_url)links.push(`<a href="${esc(m.drive_url)}" target="_blank" rel="noopener">${de?'Bau-Bogen (Drive)':'Build sheet (Drive)'}</a>`);
+  if(m.preview_url)links.push(`<a href="${esc(m.preview_url)}" target="_blank" rel="noopener">${de?'Anzeigen-Vorschau':'Ad preview'}</a>`);
+  if(m.bogen_path)links.push(`<a href="${esc(/^https?:/.test(m.bogen_path)?m.bogen_path:REPO_BLOB+m.bogen_path)}" target="_blank" rel="noopener" title="${esc(m.bogen_path)}">${de?'Quelle im Repo':'Source in repo'}</a>`);
+  return `<div class="ovc-camp">${ovStatusPill(stK,(ended?(de?'Laufzeit vorbei · ':'ended · '):'')+m.status)}${run}`
+    +`${m.platform?`<span class="ovc-cinfo">${esc(m.platform)}${m.platform_campaign_id?' · '+esc(m.platform_campaign_id):''}</span>`:''}`
+    +`${m.budget?`<span class="ovc-cinfo" title="${esc(m.budget)}">${esc(m.budget.length>48?m.budget.slice(0,47)+'…':m.budget)}</span>`:''}`
+    +`<span class="ovc-links">${links.join('')}${!m.drive_url?ovStatusPill('warn',de?'⚠ Drive-Link fehlt':'⚠ Drive link missing'):''}</span><span style="flex:1"></span>${btn}</div>`
+    +(m.notes?`<div class="ovc-cnote">${esc(m.notes)}</div>`:'');
+}
+function campEditorHtml(cn,m){
+  const de=LANG==='de';m=m||{};
+  const f=CAMP_FIELDS.map(([k,l])=>{const v=m[k]==null?'':String(m[k]).slice(0,k.endsWith('_date')?10:9999);
+    let inp;
+    if(k==='status')inp=`<select id="ce_${k}">${CAMP_ST.map(x=>`<option${(v||'geplant')===x?' selected':''}>${x}</option>`).join('')}</select>`;
+    else if(k.endsWith('_date'))inp=`<input id="ce_${k}" type="date" value="${esc(v)}">`;
+    else inp=`<input id="ce_${k}" value="${esc(v||(k==='platform'&&!m.campaign_name?'Google Ads':''))}">`;
+    return `<label class="ovc-cf${['notes','budget','drive_url','preview_url','bogen_path'].includes(k)?' wide':''}"><span>${l}</span>${inp}</label>`;}).join('');
+  return `<div class="ovc-camp edit"><div class="ovc-cgrid">${f}</div><div class="ovc-cact"><button class="btn" type="button" data-cn="${esc(cn)}" onclick="campSave(this.dataset.cn)">${de?'Speichern':'Save'}</button><button class="btn ghost" type="button" onclick="campEdit(null)">${de?'Abbrechen':'Cancel'}</button></div></div>`;
+}
+function campEdit(cn){state.campEdit=cn;renderCampaigns();}
+async function campSave(cn){
+  const o={campaign_name:cn};
+  CAMP_FIELDS.forEach(([k])=>{const el=$('ce_'+k);if(!el)return;const v=String(el.value||'').trim();o[k]=v===''?null:v;});
+  if(!o.status)o.status='geplant';
+  if(!o.platform)o.platform='Google Ads';
+  if(!campMeta(cn))o.created_by=whoami()||null;
+  try{
+    const r=await sb('campaigns?on_conflict=campaign_name',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify([o])});
+    const row=(r&&r[0])||o;
+    state.camps=(state.camps||[]).filter(c=>c.campaign_name!==cn).concat([row]);
+    state.campEdit=null;renderCampaigns();renderDashboard();
+    toast(LANG==='de'?'Steckbrief gespeichert.':'Profile saved.');
+  }catch(e){toast((LANG==='de'?'Speichern fehlgeschlagen: ':'Save failed: ')+e.message,true);}
+}
+// Bezahlte, aktive UTM-Zeilen ohne Naming-Eintrag: Die Karten entstehen aus dem Naming — ohne
+// Eintrag waere laufende Werbung hier unsichtbar (so geschehen bei Spur 2 bis 17.10.2026).
+function campOrphanCards(q){
+  const de=LANG==='de';
+  const rows=(state.rows||[]).filter(r=>(r.platform_type||'')==='paid'&&rowStatus(r)==='aktiv'&&!r.naming_id);
+  const by=new Map();
+  rows.forEach(r=>{const k=r.campaign_name||r.utm_campaign||'—';if(q&&![k,r.utm_campaign,r.utm_content,r.funnel_ref].filter(Boolean).join(' ').toLowerCase().includes(q))return;if(!by.has(k))by.set(k,[]);by.get(k).push(r);});
+  let h='';
+  for(const [k,list] of by)h+=`<div class="ovc"><div class="ovc-head"><span class="temp-chip none">—</span><b>${esc(k)}</b>${ovStatusPill('bad',de?'✗ Werbung läuft, aber kein Naming-Eintrag':'✗ ads live, but no naming entry')}<span class="mono ovc-full">${esc(list.map(r=>r.utm_id).join(', '))}</span></div>`
+    +`<div class="ovc-camp"><span class="ovc-cinfo">${de?'Im Naming-Studio nach SOP anlegen und die UTM-Zeilen verknüpfen, dann erscheint hier die volle Karte.':'Create it in the naming studio per SOP and link the UTM rows to get the full card.'}</span><span style="flex:1"></span><button class="ovc-cbtn" type="button" onclick="switchView('naming')">${de?'Zum Naming-Studio':'Open naming studio'}</button></div></div>`;
+  return h;
 }
 
 /* ─────────────── Utils ─────────────── */
@@ -3875,6 +3974,31 @@ function openTasks(){
   if(lcNoGoal.length)mine.push({label:lcNoGoal.length+(de?' Lifecycle-Serien ohne Ziel-Conversion':' lifecycle series without target conversion'),
     detail:de?'Ziel je Serie setzen · L1 → Paid Plan':'set target per series · L1 → paid plan',view:'lifecycle'});
   const blind=(state.rows||[]).filter(r=>(r.platform_type||'')==='paid'&&rowStatus(r)==='aktiv'&&!String(r.funnel_ref||'').trim()).length;
+  // Werbekampagnen (seit 17.10.2026, Leitfaden marketing/werbekampagne-anlegen.md): Was laeuft, muss
+  // als Karte sichtbar sein und einen Steckbrief tragen — sonst weiss das Register nicht, dass es laeuft.
+  const paidLive=(state.rows||[]).filter(r=>(r.platform_type||'')==='paid'&&rowStatus(r)==='aktiv');
+  const noNaming=paidLive.filter(r=>!r.naming_id).length;
+  if(noNaming)mine.push({label:noNaming+(de?' bezahlte UTM-Zeilen aktiv, ohne Naming':' paid UTM rows active, without naming'),
+    detail:de?'die Kampagne fehlt sonst unter Kampagnen · im Naming-Studio anlegen und verknüpfen':'campaign missing from the campaigns view · create in naming studio and link',view:'naming'});
+  const liveCamps=new Set();
+  paidLive.forEach(r=>{const n=r.naming_id?state.naming.find(x=>x.id===r.naming_id):null;if(n&&n.campaign_name)liveCamps.add(n.campaign_name);});
+  const heute=new Date().toISOString().slice(0,10);
+  liveCamps.forEach(cn=>{const m=campMeta(cn);
+    if(!m)mine.push({label:cn,detail:de?'Steckbrief fehlt (Status, Laufzeit, Drive-Link)':'profile missing (status, dates, Drive link)',view:'campaigns'});
+    else{
+      if(!m.drive_url)mine.push({label:cn,detail:de?'Drive-Link zum Bau-Bogen fehlt':'Drive link to build sheet missing',view:'campaigns'});
+      if(m.status==='beendet')mine.push({label:cn,detail:de?'Kampagne beendet, UTM-Zeilen noch aktiv · auf stillgelegt setzen':'campaign ended, UTM rows still active · retire them',view:'utm'});
+    }});
+  (state.camps||[]).forEach(m=>{if(m.status==='aktiv'&&m.end_date&&String(m.end_date).slice(0,10)<heute)
+    mine.push({label:m.campaign_name,detail:(de?'Laufzeit vorbei seit ':'ended on ')+fmtDay(m.end_date)+(de?' · Status, Auswertung, UTM-Zeilen nachziehen':' · update status, review, UTM rows'),view:'campaigns'});});
+  // Tote Verweise: aktive Zeilen, deren funnel_ref auf keinen Funnel und keine Serie zeigt (gemessen
+  // 17.10.: 43 Zeilen, LOT-Auslieferung und ATAS-Template · Onboarding (EN)). Die Tracking-Regel und
+  // die Lifecycle-Sicht sind fuer sie blind.
+  const fnames=new Set((state.funnels||[]).map(f=>f.name));
+  const dead=(state.rows||[]).filter(r=>rowStatus(r)==='aktiv'&&String(r.funnel_ref||'').trim()&&!fnames.has(r.funnel_ref));
+  if(dead.length){const refs=[...new Set(dead.map(r=>r.funnel_ref.replace(/\s*\((DE|EN)\)$/,'').replace(/ (SE-Options|SE-Equity|EGS|Opening Put|Remote Control)$/,'')))];
+    mine.push({label:dead.length+(de?' aktive UTM-Zeilen zeigen auf eine Serie, die es hier nicht gibt':' active UTM rows point to a series that does not exist here'),
+      detail:refs.slice(0,3).join(', ')+(refs.length>3?' …':'')+(de?' · Serie anlegen oder Verweis korrigieren':' · create series or fix reference'),view:'utm'});}
   if(blind)mine.push({label:blind+(de?' bezahlte UTM-Zeilen aktiv, ohne funnel_ref':' paid UTM rows active, without funnel_ref'),
     detail:de?'die Tracking-Regel ist dafür blind':'the tracking rule cannot see these',view:'utm'});
   // „Name ohne UTM-Link" heisst: ein Kampagnen-/Asset-Name wurde nach SOP gemintet, aber daraus
