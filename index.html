@@ -897,6 +897,38 @@
   .ovc-st.ovcs-bad{color:#ff8f8f;border-color:rgba(255,143,143,.35);background:rgba(255,143,143,.07)}
   .ovc-arrow{display:flex;align-items:center;justify-content:center;color:#4a4f7a;font-size:18px;padding:0 2px}
   .ovc-camp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 16px;border-bottom:1px solid var(--tn-border);background:rgba(9,12,35,.35);font-size:12px}
+  .ct-head{margin-bottom:12px}
+  .ct{display:flex;flex-direction:column;gap:12px}
+  .ct-way{border-left:2px solid var(--tn-border);padding:2px 0 2px 16px;margin-left:6px}
+  .ct-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .ct-row b{font-size:14px;color:#fff}
+  .ct-sub{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:5px 0 5px 12px;font-size:12px}
+  .ct-lbl{min-width:92px;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:#6b7099}
+  .ct-ad{cursor:pointer;border:1px solid var(--tn-border);border-radius:9px;padding:4px 10px;background:rgba(9,12,35,.7);color:#e6e8ff}
+  .ct-ad small{display:block;font-family:"SF Mono",Menlo,monospace;font-size:10px;color:#8e94c0}
+  .ct-ad:hover,.ct-fn:hover{border-color:rgba(150,57,243,.6)}
+  .ct-fn{cursor:pointer;border:1px solid rgba(176,124,240,.4);border-radius:9px;padding:4px 10px;background:rgba(176,124,240,.08);color:#d9c2ff}
+  .smgx{position:relative;display:flex;gap:110px;align-items:flex-start;min-width:960px}
+  .smgx-svg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+  .smgx-svg path{fill:none;stroke:#4a4f7a;stroke-width:1.6;transition:.12s}
+  .smgx.hov .smgx-svg path{opacity:.12}
+  .smgx.hov .smgx-svg path.hl{opacity:1;stroke:#9639f3;stroke-width:2.4}
+  .smgx-col{display:flex;flex-direction:column;gap:12px;width:260px}
+  .smgx-h{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6b7099;margin-bottom:2px}
+  .smgx-node{position:relative;z-index:1;border:1px solid var(--tn-border);border-radius:12px;padding:10px 12px;background:rgba(9,12,35,.85);cursor:default;transition:.12s}
+  .smgx-node b{display:block;font-size:13px;color:#fff;line-height:1.25}
+  .smgx-node.camp{cursor:pointer;border-color:rgba(23,248,224,.3);background:linear-gradient(135deg,rgba(23,248,224,.07),rgba(9,12,35,.85))}
+  .smgx-node.goal[data-fid]{cursor:pointer}
+  .smgx-node.goal{border-color:rgba(176,124,240,.4)}
+  .smgx-node.goal.bad,.smgx-node.out.bad{border-color:rgba(255,143,143,.5)}
+  .smgx-node.out.ok{border-color:rgba(126,230,166,.45)}
+  .smgx-node.out.warn{border-color:rgba(255,206,122,.45)}
+  .smgx-node.out.info{border-color:rgba(156,196,255,.45)}
+  .smgx-node.out[onclick]{cursor:pointer}
+  .smgx-node .smg-sub{display:block;font-size:10.5px;color:#8e94c0;margin-top:3px;word-break:break-all;font-family:"SF Mono",Menlo,monospace}
+  .smgx-meta{display:flex;gap:6px;margin-bottom:5px;flex-wrap:wrap}
+  .smgx.hov .smgx-node{opacity:.35}
+  .smgx.hov .smgx-node.hl{opacity:1;border-color:#9639f3}
   .ovc-art{font-size:11px;padding:2px 8px;border-radius:6px;background:rgba(150,57,243,.18);color:#d9c2ff;border:1px solid rgba(150,57,243,.4)}
   .ovc-cinfo{color:#aab0d6;font-size:11.5px}
   .ovc-links{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
@@ -1290,8 +1322,10 @@
       <div class="toolbar">
         <h2 style="margin:0"><span data-i18n="sm.title">Campaign Structure Map</span> <span class="pill" id="smCount">…</span></h2>
         <span style="flex:1"></span>
+        <select id="smCamp" style="width:auto;max-width:340px" title="Kampagne" onchange="state.smCamp=this.value;renderStructure()"></select>
         <input id="smSearch" class="fc-search" style="width:250px;margin:0" data-i18n-ph="sm.search" placeholder="Suchen: cb01, Cold, Podcast…" oninput="renderStructure()">
       </div>
+      <p class="hint" id="smFilt" style="margin:-6px 0 8px"></p>
       <p class="hint" data-i18n="sm.sub" style="margin:-4px 0 14px">Zweite Sicht auf dieselben gespeicherten Namen — Campaign → AdSet/Automation → Ads. Kurz-Labels für die Orientierung; voller SOP-Name bei Hover; Klick öffnet den Eintrag im Naming Studio.</p>
       <div id="smTree"></div>
       <div id="smMap" class="smmap-view" style="display:none">
@@ -1761,7 +1795,7 @@ const T={
   'wz.v.src':'Wähle mindestens eine Quelle — sonst erscheint die Kampagne noch nicht in der Übersicht. Alles Weitere darfst Du offen lassen.',
   'wz.new':'↺ Neu','wz.newconfirm':'Aktuellen Entwurf verwerfen und neu beginnen?','wz.draft':'✎ Dein Stand wird automatisch gemerkt — Du kannst jederzeit weggehen und später weitermachen. Lücken darfst Du offen lassen.',
   'wz.log.conv':'Conversion anlegen…','wz.log.funnel':'Funnel anlegen…','wz.log.naming':'Naming {i}/{n}…','wz.log.done':'Fertig ✓',
-  'sm.note':'<b>Campaign Structure Map.</b> Zweitsicht auf die gespeicherten Namen — Campaign → AdSet/Automation → Ads. Bearbeitet wird weiter im <b>Naming Studio</b>; hier klickst Du einen Eintrag an, um ihn dort zu öffnen.','sm.title':'Campaign Structure Map','sm.search':'Suchen: cb01, Cold, Podcast…','sm.sub':'Zweite Sicht auf dieselben gespeicherten Namen — Campaign → AdSet/Automation → Ads. Kurz-Labels für die Orientierung; voller SOP-Name bei Hover; Klick öffnet den Eintrag im Naming Studio.','sm.empty':'Noch keine gespeicherten Namen — im Naming Studio anlegen.','sm.edit':'im Naming Studio öffnen','sm.v.tree':'Liste','sm.v.map':'Struktur-Map','sm.mapsoon.h':'Visueller Struktur-Graph — folgt','sm.mapsoon.p':'Das Auto-Layout-Diagramm (Campaign → AdSet → Ads als Netz) kommt als nächster Ausbau. Die Baum-Liste deckt heute schon dieselbe Struktur ab und wächst automatisch mit den Daten.','sm.derivectx':'Du leitest ab von:','sm.siblings':'{n} bestehende Schwester-Ads:','sm.openmap':'In Structure Map öffnen','sm.zoomout':'Auszoomen','sm.zoomin':'Reinzoomen','sm.zoomfit':'Zurücksetzen (100 %)','sm.zoomhint':'Scrollen = zoomen · ziehen = verschieben · +/− oder ⤢ zum Zurücksetzen',
+  'sm.note':'<b>Kampagnen im Zusammenhang.</b> Dieselben Daten wie die Karten, anders gezeigt: der Baum für eine Kampagne, der Graph für alle. Die Filter der Karten (Gruppe, Art, Quelle) gelten hier mit. Bearbeitet wird in den Karten, im Naming Studio und im Funnel-Tab.','sm.title':'Kampagnen im Zusammenhang','sm.search':'Suchen: cb01, Cold, Podcast…','sm.sub':'Baum: die oben gewählte Kampagne von vorn bis hinten (Anzeigengruppe → Anzeige → Funnel → Ziel → was danach passiert). Graph: alle Kampagnen im Überblick und wie sie über Ziele zu Serien und Übergaben zusammenhängen; Kampagne anklicken öffnet den Baum, Ziel den Funnel.','sm.empty':'Noch keine gespeicherten Namen — im Naming Studio anlegen.','sm.edit':'im Naming Studio öffnen','sm.v.tree':'Liste','sm.v.map':'Struktur-Map','sm.mapsoon.h':'Visueller Struktur-Graph — folgt','sm.mapsoon.p':'Das Auto-Layout-Diagramm (Campaign → AdSet → Ads als Netz) kommt als nächster Ausbau. Die Baum-Liste deckt heute schon dieselbe Struktur ab und wächst automatisch mit den Daten.','sm.derivectx':'Du leitest ab von:','sm.siblings':'{n} bestehende Schwester-Ads:','sm.openmap':'In Structure Map öffnen','sm.zoomout':'Auszoomen','sm.zoomin':'Reinzoomen','sm.zoomfit':'Zurücksetzen (100 %)','sm.zoomhint':'Scrollen = zoomen · ziehen = verschieben · +/− oder ⤢ zum Zurücksetzen',
   'dash.title':'Campaign Control. Sechs Module.','dash.lead':'Springe direkt in das Modul, das gerade gebraucht wird — Namen bauen, UTM kopieren, Funnel & Tracking prüfen oder Kampagnen im Zusammenhang sehen.','dash.open':'Öffnen',
   'dash.c.naming':'Asset → AdSet → Campaign. SOP-konforme Namen.','dash.c.structure':'Campaign → AdSet/Automation → Ads, als Baum und Graph.',
   'dash.c.utm':'Tracking-URLs bauen, suchen, kopieren.','dash.c.fc':'Funnel-Wege + Conversion-Messpunkte (GA4 / Ads / Meta).',
@@ -1899,7 +1933,7 @@ const T={
   'wz.v.src':'Pick at least one source — otherwise the campaign won’t show in the overview yet. Everything else can stay open.',
   'wz.new':'↺ New','wz.newconfirm':'Discard the current draft and start over?','wz.draft':'✎ Your progress is saved automatically — you can leave any time and continue later. Gaps are fine to leave open.',
   'wz.log.conv':'Creating conversion…','wz.log.funnel':'Creating funnel…','wz.log.naming':'Naming {i}/{n}…','wz.log.done':'Done ✓',
-  'sm.note':'<b>Campaign Structure Map.</b> A second view of the saved names — Campaign → AdSet/Automation → Ads. Editing stays in the <b>Naming Studio</b>; click an entry here to open it there.','sm.title':'Campaign Structure Map','sm.search':'Search: cb01, Cold, Podcast…','sm.sub':'A second view of the same saved names — Campaign → AdSet/Automation → Ads. Short labels for orientation; full SOP name on hover; click opens the entry in the Naming Studio.','sm.empty':'No saved names yet — create them in the Naming Studio.','sm.edit':'open in Naming Studio','sm.v.tree':'List','sm.v.map':'Structure map','sm.mapsoon.h':'Visual structure graph — coming','sm.mapsoon.p':'The auto-layout diagram (Campaign → AdSet → Ads as a network) is the next step. The tree list already covers the same structure today and grows automatically with the data.','sm.derivectx':'You are deriving from:','sm.siblings':'{n} existing sibling ads:','sm.openmap':'Open in Structure Map','sm.zoomout':'Zoom out','sm.zoomin':'Zoom in','sm.zoomfit':'Reset (100%)','sm.zoomhint':'Scroll = zoom · drag = pan · +/− or ⤢ to reset',
+  'sm.note':'<b>Campaigns in context.</b> The same data as the cards, shown differently: the tree for one campaign, the graph for all. The card filters (group, type, source) apply here too. Editing happens in the cards, the naming studio and the funnel tab.','sm.title':'Campaigns in context','sm.search':'Search: cb01, Cold, Podcast…','sm.sub':'Tree: the campaign chosen above, end to end (ad group → ad → funnel → goal → what happens next). Graph: all campaigns at a glance and how they connect through goals to sequences and handovers; click a campaign to open its tree, a goal to open the funnel.','sm.empty':'No saved names yet — create them in the Naming Studio.','sm.edit':'open in Naming Studio','sm.v.tree':'List','sm.v.map':'Structure map','sm.mapsoon.h':'Visual structure graph — coming','sm.mapsoon.p':'The auto-layout diagram (Campaign → AdSet → Ads as a network) is the next step. The tree list already covers the same structure today and grows automatically with the data.','sm.derivectx':'You are deriving from:','sm.siblings':'{n} existing sibling ads:','sm.openmap':'Open in Structure Map','sm.zoomout':'Zoom out','sm.zoomin':'Zoom in','sm.zoomfit':'Reset (100%)','sm.zoomhint':'Scroll = zoom · drag = pan · +/− or ⤢ to reset',
   'dash.title':'Campaign Control. Six modules.','dash.lead':'Jump straight into the module you need — build names, copy UTMs, check funnel & tracking, or see campaigns in context.','dash.open':'Open',
   'dash.c.naming':'Asset → AdSet → Campaign. SOP-compliant names.','dash.c.structure':'Campaign → AdSet/Automation → Ads, as tree and graph.',
   'dash.c.utm':'Build, search and copy tracking URLs.','dash.c.fc':'Funnel paths + conversion measurement points (GA4 / Ads / Meta).',
@@ -2363,7 +2397,7 @@ function adsetShort(n){const s=n.adset_or_automation||'';if(!s)return '—';if((
 function assetShort(n){const c=n.utm_content||'';if(c)return c.replace(/_/g,' · ');const a=n.asset_identifier||'';if(!a)return '—';return a.split('_').slice(-3).join(' · ');}
 function noteShort(s){return String(s||'').split(' | ')[0].trim();}
 function openNaming(id){switchView('naming');editNaming(id);}
-function setSmView(v){state.smView=v;document.querySelectorAll('#smView button').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick')===`setSmView('${v}')`));$('smTree').style.display=v==='tree'?'':'none';$('smMap').style.display=v==='map'?'':'none';if(v==='map')initSmZoom();}
+function setSmView(v){state.smView=v;document.querySelectorAll('#smView button').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick')===`setSmView('${v}')`));$('smTree').style.display=v==='tree'?'':'none';$('smMap').style.display=v==='map'?'':'none';if($('smCamp'))$('smCamp').style.display=v==='tree'?'':'none';if(v==='map')initSmZoom();}
 
 /* ─────────── Structure-Map · Zoom & Pan (Whimsical-Stil) ─────────── */
 const smZ={z:1,x:0,y:0};
@@ -2382,54 +2416,23 @@ function initSmZoom(){
   vp.addEventListener('click',function(e){if(moved){e.stopPropagation();e.preventDefault();moved=false;}},true);
 }
 // Baum-Ansicht: Campaign → AdSet/Automation → Ads. Reine Zweitsicht auf naming_registry.
-function smMapHTML(camps){
-  let out='';
-  for(const [ck,sets] of camps){
-    const anyN=[...sets.values()][0][0];const total=[...sets.values()].reduce((a,x)=>a+x.length,0);
-    let setsLi='';
-    for(const [sk,ads] of sets){
-      const a0=ads[0];const isEmail=(a0.platform_type||'paid')==='email';
-      let adsLi='';
-      ads.forEach(n=>{adsLi+=`<li><div class="smg-node ad" onclick="openNaming(${n.id})" title="${esc(n.asset_identifier||n.campaign_name)}"><span class="sm-badge ${esc(n.platform_type||'paid')}">${esc(n.platform_type||'paid')}</span><b>${esc(assetShort(n))}</b>${n.utm_content?`<span class="mono smg-sub">${esc(n.utm_content)}</span>`:''}${n.notes?`<span class="smg-note" title="${esc(n.notes)}">✎ ${esc(noteShort(n.notes))}</span>`:''}</div></li>`;});
-      setsLi+=`<li><div class="smg-node ${isEmail?'email':'adset'}" title="${esc(sk)}"><span class="sm-badge ${isEmail?'email':'adset'}">${isEmail?'Automation':'AdSet'}</span><b>${esc(adsetShort(a0))}</b><span class="smg-sub">${ads.length} ${isEmail?'E-Mails':'Ads'}</span></div><ul>${adsLi}</ul></li>`;
-    }
-    out+=`<div class="smg-scroll"><ul class="smg-tree"><li><div class="smg-node camp" title="${esc(ck)}"><span class="sm-badge camp">Campaign</span><b>${esc(campaignShort(anyN))}</b><span class="smg-sub">${sets.size} AdSets · ${total} Ads</span></div><ul>${setsLi}</ul></li></ul></div>`;
-  }
-  return out;
-}
 function renderStructure(){
   const box=$('smTree');if(!box)return;
+  const de=LANG==='de';
   const q=($('smSearch')?.value||'').toLowerCase();
-  const list=state.naming.filter(n=>!q||[n.campaign_name,n.adset_or_automation,n.asset_identifier,n.utm_content,n.utm_campaign].filter(Boolean).join(' ').toLowerCase().includes(q));
-  if($('smCount'))$('smCount').textContent=list.length;
-  const camps=new Map();
-  list.forEach(n=>{const ck=n.campaign_name||'—';if(!camps.has(ck))camps.set(ck,new Map());const sets=camps.get(ck);const sk=n.adset_or_automation||'—';if(!sets.has(sk))sets.set(sk,[]);sets.get(sk).push(n);});
+  const camps=campsFiltered(q);
+  if($('smCount'))$('smCount').textContent=camps.size;
+  // Filter aus der Kartenansicht gelten hier mit — sichtbar machen, sonst wirkt die Ansicht unvollstaendig.
+  const act=[];
+  if((state.ovGrp||'all')!=='all')act.push((de?'Gruppe ':'group ')+groupLabel(state.ovGrp).split(' · ')[0]);
+  if((state.ovArt||'all')!=='all')act.push('Art '+(state.ovArt==='none'?(de?'ohne':'none'):campArtLbl(state.ovArt)));
+  if((state.ovSrc||'all')!=='all')act.push((de?'Quelle ':'source ')+state.ovSrc);
+  if($('smFilt'))$('smFilt').innerHTML=act.length?`${de?'Filter aus „Karten“:':'Filters from “Cards”:'} ${esc(act.join(' · '))} · <a href="#" onclick="smResetFilters();return false">${de?'zurücksetzen':'reset'}</a>`:'';
+  const names=[...camps.keys()];if(!names.includes(state.smCamp))state.smCamp=names[0]||'';
+  const sel=$('smCamp');if(sel){sel.innerHTML=names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');sel.value=state.smCamp;}
   if(!camps.size){const empty=`<div class="hint" style="padding:16px">${t('sm.empty')}</div>`;box.innerHTML=empty;if($('smMapCanvas'))$('smMapCanvas').innerHTML=empty;return;}
-  if($('smMapCanvas')){$('smMapCanvas').innerHTML=smMapHTML(camps);applySmTransform();}
-  let h='';
-  for(const [ck,sets] of camps){
-    const total=[...sets.values()].reduce((a,x)=>a+x.length,0);const anyN=[...sets.values()][0][0];
-    h+=`<div class="sm-camp"><div class="sm-c-head" onclick="this.parentNode.classList.toggle('collapsed')">
-      <span class="sm-caret">▾</span><span class="sm-badge camp">Campaign</span>
-      <b title="${esc(ck)}">${esc(campaignShort(anyN))}</b>
-      <span class="sm-count">${sets.size} AdSets · ${total} Ads</span>
-      <span class="sm-full mono" title="${esc(ck)}">${esc(ck)}</span></div><div class="sm-c-body">`;
-    for(const [sk,ads] of sets){
-      const a0=ads[0];const isEmail=(a0.platform_type||'paid')==='email';
-      h+=`<div class="sm-set"><div class="sm-s-head" onclick="this.parentNode.classList.toggle('collapsed')">
-        <span class="sm-caret">▾</span><span class="sm-badge ${isEmail?'email':'adset'}">${isEmail?'Automation':'AdSet'}</span>
-        <b title="${esc(sk)}">${esc(adsetShort(a0))}</b>
-        <span class="sm-count">${ads.length} ${isEmail?'E-Mails':'Ads'}</span></div><div class="sm-s-body">`;
-      ads.forEach(n=>{h+=`<div class="sm-ad" onclick="openNaming(${n.id})" title="${esc(n.asset_identifier||n.campaign_name)}">
-        <span class="sm-badge ${esc(n.platform_type||'paid')}">${esc(n.platform_type||'paid')}</span>
-        <b>${esc(assetShort(n))}</b><span class="mono sm-utm">${esc(n.utm_content||'')}</span>
-        ${n.notes?`<span class="sm-note" title="${esc(n.notes)}">✎ ${esc(noteShort(n.notes))}</span>`:''}
-        <span class="sm-open">${t('sm.edit')} ↗</span></div>`;});
-      h+=`</div></div>`;
-    }
-    h+=`</div></div>`;
-  }
-  box.innerHTML=h;
+  box.innerHTML=smTreeHTML(state.smCamp,camps.get(state.smCamp));
+  if($('smMapCanvas')){$('smMapCanvas').innerHTML=smGraphHTML(camps);applySmTransform();if(state.smView==='map')smGraphLines();}
 }
 async function delNaming(id){
   const n=state.naming.find(x=>x.id===id);if(!n)return;
@@ -3720,6 +3723,110 @@ function ovStatusPill(kind,txt){return `<span class="ovc-st ovcs-${kind}">${esc(
 function funnelRefOf(rows){const c=new Map();rows.forEach(n=>{const f=n.funnel_reference;if(f){c.set(f,(c.get(f)||0)+1);}});let best='',bn=0;for(const [k,v] of c)if(v>bn){bn=v;best=k;}return best;}
 function stepShort(s){let l=s.title||s.type||'Step';l=String(l).replace(/[_-]/g,' ');return l.length>16?l.slice(0,15)+'…':l;}
 function openFunnelFromOv(id){switchView('fc');selectFunnel(id);}
+// Was nach der Conversion passiert (Goal-Step setzt `ac_tag` → Serie mit diesem Trigger, sonst `handover`).
+// Gemeinsam fuer Karte, Baum und Graph, damit alle drei dasselbe sagen.
+function campOutcome(st){
+  const c=state.convs.find(x=>x.key===st.conversion_key);
+  const tags=String(st.ac_tag||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const ser=tags.length?(state.funnels||[]).filter(x=>isLifecycle(x)&&x.status!=='archived'&&String(((x.steps||[])[0]||{}).ac_tag||'').split(',').map(y=>y.trim()).some(y=>tags.includes(y))):[];
+  return {key:st.conversion_key,label:c?(c.name||st.conversion_key):st.conversion_key,ser,handover:st.handover||'',tag:tags[0]||''};
+}
+function campOutcomePill(o){
+  const de=LANG==='de';
+  if(o.ser.length)return o.ser.map(x=>ovStatusPill(x.status==='live'?'ok':'warn',(x.status==='live'?(de?'Serie läuft: ':'series live: '):(de?'Serie im Bau: ':'series in build: '))+x.name)).join('');
+  if(o.handover)return ovStatusPill('info',(de?'Übergabe: ':'handover: ')+o.handover.split(',')[0]);
+  return ovStatusPill('bad',de?'✗ keine Strecke':'✗ no sequence');
+}
+// Eine Kampagne in ihre Wege zerlegen: je Anzeigengruppe → Anzeigen, Funnel, Ziele (mit Ausgang).
+function campWays(rows){
+  const by=new Map();
+  rows.forEach(n=>{const k=n.adset_or_automation||'—';if(!by.has(k))by.set(k,[]);by.get(k).push(n);});
+  return [...by].map(([adset,ads])=>{
+    const fr=funnelRefOf(ads);const f=fr?ovFunnelFor(fr):null;const goals=[],seen=new Set();
+    if(f)(f.steps||[]).forEach(st=>{if(!st.conversion_key)return;const k=st.conversion_key+'|'+(st.ac_tag||'');if(seen.has(k))return;seen.add(k);goals.push(campOutcome(st));});
+    return {adset,ads,fr,f,goals};
+  });
+}
+// Filter der Kartenansicht (Gruppe, Art, Quelle) + Suchtext — fuer Karten, Baum und Graph gleich.
+function campsFiltered(q){
+  const grp=state.ovGrp||'all',src=state.ovSrc||'all',art=state.ovArt||'all';
+  let nm=state.naming.filter(n=>grp==='all'||ovGroup(n)===grp);
+  if(src!=='all')nm=nm.filter(n=>(n.platform_type||'paid')===src);
+  if(q)nm=nm.filter(n=>[n.campaign_name,n.adset_or_automation,n.asset_identifier,n.utm_content,n.utm_campaign,n.funnel_reference].filter(Boolean).join(' ').toLowerCase().includes(q));
+  const camps=new Map();
+  nm.forEach(n=>{const c=n.campaign_name||'—';if(!camps.has(c))camps.set(c,[]);camps.get(c).push(n);});
+  if(art!=='all')for(const [cn,rows] of [...camps]){const k=campArt(cn,rows).k;if(art==='none'?!!k:k!==art)camps.delete(cn);}
+  return camps;
+}
+function campRefresh(){if((state.cmDisplay||'cards')==='cards')renderCampaigns();else renderStructure();}
+function smOpenTree(cn){state.smCamp=cn;const sq=$('smSearch');if(sq)sq.value='';cmShow('tree');}
+function smResetFilters(){state.ovGrp='all';state.ovArt='all';state.ovSrc='all';['ovArt','ovSrc'].forEach(id=>{if($(id))$(id).value='all';});renderStructure();}
+/* ── Baum: EINE ausgewaehlte Kampagne von vorn bis hinten ── */
+function smTreeHTML(cn,rows){
+  const de=LANG==='de';
+  let h=`<div class="ovc ct-head">${campBarHtml(cn,false,rows)}</div><div class="ct">`;
+  campWays(rows).forEach(w=>{
+    const isMail=(w.ads[0].platform_type||'paid')==='email';
+    h+=`<div class="ct-way"><div class="ct-row"><span class="sm-badge ${isMail?'email':'adset'}">${isMail?'Automation':(de?'Anzeigengruppe':'Ad group')}</span><b title="${esc(w.adset)}">${esc(w.adset)}</b></div>`;
+    h+=`<div class="ct-sub"><span class="ct-lbl">${de?'Anzeigen':'Ads'}</span>${w.ads.map(n=>`<span class="ct-ad" onclick="openNaming(${n.id})" title="${esc(n.asset_identifier||n.campaign_name)}">${esc(assetShort(n))}${n.utm_content?`<small>${esc(n.utm_content)}</small>`:''}</span>`).join('')}</div>`;
+    h+=`<div class="ct-sub"><span class="ct-lbl">${de?'Führt zu':'Leads to'}</span>${w.f?`<span class="ct-fn" onclick="openFunnelFromOv(${w.f.id})" title="${esc(w.f.name)}">${esc(w.f.name)} ↗</span>`:ovStatusPill('bad',de?'✗ kein Funnel':'✗ no funnel')}</div>`;
+    if(w.f&&!w.goals.length)h+=`<div class="ct-sub"><span class="ct-lbl">${de?'Ziel':'Goal'}</span>${ovStatusPill('warn',de?'⚠ kein Conversion-Ziel':'⚠ no conversion goal')}</div>`;
+    w.goals.forEach(g=>{
+      h+=`<div class="ct-sub"><span class="ct-lbl">${de?'Ziel · danach':'Goal · then'}</span><span class="ovc-node">${esc(g.label)}</span><span class="ovc-sep">→</span>${campOutcomePill(g)}</div>`;
+    });
+    h+=`</div>`;
+  });
+  return h+`</div>`;
+}
+/* ── Graph: alle Kampagnen (gefiltert), Kampagne → Ziel → was danach passiert ── */
+function smGraphHTML(camps){
+  const de=LANG==='de';
+  const goals=new Map(),outs=new Map(),edges=new Set();
+  for(const [cn,rows] of camps){
+    campWays(rows).forEach(w=>{
+      if(!w.goals.length){goals.set('g:—',{label:de?'kein Ziel / Funnel':'no goal / funnel',bad:true});edges.add('c:'+cn+'\t'+'g:—');return;}
+      w.goals.forEach(g=>{
+        const gk='g:'+g.key;if(!goals.has(gk))goals.set(gk,{label:g.label,key:g.key,fid:w.f&&w.f.id});
+        edges.add('c:'+cn+'\t'+gk);
+        const os=g.ser.length?g.ser.map(x=>({k:'s:'+x.id,label:x.name,cls:x.status==='live'?'ok':'warn',lc:true})):(g.handover?[{k:'h:'+g.handover.split(',')[0],label:(de?'Übergabe: ':'handover: ')+g.handover.split(',')[0],cls:'info'}]:[{k:'none',label:de?'keine Strecke':'no sequence',cls:'bad'}]);
+        os.forEach(o=>{if(!outs.has(o.k))outs.set(o.k,o);edges.add(gk+'\t'+o.k);});
+      });
+    });
+  }
+  const cN=[...camps].map(([cn,rows])=>{const m=campMeta(cn),ar=campArt(cn,rows);
+    return `<div class="smgx-node camp" data-id="c:${esc(cn)}" data-cn="${esc(cn)}" onclick="smOpenTree(this.dataset.cn)" onmouseenter="smgxHover(this.dataset.id)" onmouseleave="smgxHover(null)" title="${esc(cn)}">`
+      +`<div class="smgx-meta">${ar.k?`<span class="ovc-art">${esc(campArtLbl(ar.k))}${ar.derived?' *':''}</span>`:''}${m?`<span class="ovc-st ovcs-${m.status==='aktiv'?'ok':m.status==='beendet'?'':'warn'}">${esc(m.status)}</span>`:''}</div>`
+      +`<b>${esc(campaignShort(rows[0]))}</b><span class="smg-sub">${esc(cn)}</span></div>`;}).join('');
+  const gN=[...goals].map(([k,g])=>`<div class="smgx-node goal${g.bad?' bad':''}" data-id="${esc(k)}"${g.fid?` data-fid="${g.fid}" onclick="openFunnelFromOv(${g.fid})"`:''} onmouseenter="smgxHover(this.dataset.id)" onmouseleave="smgxHover(null)"><b>${esc(g.label)}</b>${g.key?`<span class="smg-sub">${esc(g.key)}</span>`:''}</div>`).join('');
+  const oN=[...outs.values()].map(o=>`<div class="smgx-node out ${o.cls}" data-id="${esc(o.k)}"${o.lc?` onclick="switchView('lifecycle')"`:''} onmouseenter="smgxHover(this.dataset.id)" onmouseleave="smgxHover(null)"><b>${esc(o.label)}</b></div>`).join('');
+  return `<div class="smgx" id="smgx" data-edges="${esc(JSON.stringify([...edges].map(e=>e.split('\t'))))}"><svg class="smgx-svg"></svg>`
+    +`<div class="smgx-col"><div class="smgx-h">${de?'Kampagne':'Campaign'}</div>${cN}</div>`
+    +`<div class="smgx-col"><div class="smgx-h">${de?'Ziel (Conversion)':'Goal (conversion)'}</div>${gN}</div>`
+    +`<div class="smgx-col"><div class="smgx-h">${de?'Danach':'Then'}</div>${oN}</div></div>`;
+}
+function smGraphLines(){
+  const root=document.getElementById('smgx');if(!root)return;
+  const svg=root.querySelector('svg'),pos={};
+  root.querySelectorAll('.smgx-node').forEach(n=>{pos[n.dataset.id]={x:n.offsetLeft,y:n.offsetTop,w:n.offsetWidth,h:n.offsetHeight};});
+  svg.setAttribute('width',root.offsetWidth);svg.setAttribute('height',root.offsetHeight);
+  let edges=[];try{edges=JSON.parse(root.dataset.edges||'[]');}catch(e){}
+  svg.innerHTML=edges.map(([a,b])=>{const A=pos[a],B=pos[b];if(!A||!B)return '';
+    const x1=A.x+A.w,y1=A.y+A.h/2,x2=B.x,y2=B.y+B.h/2,dx=Math.max(30,(x2-x1)/2);
+    return `<path d="M${x1} ${y1} C${x1+dx} ${y1},${x2-dx} ${y2},${x2} ${y2}" data-a="${esc(a)}" data-b="${esc(b)}"/>`;}).join('');
+}
+function smgxHover(id){
+  const root=document.getElementById('smgx');if(!root)return;
+  const paths=[...root.querySelectorAll('path')],nodes=[...root.querySelectorAll('.smgx-node')];
+  root.classList.toggle('hov',!!id);
+  if(!id){paths.forEach(p=>p.classList.remove('hl'));nodes.forEach(n=>n.classList.remove('hl'));return;}
+  // Die ganze Kette zur Auswahl: alles dahinter (vorwaerts) und alles davor (rueckwaerts), nicht nur der Nachbar.
+  const walk=(from,fwd)=>{const seen=new Set([from]),q=[from];
+    while(q.length){const cur=q.shift();paths.forEach(p=>{const a=p.dataset.a,b=p.dataset.b,nx=fwd?(a===cur?b:null):(b===cur?a:null);if(nx&&!seen.has(nx)){seen.add(nx);q.push(nx);}});}
+    return seen;};
+  const hl=new Set([...walk(id,true),...walk(id,false)]);
+  paths.forEach(p=>p.classList.toggle('hl',hl.has(p.dataset.a)&&hl.has(p.dataset.b)));
+  nodes.forEach(n=>n.classList.toggle('hl',hl.has(n.dataset.id)));
+}
 function ovCampaignCard(cn,rows,seg){
   const any=rows[0];
   const temp=rows.map(r=>r.temperature).find(Boolean)||'';
@@ -3773,19 +3880,13 @@ function ovCampaignCard(cn,rows,seg){
   fnAll.forEach(f=>(f.steps||[]).forEach(st=>{
     if(!st.conversion_key)return;
     const k=st.conversion_key+'|'+(st.ac_tag||'');if(lcSeen.has(k))return;lcSeen.add(k);
-    const c=state.convs.find(x=>x.key===st.conversion_key);
-    const tags=String(st.ac_tag||'').split(',').map(x=>x.trim()).filter(Boolean);
-    const ser=tags.length?(state.funnels||[]).filter(x=>isLifecycle(x)&&x.status!=='archived'&&String(((x.steps||[])[0]||{}).ac_tag||'').split(',').map(y=>y.trim()).some(y=>tags.includes(y))):[];
-    lcBr.push({label:c?(c.name||st.conversion_key):st.conversion_key,ser,handover:st.handover||'',tag:tags[0]||''});
+    lcBr.push(campOutcome(st));
   }));
   const lcBits=[];
   if(mails.length)lcBits.push(`<span class="ovc-asset">AC · ${mails.length} ${t('ovc.autos')}</span>`);
   let lcMiss=0;
   lcBr.forEach(b=>{
-    let st;
-    if(b.ser.length)st=b.ser.map(x=>ovStatusPill(x.status==='live'?'ok':'warn',(x.status==='live'?(de3?'Serie läuft: ':'series live: '):(de3?'Serie im Bau: ':'series in build: '))+x.name)).join('');
-    else if(b.handover)st=ovStatusPill('info',(de3?'Übergabe: ':'handover: ')+b.handover.split(',')[0]);
-    else{lcMiss++;st=ovStatusPill('bad',de3?'✗ keine Strecke':'✗ no sequence');}
+    const st=campOutcomePill(b);if(!b.ser.length&&!b.handover)lcMiss++;
     lcBits.push(`<div class="ovc-lcrow" title="${esc(b.tag)}"><span class="ovc-node">${esc(b.label)}</span><span class="ovc-sep">→</span>${st}</div>`);
   });
   if(!lcBr.length){const acTags=[...new Set(fnAll.flatMap(f=>(f.steps||[]).filter(s=>s.ac_tag).map(s=>s.ac_tag)))];acTags.slice(0,3).forEach(tg=>lcBits.push(`<span class="ovc-tag">${esc(tg)}</span>`));}
@@ -3806,18 +3907,11 @@ function ovCampaignCard(cn,rows,seg){
 function renderCampaigns(){
   const inner=$('ovInner');if(!inner)return;
   renderOvTabs();
-  const grp=state.ovGrp||'all',src=state.ovSrc||'all',seg=state.ovSeg||'all';
+  const grp=state.ovGrp||'all',src=state.ovSrc||'all',art=state.ovArt||'all',seg=state.ovSeg||'all';
   const q=($('cmFilter').value||'').trim().toLowerCase();
-  let nm=state.naming.filter(n=>grp==='all'||ovGroup(n)===grp);
-  if(src!=='all')nm=nm.filter(n=>(n.platform_type||'paid')===src);
-  if(q)nm=nm.filter(n=>[n.campaign_name,n.adset_or_automation,n.asset_identifier,n.utm_content,n.funnel_reference].filter(Boolean).join(' ').toLowerCase().includes(q));
-  const camps=new Map();
-  nm.forEach(n=>{const c=n.campaign_name||'—';if(!camps.has(c))camps.set(c,[]);camps.get(c).push(n);});
+  const camps=campsFiltered(q);
   if($('cmCount'))$('cmCount').textContent=camps.size+' '+(LANG==='de'?'Kampagnen':'campaigns');
   inner.classList.add('cards');
-  const art=state.ovArt||'all';
-  if(art!=='all')for(const [cn,rows] of [...camps]){const k=campArt(cn,rows).k;if(art==='none'?!!k:k!==art)camps.delete(cn);}
-  if($('cmCount'))$('cmCount').textContent=camps.size+' '+(LANG==='de'?'Kampagnen':'campaigns');
   let h='';for(const [cn,rows] of camps)h+=ovCampaignCard(cn,rows,seg);
   if(grp==='all'&&art==='all'&&(src==='all'||src==='paid'))h+=campOrphanCards(q);
   inner.innerHTML=h||`<div class="ov-empty" style="padding:26px">${t('ovc.empty')}</div>`;
@@ -3846,7 +3940,8 @@ function campBarHtml(cn,isPaid,rows){
   const de=LANG==='de',m=campMeta(cn);
   const ar=campArt(cn,rows);const artH=ar.k?`<span class="ovc-art"${ar.derived?` title="${de?'aus dem Naming abgeleitet':'derived from naming'}"`:''}>${esc(campArtLbl(ar.k))}${ar.derived?' *':''}</span>`:'';
   if(state.campEdit===cn)return campEditorHtml(cn,m);
-  const btn=`<button class="ovc-cbtn" type="button" data-cn="${esc(cn)}" onclick="campEdit(this.dataset.cn)">${m?(de?'Steckbrief bearbeiten':'edit profile'):(de?'Steckbrief anlegen':'add profile')}</button>`;
+  const treeBtn=state.cmDisplay==='tree'?'':`<button class="ovc-cbtn" type="button" data-cn="${esc(cn)}" onclick="smOpenTree(this.dataset.cn)" title="${de?'Diese Kampagne von vorn bis hinten':'This campaign end to end'}">${de?'Als Baum':'As tree'}</button>`;
+  const btn=treeBtn+`<button class="ovc-cbtn" type="button" data-cn="${esc(cn)}" onclick="campEdit(this.dataset.cn)">${m?(de?'Steckbrief bearbeiten':'edit profile'):(de?'Steckbrief anlegen':'add profile')}</button>`;
   if(!m)return `<div class="ovc-camp">${artH}${isPaid?ovStatusPill('warn',de?'⚠ Steckbrief fehlt: Status, Laufzeit, Drive-Link':'⚠ profile missing: status, dates, Drive link'):''}<span style="flex:1"></span>${btn}</div>`;
   const ended=m.status==='aktiv'&&m.end_date&&String(m.end_date)<campToday();
   const stK=ended?'bad':m.status==='aktiv'?'ok':m.status==='beendet'?'':'warn';
@@ -3872,7 +3967,7 @@ function campEditorHtml(cn,m){
     return `<label class="ovc-cf${['notes','budget','drive_url','preview_url','bogen_path'].includes(k)?' wide':''}"><span>${l}</span>${inp}</label>`;}).join('');
   return `<div class="ovc-camp edit"><div class="ovc-cgrid">${f}</div><div class="ovc-cact"><button class="btn" type="button" data-cn="${esc(cn)}" onclick="campSave(this.dataset.cn)">${de?'Speichern':'Save'}</button><button class="btn ghost" type="button" onclick="campEdit(null)">${de?'Abbrechen':'Cancel'}</button></div></div>`;
 }
-function campEdit(cn){state.campEdit=cn;renderCampaigns();}
+function campEdit(cn){state.campEdit=cn;campRefresh();}
 async function campSave(cn){
   const o={campaign_name:cn};
   CAMP_FIELDS.forEach(([k])=>{const el=$('ce_'+k);if(!el)return;const v=String(el.value||'').trim();o[k]=v===''?null:v;});
@@ -3883,7 +3978,7 @@ async function campSave(cn){
     const r=await sb('campaigns?on_conflict=campaign_name',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify([o])});
     const row=(r&&r[0])||o;
     state.camps=(state.camps||[]).filter(c=>c.campaign_name!==cn).concat([row]);
-    state.campEdit=null;renderCampaigns();renderDashboard();
+    state.campEdit=null;campRefresh();renderDashboard();
     toast(LANG==='de'?'Steckbrief gespeichert.':'Profile saved.');
   }catch(e){toast((LANG==='de'?'Speichern fehlgeschlagen: ':'Save failed: ')+e.message,true);}
 }
@@ -4202,9 +4297,10 @@ const TAG_CATALOG=[
   {cat:'Goal', who:'du', note:'Funnel-Ziel erreicht.', values:['Consultation Booked – Daytrading']},
   {cat:'Funnel', who:'du', note:'Aktive Funnel-Zuordnung.', values:['Daytrading Consultation']},
   {cat:'Nurture', who:'auto', note:'Mutex zwischen den beiden Broschueren-Nurture-Serien (Day/Swing) -- ein Kontakt durchlaeuft nie beide gleichzeitig. Gesetzt direkt nach der Einwilligungspruefung vor A.1, entfernt am Serienende oder beim Ausstieg ueber ein Goal: Consultation Booked-Tag. Entscheid Marnie 2026-10-14.', values:['läuft']},
-  {cat:'Consultation', who:'auto', note:'Ausgang des Strategiegespraechs (Entwurf 2026-10-11; Held in AC seit 2026-10-12, ID 574; No-Show und Lost noch nicht angelegt). Held und Lost setzt Olivers Kundenmanagement-Tool, No-Show setzt Zapier/Calendly. Nie von Hand in einer Kampagne. Gebucht mit Start spaeter ist das Feld Geplanter Kursstart, kein Tag. Gewonnen = Customer.', values:['Held','No-Show','Lost']},
+  {cat:'Consultation', who:'auto', note:'Ausgang des Strategiegespraechs (Entwurf 2026-10-11; Held ID 574 seit 2026-10-12, No-Show 577 und Lost 578 seit 2026-10-24). Held und Lost setzt das Kundenmanagement im Kundenportal automatisch, No-Show per Klick bis zum Termin-Import (Marnie 2026-10-24). Nie von Hand in einer Kampagne. Gebucht mit Start spaeter ist das Feld Geplanter Kursstart, kein Tag. Gewonnen = Customer.', values:['Held','No-Show','Lost']},
+  {cat:'Personal Mail', who:'auto', note:'Persoenliche Mail von Oliver aus dem Kundenportal (Button mit Vorlage), gesetzt beim Absenden. Automatische Nachfass-Strecken pausieren oder enden darauf. Zeitpunkt im Feld Letzte persoenliche Mail am. Keine Newsletter-Einwilligung noetig (Marnie 2026-10-24, TEAM-156).', values:['Follow-up','Club Cancellation']},
   {cat:'Status', who:'du', note:'Temporärer/Event-Zustand — datiert, je Event 4 Stufen (Eingeladen/Registriert/Teilgenommen/Aufzeichnung gesehen).', values:['Do-Not-Contact','Testkontakt'], open:true},
-  {cat:'Customer', who:'portal', note:'NUR bezahlte Käufer (bloßes „Customer" = hat gekauft).', values:['','ETF','Aktienhandel','Swingtrading','Daytrading','Daytrading Club','Optionshandel','Dealer Hedging','LOI','FI','DHD','Alumni','LOT','Summit 2026']},
+  {cat:'Customer', who:'portal', note:'NUR bezahlte Käufer (bloßes „Customer" = hat gekauft).', values:['Daytrading + Swingtrading Kombi','','ETF','Aktienhandel','Swingtrading','Daytrading','Daytrading Club','Optionshandel','Dealer Hedging','LOI','FI','DHD','Alumni','LOT','Summit 2026']},
   {cat:'Subscription', who:'portal', note:'Aktives Abo-Produkt.', values:['LOI','FI','DHD','Daytrading Add-On','LOT']},
   {cat:'Language', who:'portal', note:'Sprache — der Sprach-Schalter jeder Serie, nicht nur eine Eigenschaft. Muss an JEDEM Eingang gesetzt werden, auch dort, wo kein Portal beteiligt ist (Fluent-Forms-Feeds, Webinar-Anbindung, Importe). Fehlt der Tag, enden beide Sprachvarianten einer Serie ohne Mail und ohne Fehlermeldung.', values:['DE','EN']},
   {cat:'LOI Status', who:'portal', note:'LOI-Subscription-Status. Kein „Free" — frei wird abgeleitet (kein Active/Lifetime/Included).', values:['Active','Cancelled','Lifetime','Payment Failed','Included']},
